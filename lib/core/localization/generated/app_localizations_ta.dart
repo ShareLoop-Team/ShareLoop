@@ -1,0 +1,450 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for Tamil (`ta`).
+class AppLocalizationsTa extends AppLocalizations {
+  AppLocalizationsTa([String locale = 'ta']) : super(locale);
+
+  @override
+  String get appTitle => 'ShareLoop';
+
+  @override
+  String get tagline =>
+      'உங்களுக்குத் தேவையற்றதைக் கொடுங்கள். உங்களுக்குத் தேவையானதைப் பெறுங்கள்.';
+
+  @override
+  String get home => 'முகப்பு';
+
+  @override
+  String get profile => 'சுயவிவரம்';
+
+  @override
+  String get settings => 'அமைப்புகள்';
+
+  @override
+  String get giveAway => 'கொடுங்கள்';
+
+  @override
+  String get requests => 'கோரிக்கைகள்';
+
+  @override
+  String get login => 'உள்நுழைய';
+
+  @override
+  String get register => 'பதிவு செய்ய';
+
+  @override
+  String get logout => 'வெளியேறு';
+
+  @override
+  String get email => 'மின்னஞ்சல்';
+
+  @override
+  String get password => 'கடவுச்சொல்';
+
+  @override
+  String get fullName => 'முழு பெயர்';
+
+  @override
+  String get phoneNumber => 'தொலைபேசி எண்';
+
+  @override
+  String get district => 'மாவட்டம்';
+
+  @override
+  String get cityTown => 'நகரம்';
+
+  @override
+  String get search => 'பொருட்களைத் தேடு...';
+
+  @override
+  String get noItemsAvailable => 'தற்போது பொருட்கள் எதுவும் இல்லை.';
+
+  @override
+  String get noOpenRequests => 'தற்போது திறந்த கோரிக்கைகள் இல்லை.';
+
+  @override
+  String get myPosts => 'எனது இடுகைகள்';
+
+  @override
+  String get myRequests => 'எனது கோரிக்கைகள்';
+
+  @override
+  String get reviewsReceived => 'பெறப்பட்ட மதிப்பீடுகள்';
+
+  @override
+  String get donations => 'நன்கொடைகள்';
+
+  @override
+  String get requestThisItem => 'இந்த பொருளை கோருங்கள்';
+
+  @override
+  String get viewIncomingRequests => 'வரும் கோரிக்கைகளைக் காண்க';
+
+  @override
+  String get submitRequest => 'கோரிக்கையை சமர்ப்பிக்க';
+
+  @override
+  String get publishPost => 'வெளியிடு';
+
+  @override
+  String get language => 'மொழி';
+
+  @override
+  String get onboardingDescription =>
+      'உங்களுக்குத் தேவையில்லாததைக் கொடுங்கள். உங்களுக்குத் தேவையானதைக் கண்டறியுங்கள். இலங்கை முழுவதும் உள்ள உங்கள் சமூகத்துடன் பொருட்களை இலவசமாகப் பகிருங்கள்.';
+
+  @override
+  String get onboardingLogIn => 'உள்நுழைய';
+
+  @override
+  String get onboardingRegister => 'பதிவு செய்ய';
+
+  @override
+  String get loginWelcomeBack => 'மீண்டும் வருக';
+
+  @override
+  String get loginSubtitle => 'தொடர்ந்து பகிரவும் இணையவும் உள்நுழையுங்கள்';
+
+  @override
+  String get loginEmailHint => 'உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்';
+
+  @override
+  String get loginPasswordHint => 'கடவுச்சொல்லை உள்ளிடுங்கள்';
+
+  @override
+  String get loginEmailRequired => 'மின்னஞ்சல் தேவை';
+
+  @override
+  String get loginPasswordRequired => 'கடவுச்சொல் தேவை';
+
+  @override
+  String get loginShowPassword => 'கடவுச்சொல்லைக் காட்டு';
+
+  @override
+  String get loginHidePassword => 'கடவுச்சொல்லை மறை';
+
+  @override
+  String get loginRememberMe => 'என்னை நினைவில் கொள்';
+
+  @override
+  String get loginForgotPassword => 'கடவுச்சொல் மறந்துவிட்டதா?';
+
+  @override
+  String get loginForgotPasswordUnavailable =>
+      'கடவுச்சொல் மீட்டமைப்பு இன்னும் கிடைக்கவில்லை.';
+
+  @override
+  String get loginSignIn => 'உள்நுழைய';
+
+  @override
+  String get loginOr => 'அல்லது';
+
+  @override
+  String get loginNoAccount => 'கணக்கு இல்லையா?';
+
+  @override
+  String get loginCreateAccount => 'கணக்கை உருவாக்கு';
+
+  @override
+  String get registerTitle => 'ShareLoop-க்கு வருக!';
+
+  @override
+  String get registerSubtitle =>
+      'உங்கள் அருகில் பொருட்களைக் கொடுக்கவும் கண்டறியவும் கணக்கை உருவாக்குங்கள்.';
+
+  @override
+  String get registerNameHint => 'உங்கள் முழுப் பெயரை உள்ளிடுங்கள்';
+
+  @override
+  String get registerPhoneHint => 'உங்கள் தொலைபேசி எண்ணை உள்ளிடுங்கள்';
+
+  @override
+  String get registerDistrictHint => 'உங்கள் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get registerCityHint => 'உங்கள் நகரத்தை உள்ளிடுங்கள்';
+
+  @override
+  String get registerConfirmPasswordHint => 'கடவுச்சொல்லை உறுதிப்படுத்துங்கள்';
+
+  @override
+  String get registerNameRequired => 'பெயர் தேவை';
+
+  @override
+  String get registerPhoneRequired => 'தொலைபேசி எண் தேவை';
+
+  @override
+  String get registerDistrictRequired => 'உங்கள் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get registerCityRequired => 'நகரம் தேவை';
+
+  @override
+  String registerPasswordTooShort(int min) {
+    return 'கடவுச்சொல்லில் குறைந்தது $min எழுத்துகள் இருக்க வேண்டும்';
+  }
+
+  @override
+  String get registerPasswordMismatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
+
+  @override
+  String get registerButton => 'பதிவு செய்ய';
+
+  @override
+  String get registerHaveAccount => 'ஏற்கனவே கணக்கு உள்ளதா?';
+
+  @override
+  String get registerSignIn => 'உள்நுழைய';
+
+  @override
+  String homeGreeting(String name) {
+    return 'வணக்கம், $name. இன்று என்ன பகிர்கிறீர்கள்?';
+  }
+
+  @override
+  String get homeGreetingGuest => 'வணக்கம்! இன்று என்ன பகிர்கிறீர்கள்?';
+
+  @override
+  String get homeSearchHint => 'உங்களுக்குத் தேவையான பொருட்களைத் தேடுங்கள்...';
+
+  @override
+  String get homeGiveItemTitle => 'ஒரு பொருளைக் கொடுங்கள்';
+
+  @override
+  String get homeGiveItemSubtitle =>
+      'உங்களுக்குத் தேவையில்லாததை இலவசமாகக் கொடுங்கள்';
+
+  @override
+  String get homeRequestItemTitle => 'ஒரு பொருளைக் கோருங்கள்';
+
+  @override
+  String get homeRequestItemSubtitle =>
+      'உங்களுக்கு என்ன தேவை என்று சமூகத்திடம் சொல்லுங்கள்';
+
+  @override
+  String get homeAllCategories => 'அனைத்தும்';
+
+  @override
+  String get homeAvailableNearYou => 'உங்கள் அருகில் கிடைப்பவை';
+
+  @override
+  String get homeOpenRequests => 'திறந்த கோரிக்கைகள்';
+
+  @override
+  String get homeAllDistricts => 'அனைத்து மாவட்டங்கள்';
+
+  @override
+  String get homeChooseDistrict => 'மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get homeGive => 'கொடு';
+
+  @override
+  String homeDonorBadge(String badge) {
+    return '$badge நன்கொடையாளர்';
+  }
+
+  @override
+  String get homeNewDonor => 'புதிய நன்கொடையாளர்';
+
+  @override
+  String homeRequestedBy(String name) {
+    return 'கோரியவர் $name';
+  }
+
+  @override
+  String get giveTitle => 'ஒரு பொருளைக் கொடுங்கள்';
+
+  @override
+  String get giveSubtitle => 'உங்கள் சமூகத்துடன் பயனுள்ள ஒன்றைப் பகிருங்கள்';
+
+  @override
+  String get givePhotos => 'புகைப்படங்கள்';
+
+  @override
+  String get giveAddPhotos => 'உங்கள் பொருளின் புகைப்படங்களைச் சேர்க்கவும்';
+
+  @override
+  String get giveAddPhotosHint =>
+      'தெளிவான புகைப்படங்கள் மற்றவர்கள் விரைவாக முடிவெடுக்க உதவும்';
+
+  @override
+  String get giveAddPhoto => 'புகைப்படம் சேர்';
+
+  @override
+  String get giveRemovePhoto => 'புகைப்படத்தை நீக்கு';
+
+  @override
+  String get giveCover => 'முதன்மை';
+
+  @override
+  String get giveTakePhoto => 'புகைப்படம் எடு';
+
+  @override
+  String get giveChooseFromGallery => 'கேலரியிலிருந்து தேர்ந்தெடு';
+
+  @override
+  String get giveItemTitle => 'பொருளின் தலைப்பு';
+
+  @override
+  String get giveItemTitleHint => 'எ.கா. தரம் 10 அறிவியல் பாடநூல்';
+
+  @override
+  String get giveItemTitleRequired => 'தலைப்பை உள்ளிடுங்கள்';
+
+  @override
+  String get giveDescription => 'விவரம்';
+
+  @override
+  String get giveDescriptionHint =>
+      'பொருள், அதன் அளவு மற்றும் தேய்மானம் பற்றிச் சொல்லுங்கள்';
+
+  @override
+  String get giveDescriptionRequired => 'சிறு விவரத்தைச் சேர்க்கவும்';
+
+  @override
+  String get giveCategory => 'வகை';
+
+  @override
+  String get giveCategoryHint => 'வகையைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get giveCategoryRequired => 'வகையைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get giveCondition => 'நிலை';
+
+  @override
+  String get giveDistrictHint => 'தேர்ந்தெடு';
+
+  @override
+  String get giveDistrictRequired => 'மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get giveCityHint => 'எ.கா. நீர்கொழும்பு';
+
+  @override
+  String get giveCityRequired => 'நகரம் தேவை';
+
+  @override
+  String get givePublish => 'பொருளை வெளியிடு';
+
+  @override
+  String get givePublished => 'உங்கள் பொருள் இப்போது வெளியிடப்பட்டது!';
+
+  @override
+  String get profileTitle => 'எனது சுயவிவரம்';
+
+  @override
+  String get profileEditProfile => 'சுயவிவரத்தைத் திருத்து';
+
+  @override
+  String get profileItemsGiven => 'கொடுத்தவை';
+
+  @override
+  String get profileRating => 'மதிப்பீடு';
+
+  @override
+  String profileNextBadge(String badge) {
+    return 'அடுத்த பதக்கம்: $badge';
+  }
+
+  @override
+  String profileBadgeProgress(int count, int total) {
+    return '$total இல் $count பொருட்கள்';
+  }
+
+  @override
+  String get profileAllBadgesEarned =>
+      'அனைத்து பதக்கங்களும் பெறப்பட்டன. நன்றி!';
+
+  @override
+  String get profileMyActivity => 'எனது செயல்பாடு';
+
+  @override
+  String get profileMyDonations => 'எனது நன்கொடைகள்';
+
+  @override
+  String get profileReviews => 'மதிப்புரைகள்';
+
+  @override
+  String get profileNotifications => 'அறிவிப்புகள்';
+
+  @override
+  String get profileNotificationsUnavailable =>
+      'அறிவிப்புகள் இன்னும் கிடைக்கவில்லை.';
+
+  @override
+  String get profileAdmin => 'நிர்வாகம்';
+
+  @override
+  String get profileManageUsers => 'பயனர்களை நிர்வகி';
+
+  @override
+  String get profileModeratePosts => 'இடுகைகளை மதிப்பாய்வு செய்';
+
+  @override
+  String get profileManageCategories => 'வகைகளை நிர்வகி';
+
+  @override
+  String get profileSignOut => 'வெளியேறு';
+
+  @override
+  String get profileSignOutConfirm => 'ShareLoop இலிருந்து வெளியேறவா?';
+
+  @override
+  String get profileSignOutMessage =>
+      'பொருட்களைக் கொடுக்க அல்லது கோர மீண்டும் உள்நுழைய வேண்டும்.';
+
+  @override
+  String get profileNoDonations =>
+      'நீங்கள் இன்னும் எந்தப் பொருளையும் கொடுக்கவில்லை.';
+
+  @override
+  String get profileNoRequests =>
+      'நீங்கள் இன்னும் எந்தப் பொருளையும் கோரவில்லை.';
+
+  @override
+  String get profileNoReviews => 'இன்னும் மதிப்புரைகள் இல்லை.';
+
+  @override
+  String get statusAvailable => 'கிடைக்கிறது';
+
+  @override
+  String get statusHandoverPending => 'ஒப்படைப்பு நிலுவையில்';
+
+  @override
+  String get statusGiven => 'கொடுக்கப்பட்டது';
+
+  @override
+  String get statusPending => 'நிலுவையில்';
+
+  @override
+  String get statusApproved => 'அங்கீகரிக்கப்பட்டது';
+
+  @override
+  String get statusNotSelected => 'தேர்ந்தெடுக்கப்படவில்லை';
+
+  @override
+  String get timeJustNow => 'இப்போது';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '$count நிமி. முன்';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '$count மணி. முன்';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '$count நாள் முன்';
+  }
+}

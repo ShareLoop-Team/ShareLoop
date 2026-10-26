@@ -1,0 +1,443 @@
+// ignore: unused_import
+import 'package:intl/intl.dart' as intl;
+
+import 'app_localizations.dart';
+
+// ignore_for_file: type=lint
+
+/// The translations for English (`en`).
+class AppLocalizationsEn extends AppLocalizations {
+  AppLocalizationsEn([String locale = 'en']) : super(locale);
+
+  @override
+  String get appTitle => 'ShareLoop';
+
+  @override
+  String get tagline => 'Give What You Don\'t Need. Get What You Do.';
+
+  @override
+  String get home => 'Home';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get settings => 'Settings';
+
+  @override
+  String get giveAway => 'Give Away';
+
+  @override
+  String get requests => 'Requests';
+
+  @override
+  String get login => 'Log In';
+
+  @override
+  String get register => 'Register';
+
+  @override
+  String get logout => 'Log Out';
+
+  @override
+  String get email => 'Email';
+
+  @override
+  String get password => 'Password';
+
+  @override
+  String get fullName => 'Full Name';
+
+  @override
+  String get phoneNumber => 'Phone Number';
+
+  @override
+  String get district => 'District';
+
+  @override
+  String get cityTown => 'City / Town';
+
+  @override
+  String get search => 'Search items...';
+
+  @override
+  String get noItemsAvailable => 'No items available right now.';
+
+  @override
+  String get noOpenRequests => 'No open requests right now.';
+
+  @override
+  String get myPosts => 'My Posts';
+
+  @override
+  String get myRequests => 'My Requests';
+
+  @override
+  String get reviewsReceived => 'Reviews Received';
+
+  @override
+  String get donations => 'Donations';
+
+  @override
+  String get requestThisItem => 'Request this item';
+
+  @override
+  String get viewIncomingRequests => 'View Incoming Requests';
+
+  @override
+  String get submitRequest => 'Submit Request';
+
+  @override
+  String get publishPost => 'Publish Post';
+
+  @override
+  String get language => 'Language';
+
+  @override
+  String get onboardingDescription =>
+      'Give what you no longer need. Find what you do. Share items for free with your community across Sri Lanka.';
+
+  @override
+  String get onboardingLogIn => 'Log in';
+
+  @override
+  String get onboardingRegister => 'Register';
+
+  @override
+  String get loginWelcomeBack => 'Welcome back';
+
+  @override
+  String get loginSubtitle => 'Sign in to continue sharing and connecting';
+
+  @override
+  String get loginEmailHint => 'Enter your Email';
+
+  @override
+  String get loginPasswordHint => 'Enter Password';
+
+  @override
+  String get loginEmailRequired => 'Email is required';
+
+  @override
+  String get loginPasswordRequired => 'Password is required';
+
+  @override
+  String get loginShowPassword => 'Show password';
+
+  @override
+  String get loginHidePassword => 'Hide password';
+
+  @override
+  String get loginRememberMe => 'Remember me';
+
+  @override
+  String get loginForgotPassword => 'Forgot password?';
+
+  @override
+  String get loginForgotPasswordUnavailable =>
+      'Password reset isn\'t available yet.';
+
+  @override
+  String get loginSignIn => 'Sign In';
+
+  @override
+  String get loginOr => 'or';
+
+  @override
+  String get loginNoAccount => 'Don\'t have an account?';
+
+  @override
+  String get loginCreateAccount => 'Create Account';
+
+  @override
+  String get registerTitle => 'Welcome to ShareLoop!';
+
+  @override
+  String get registerSubtitle =>
+      'Create your account to start giving and finding items near you.';
+
+  @override
+  String get registerNameHint => 'Enter your full name';
+
+  @override
+  String get registerPhoneHint => 'Enter your phone number';
+
+  @override
+  String get registerDistrictHint => 'Select your district';
+
+  @override
+  String get registerCityHint => 'Enter your city / town';
+
+  @override
+  String get registerConfirmPasswordHint => 'Confirm password';
+
+  @override
+  String get registerNameRequired => 'Name is required';
+
+  @override
+  String get registerPhoneRequired => 'Phone number is required';
+
+  @override
+  String get registerDistrictRequired => 'Please select your district';
+
+  @override
+  String get registerCityRequired => 'City / town is required';
+
+  @override
+  String registerPasswordTooShort(int min) {
+    return 'Password must be at least $min characters';
+  }
+
+  @override
+  String get registerPasswordMismatch => 'Passwords do not match';
+
+  @override
+  String get registerButton => 'Register';
+
+  @override
+  String get registerHaveAccount => 'Already have an account?';
+
+  @override
+  String get registerSignIn => 'Sign In';
+
+  @override
+  String homeGreeting(String name) {
+    return 'Hello, $name. What are you sharing today?';
+  }
+
+  @override
+  String get homeGreetingGuest => 'Hello! What are you sharing today?';
+
+  @override
+  String get homeSearchHint => 'Find items you need...';
+
+  @override
+  String get homeGiveItemTitle => 'Give an Item';
+
+  @override
+  String get homeGiveItemSubtitle => 'Pass on what you no longer need, free';
+
+  @override
+  String get homeRequestItemTitle => 'Request an Item';
+
+  @override
+  String get homeRequestItemSubtitle => 'Tell the community what you need';
+
+  @override
+  String get homeAllCategories => 'All';
+
+  @override
+  String get homeAvailableNearYou => 'Available near you';
+
+  @override
+  String get homeOpenRequests => 'Open requests';
+
+  @override
+  String get homeAllDistricts => 'All districts';
+
+  @override
+  String get homeChooseDistrict => 'Choose a district';
+
+  @override
+  String get homeGive => 'Give';
+
+  @override
+  String homeDonorBadge(String badge) {
+    return '$badge donor';
+  }
+
+  @override
+  String get homeNewDonor => 'New donor';
+
+  @override
+  String homeRequestedBy(String name) {
+    return 'Requested by $name';
+  }
+
+  @override
+  String get giveTitle => 'Give an Item';
+
+  @override
+  String get giveSubtitle => 'Share something useful with your community';
+
+  @override
+  String get givePhotos => 'Photos';
+
+  @override
+  String get giveAddPhotos => 'Add photos of your item';
+
+  @override
+  String get giveAddPhotosHint => 'Clear photos help others decide faster';
+
+  @override
+  String get giveAddPhoto => 'Add photo';
+
+  @override
+  String get giveRemovePhoto => 'Remove photo';
+
+  @override
+  String get giveCover => 'Cover';
+
+  @override
+  String get giveTakePhoto => 'Take a photo';
+
+  @override
+  String get giveChooseFromGallery => 'Choose from gallery';
+
+  @override
+  String get giveItemTitle => 'Item title';
+
+  @override
+  String get giveItemTitleHint => 'e.g. Grade 10 Science Textbook';
+
+  @override
+  String get giveItemTitleRequired => 'Please enter a title';
+
+  @override
+  String get giveDescription => 'Description';
+
+  @override
+  String get giveDescriptionHint =>
+      'Tell others about the item, its size, and any wear';
+
+  @override
+  String get giveDescriptionRequired => 'Please add a short description';
+
+  @override
+  String get giveCategory => 'Category';
+
+  @override
+  String get giveCategoryHint => 'Select a category';
+
+  @override
+  String get giveCategoryRequired => 'Please select a category';
+
+  @override
+  String get giveCondition => 'Condition';
+
+  @override
+  String get giveDistrictHint => 'Select';
+
+  @override
+  String get giveDistrictRequired => 'Select a district';
+
+  @override
+  String get giveCityHint => 'e.g. Negombo';
+
+  @override
+  String get giveCityRequired => 'Enter a city';
+
+  @override
+  String get givePublish => 'Publish Item';
+
+  @override
+  String get givePublished => 'Your item is now live!';
+
+  @override
+  String get profileTitle => 'My Profile';
+
+  @override
+  String get profileEditProfile => 'Edit Profile';
+
+  @override
+  String get profileItemsGiven => 'Items given';
+
+  @override
+  String get profileRating => 'Rating';
+
+  @override
+  String profileNextBadge(String badge) {
+    return 'Next badge: $badge';
+  }
+
+  @override
+  String profileBadgeProgress(int count, int total) {
+    return '$count of $total items';
+  }
+
+  @override
+  String get profileAllBadgesEarned => 'Every badge earned. Thank you!';
+
+  @override
+  String get profileMyActivity => 'My activity';
+
+  @override
+  String get profileMyDonations => 'My Donations';
+
+  @override
+  String get profileReviews => 'Reviews';
+
+  @override
+  String get profileNotifications => 'Notifications';
+
+  @override
+  String get profileNotificationsUnavailable =>
+      'Notifications aren\'t available yet.';
+
+  @override
+  String get profileAdmin => 'Admin';
+
+  @override
+  String get profileManageUsers => 'Manage users';
+
+  @override
+  String get profileModeratePosts => 'Moderate posts';
+
+  @override
+  String get profileManageCategories => 'Manage categories';
+
+  @override
+  String get profileSignOut => 'Sign Out';
+
+  @override
+  String get profileSignOutConfirm => 'Sign out of ShareLoop?';
+
+  @override
+  String get profileSignOutMessage =>
+      'You\'ll need to log in again to give or request items.';
+
+  @override
+  String get profileNoDonations => 'You haven\'t given any items yet.';
+
+  @override
+  String get profileNoRequests => 'You haven\'t requested any items yet.';
+
+  @override
+  String get profileNoReviews => 'No reviews yet.';
+
+  @override
+  String get statusAvailable => 'Available';
+
+  @override
+  String get statusHandoverPending => 'Handover pending';
+
+  @override
+  String get statusGiven => 'Given';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusNotSelected => 'Not selected';
+
+  @override
+  String get timeJustNow => 'just now';
+
+  @override
+  String timeMinutesAgo(int count) {
+    return '${count}m ago';
+  }
+
+  @override
+  String timeHoursAgo(int count) {
+    return '${count}h ago';
+  }
+
+  @override
+  String timeDaysAgo(int count) {
+    return '${count}d ago';
+  }
+}

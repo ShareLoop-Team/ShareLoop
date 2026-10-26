@@ -1,0 +1,25 @@
+flutter_native_splash:
+  # Color-only native splash: no logo. The ShareLoop wordmark is shown, and
+  # animated, only by the Flutter SplashScreen. Background matches
+  # AppColors.canvas, and stays light when the device is in dark mode so there
+  # is no dark-to-light flash before the Flutter splash.
+  color: "#F7FAF6"
+  color_dark: "#F7FAF6"
+
+  android_12:
+    color: "#F7FAF6"
+    color_dark: "#F7FAF6"
+    # Android 12+ always draws an icon on the system splash and falls back to
+    # the launcher icon when none is set. This fully transparent icon keeps the
+    # splash color-only. It is a placeholder, not brand artwork.
+    image: tool/native_splash/transparent_icon.png
+
+  android: true
+  ios: true
+  web: false
+
+  # NOTE: with no image, flutter_native_splash 2.4.8 writes opaque black 1x1
+  # ios/Runner/Assets.xcassets/LaunchImage.imageset/LaunchImage*.png files, and
+  # LaunchScreen.storyboard centers them, leaving a black dot on the launch
+  # screen. After re-running the generator, replace those three files with
+  # fully transparent 1x1 PNGs.
