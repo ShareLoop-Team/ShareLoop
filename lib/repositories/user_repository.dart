@@ -1,70 +1,44 @@
+import '../core/config/backend_config.dart';
 import '../models/user_model.dart';
-import '../services/mock_data_service.dart';
+import 'mock/mock_user_repository.dart';
+import 'supabase/supabase_user_repository.dart';
 
-/// Repository: mock data access for users. Mimics the async, nullable-result
-/// shape of a future REST API so controllers don't change when a real
-/// backend replaces [MockDataService].
-class UserRepository {
-  final MockDataService _data = MockDataService.instance;
+/// Repository: accounts and profiles. Backed by Firebase Authentication +
+/// Supabase when [BackendConfig.isConfigured], otherwise by in-memory mock
+/// data. Failures the user can act on are thrown as AppException.
+abstract class UserRepository {
+  factory UserRepository() => BackendConfig.isConfigured
+      ? SupabaseUserRepository()
+      : MockUserRepository();
 
-  Future<UserModel?> login(String email, String password) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    try {
-      return _data.users.firstWhere((u) => u.email == email);
-    } catch (_) {
-      return null;
-    }
-  }
+  /// Signs in and returns the profile, or null when no account matches.
+  Future<UserModel?> login(String email, String password);
 
   Future<UserModel> register({
     required String name,
     required String email,
+    required String password,
     required String phone,
     required String district,
     required String city,
-  }) async {
-    await Future.delayed(const Duration(milliseconds: 300));
-    final user = UserModel(
-      id: 'u${_data.users.length + 1}',
-      name: name,
-      email: email,
-      phone: phone,
-      district: district,
-      city: city,
-    );
-    _data.users.add(user);
-    return user;
-  }
+  });
 
-  Future<UserModel?> getCurrentUser() async {
-    final id = _data.currentUserId;
-    if (id == null) return null;
-    return getUserById(id);
-  }
+  /// The signed-in user from a previous session, or null.
+  Future<UserModel?> getCurrentUser();
 
-  Future<UserModel?> getUserById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    try {
-      return _data.users.firstWhere((u) => u.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
+  /// Phone and email are only filled in when the caller may see them
+  /// (themselves, an admin, or the other party of a handover).
+  Future<UserModel?> getUserById(String id);
 
-  Future<List<UserModel>> getAllUsers() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return List.unmodifiable(_data.users);
-  }
+  Future<List<UserModel>> getAllUsers();
 
-  Future<void> updateUser(UserModel user) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    final index = _data.users.indexWhere((u) => u.id == user.id);
-    if (index != -1) {
-      _data.users[index] = user;
-    }
-  }
+  /// Saves the signed-in user's editable details (name, phone, location).
+  Future<void> updateUser(UserModel user);
 
-  void setCurrentUser(String id) {
-    _data.currentUserId = id;
-  }
+  /// Whether [sendPasswordReset] can actually send an email.
+  bool get supportsPasswordReset;
+
+  Future<void> sendPasswordReset(String email);
+
+  Future<void> logout();
 }

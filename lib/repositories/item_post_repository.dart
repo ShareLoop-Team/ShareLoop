@@ -1,45 +1,33 @@
+import '../core/config/backend_config.dart';
 import '../models/item_post_model.dart';
-import '../services/mock_data_service.dart';
+import '../models/photo_upload.dart';
+import 'mock/mock_item_post_repository.dart';
+import 'supabase/supabase_item_post_repository.dart';
 
-/// Repository: mock data access for "Give Away" posts.
-class ItemPostRepository {
-  final MockDataService _data = MockDataService.instance;
+/// Repository: "Give Away" posts and their photos.
+abstract class ItemPostRepository {
+  factory ItemPostRepository() => BackendConfig.isConfigured
+      ? SupabaseItemPostRepository()
+      : MockItemPostRepository();
 
-  Future<List<ItemPostModel>> getAllPosts() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return List.unmodifiable(_data.itemPosts.reversed);
-  }
+  /// Newest first, one page at a time.
+  Future<List<ItemPostModel>> getAllPosts({
+    int limit = BackendConfig.pageSize,
+    int offset = 0,
+  });
 
-  Future<List<ItemPostModel>> getPostsByDonor(String donorId) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _data.itemPosts.where((p) => p.donorId == donorId).toList();
-  }
+  Future<List<ItemPostModel>> getPostsByDonor(String donorId);
 
-  Future<ItemPostModel?> getPostById(String id) async {
-    await Future.delayed(const Duration(milliseconds: 100));
-    try {
-      return _data.itemPosts.firstWhere((p) => p.id == id);
-    } catch (_) {
-      return null;
-    }
-  }
+  Future<ItemPostModel?> getPostById(String id);
 
-  Future<ItemPostModel> createPost(ItemPostModel post) async {
-    await Future.delayed(const Duration(milliseconds: 250));
-    _data.itemPosts.add(post);
-    return post;
-  }
+  /// Uploads [photos] and publishes the post; the returned post carries the
+  /// stored photo paths.
+  Future<ItemPostModel> createPost(
+    ItemPostModel post, {
+    List<PhotoUpload> photos = const [],
+  });
 
-  Future<void> updatePost(ItemPostModel post) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    final index = _data.itemPosts.indexWhere((p) => p.id == post.id);
-    if (index != -1) {
-      _data.itemPosts[index] = post;
-    }
-  }
-
-  Future<void> deletePost(String id) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _data.itemPosts.removeWhere((p) => p.id == id);
-  }
+  /// Also drops requests made for this post, so requesters aren't left
+  /// waiting on an item that's gone.
+  Future<void> deletePost(String id);
 }

@@ -58,3 +58,11 @@ doc/MVC_Architecture_in_Mobile_Application_Development_Guide.pdf
 # Flutter crash logs and screenshots
 flutter_*.log
 flutter_*.png
+
+# Local environment files (see .env.example); never commit real values
+.env
+.env.*
+!.env.example
+
+# Dependencies of the database check harness (tool/db_check)
+/tool/db_check/node_modules/

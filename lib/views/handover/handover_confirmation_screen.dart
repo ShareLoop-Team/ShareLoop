@@ -6,19 +6,47 @@ import '../../core/constants/app_colors.dart';
 import '../../core/routes/app_routes.dart';
 import '../../widgets/custom_button.dart';
 
-/// View: confirms the physical handover is complete and marks the
-/// transaction finished before prompting for a rating.
-class HandoverConfirmationScreen extends StatelessWidget {
+/// View: each party confirms the physical handover. The transaction only
+/// completes once both the donor and the requester have confirmed; either
+/// way the user then goes on to rate the exchange.
+class HandoverConfirmationScreen extends StatefulWidget {
   const HandoverConfirmationScreen({super.key, required this.postId});
 
   final String postId;
 
-  Future<void> _confirm(BuildContext context) async {
-    await context.read<ItemController>().markCompleted(postId);
-    if (!context.mounted) return;
-    Navigator.of(context).pushReplacementNamed(
+  @override
+  State<HandoverConfirmationScreen> createState() =>
+      _HandoverConfirmationScreenState();
+}
+
+class _HandoverConfirmationScreenState
+    extends State<HandoverConfirmationScreen> {
+  bool _submitting = false;
+
+  Future<void> _confirm() async {
+    final itemController = context.read<ItemController>();
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _submitting = true);
+    final error = await itemController.confirmHandover(widget.postId);
+    if (!mounted) return;
+    setState(() => _submitting = false);
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    final completed =
+        itemController.exchangeFor(widget.postId)?.isCompleted ?? false;
+    messenger.showSnackBar(SnackBar(
+      content: Text(completed
+          ? 'Transaction completed. Thank you for contributing to the '
+              'ShareLoop community!'
+          : 'Thanks! The exchange completes once the other party confirms '
+              'too.'),
+    ));
+    navigator.pushReplacementNamed(
       AppRoutes.ratingReview,
-      arguments: postId,
+      arguments: widget.postId,
     );
   }
 
@@ -35,18 +63,21 @@ class HandoverConfirmationScreen extends StatelessWidget {
                 size: 72, color: AppColors.deepGreen),
             const SizedBox(height: 16),
             Text(
-              'Transaction Completed',
+              'Has the item changed hands?',
               style: Theme.of(context).textTheme.headlineSmall,
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 8),
             const Text(
-              'Thank you for contributing to the ShareLoop community!',
+              'Both of you confirm once the handover is done. The '
+              'transaction completes when you both have.',
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
             CustomButton(
-              label: 'Rate this Exchange',
-              onPressed: () => _confirm(context),
+              label: 'Confirm & Rate this Exchange',
+              isLoading: _submitting,
+              onPressed: _confirm,
             ),
           ],
         ),

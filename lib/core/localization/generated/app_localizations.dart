@@ -289,13 +289,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginWelcomeBack.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back'**
+  /// **'Welcome back!'**
   String get loginWelcomeBack;
 
   /// No description provided for @loginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to continue sharing and connecting'**
+  /// **'Fill your details or continue with social media'**
   String get loginSubtitle;
 
   /// No description provided for @loginEmailHint.
@@ -352,6 +352,18 @@ abstract class AppLocalizations {
   /// **'Password reset isn\'t available yet.'**
   String get loginForgotPasswordUnavailable;
 
+  /// No description provided for @loginResetEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email above to reset your password.'**
+  String get loginResetEnterEmail;
+
+  /// No description provided for @loginResetSent.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for {email}, a password reset link is on its way.'**
+  String loginResetSent(String email);
+
   /// No description provided for @loginSignIn.
   ///
   /// In en, this message translates to:
@@ -367,7 +379,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginNoAccount.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account?'**
+  /// **'New user?'**
   String get loginNoAccount;
 
   /// No description provided for @loginCreateAccount.
@@ -376,16 +388,52 @@ abstract class AppLocalizations {
   /// **'Create Account'**
   String get loginCreateAccount;
 
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginOrContinueWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or continue with'**
+  String get loginOrContinueWith;
+
+  /// No description provided for @loginWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get loginWithGoogle;
+
+  /// No description provided for @loginWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Facebook'**
+  String get loginWithFacebook;
+
+  /// No description provided for @loginSocialUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Social sign-in isn\'t available yet.'**
+  String get loginSocialUnavailable;
+
   /// No description provided for @registerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to ShareLoop!'**
+  /// **'Create account'**
   String get registerTitle;
 
   /// No description provided for @registerSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create your account to start giving and finding items near you.'**
+  /// **'Join the community and start sharing'**
   String get registerSubtitle;
 
   /// No description provided for @registerNameHint.
@@ -397,7 +445,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerPhoneHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter your phone number'**
+  /// **'07X XXX XXXX'**
   String get registerPhoneHint;
 
   /// No description provided for @registerDistrictHint.
@@ -409,13 +457,13 @@ abstract class AppLocalizations {
   /// No description provided for @registerCityHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter your city / town'**
+  /// **'e.g. Negombo'**
   String get registerCityHint;
 
   /// No description provided for @registerConfirmPasswordHint.
   ///
   /// In en, this message translates to:
-  /// **'Confirm password'**
+  /// **'Re-enter your password'**
   String get registerConfirmPasswordHint;
 
   /// No description provided for @registerNameRequired.
@@ -457,7 +505,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerButton.
   ///
   /// In en, this message translates to:
-  /// **'Register'**
+  /// **'Create Account'**
   String get registerButton;
 
   /// No description provided for @registerHaveAccount.
@@ -471,6 +519,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In'**
   String get registerSignIn;
+
+  /// No description provided for @registerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get registerNameLabel;
+
+  /// No description provided for @registerPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a password'**
+  String get registerPasswordHint;
+
+  /// No description provided for @registerConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get registerConfirmPasswordLabel;
+
+  /// No description provided for @registerPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get registerPhoneLabel;
+
+  /// No description provided for @registerDistrictLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get registerDistrictLabel;
+
+  /// No description provided for @registerCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City / Town'**
+  String get registerCityLabel;
+
+  /// No description provided for @registerAgreeTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the {terms} and {privacy}'**
+  String registerAgreeTerms(String terms, String privacy);
+
+  /// No description provided for @registerTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get registerTerms;
+
+  /// No description provided for @registerPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get registerPrivacyPolicy;
+
+  /// No description provided for @registerTermsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the Terms and Privacy Policy'**
+  String get registerTermsRequired;
+
+  /// No description provided for @registerOrSignUpWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or sign up with'**
+  String get registerOrSignUpWith;
+
+  /// No description provided for @registerWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Google'**
+  String get registerWithGoogle;
+
+  /// No description provided for @registerWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Facebook'**
+  String get registerWithFacebook;
 
   /// No description provided for @homeGreeting.
   ///
@@ -723,6 +849,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your item is now live!'**
   String get givePublished;
+
+  /// No description provided for @requestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'People near you who need an item'**
+  String get requestsSubtitle;
+
+  /// No description provided for @requestsNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get requestsNew;
+
+  /// No description provided for @requestsAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All requests'**
+  String get requestsAll;
+
+  /// No description provided for @requestsMine.
+  ///
+  /// In en, this message translates to:
+  /// **'My requests'**
+  String get requestsMine;
+
+  /// No description provided for @requestsICanHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'I can help'**
+  String get requestsICanHelp;
+
+  /// No description provided for @requestsDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete request'**
+  String get requestsDelete;
+
+  /// No description provided for @requestsDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this request?'**
+  String get requestsDeleteConfirm;
+
+  /// No description provided for @requestsDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Donors will no longer see it. This can\'t be undone.'**
+  String get requestsDeleteMessage;
+
+  /// No description provided for @requestsDeleteAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get requestsDeleteAction;
+
+  /// No description provided for @requestsDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Request deleted.'**
+  String get requestsDeleted;
+
+  /// No description provided for @postDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete post'**
+  String get postDelete;
+
+  /// No description provided for @postDeleteConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete this post?'**
+  String get postDeleteConfirm;
+
+  /// No description provided for @postDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'It will be removed from the feed and any requests for it will be cancelled. This can\'t be undone.'**
+  String get postDeleteMessage;
+
+  /// No description provided for @postDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Post deleted.'**
+  String get postDeleted;
+
+  /// No description provided for @statusOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get statusOpen;
+
+  /// No description provided for @statusDonorReviewing.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor reviewing'**
+  String get statusDonorReviewing;
+
+  /// No description provided for @requestTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request an Item'**
+  String get requestTitle;
+
+  /// No description provided for @requestSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask your community for what you need'**
+  String get requestSubtitle;
+
+  /// No description provided for @requestInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your community is here to help.'**
+  String get requestInfoTitle;
+
+  /// No description provided for @requestInfoBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Donors read your reason before choosing, so be clear and honest.'**
+  String get requestInfoBody;
+
+  /// No description provided for @requestYouAreRequesting.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re requesting'**
+  String get requestYouAreRequesting;
+
+  /// No description provided for @requestItemName.
+  ///
+  /// In en, this message translates to:
+  /// **'Item name'**
+  String get requestItemName;
+
+  /// No description provided for @requestItemNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. Grade 10 Science Textbook'**
+  String get requestItemNameHint;
+
+  /// No description provided for @requestItemNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter the item name'**
+  String get requestItemNameRequired;
+
+  /// No description provided for @requestDescriptionHint.
+  ///
+  /// In en, this message translates to:
+  /// **'What exactly do you need? Size, edition, or any details'**
+  String get requestDescriptionHint;
+
+  /// No description provided for @requestReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Why do you need it?'**
+  String get requestReason;
+
+  /// No description provided for @requestReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'A short reason helps donors choose fairly'**
+  String get requestReasonHint;
+
+  /// No description provided for @requestReasonHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'Shown to donors when they review requests'**
+  String get requestReasonHelper;
+
+  /// No description provided for @requestReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please tell donors why you need it'**
+  String get requestReasonRequired;
+
+  /// No description provided for @requestNotes.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional notes'**
+  String get requestNotes;
+
+  /// No description provided for @requestOptional.
+  ///
+  /// In en, this message translates to:
+  /// **'(optional)'**
+  String get requestOptional;
+
+  /// No description provided for @requestNotesHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Anything else donors should know'**
+  String get requestNotesHint;
+
+  /// No description provided for @requestSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request has been submitted.'**
+  String get requestSubmitted;
 
   /// No description provided for @profileTitle.
   ///

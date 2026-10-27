@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../controllers/item_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../core/routes/app_routes.dart';
@@ -8,7 +9,8 @@ import '../../core/constants/app_colors.dart';
 import '../../widgets/custom_button.dart';
 
 /// View: shown once a donor has selected a requester — reveals the other
-/// party's contact details so handover can be arranged in person.
+/// party's contact details (to the donor and the requester alike) so
+/// handover can be arranged in person.
 class ContactSharedScreen extends StatefulWidget {
   const ContactSharedScreen({super.key, required this.postId});
 
@@ -26,21 +28,24 @@ class _ContactSharedScreenState extends State<ContactSharedScreen> {
   }
 
   Future<void> _loadContact() async {
+    final me = context.read<AuthController>().currentUser?.id;
     final post = context
         .read<ItemController>()
         .posts
         .where((p) => p.id == widget.postId)
         .firstOrNull;
-    final requesterId = post?.selectedRequesterId;
-    if (requesterId != null) {
-      await context.read<ProfileController>().loadProfile(requesterId);
+    if (post == null || me == null) return;
+    final otherId =
+        me == post.donorId ? post.selectedRequesterId : post.donorId;
+    if (otherId != null) {
+      await context.read<ProfileController>().loadContact(otherId);
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final profile = context.watch<ProfileController>();
-    final user = profile.user;
+    final user = profile.contact;
     return Scaffold(
       appBar: AppBar(title: const Text('Contact Details')),
       body: Padding(
@@ -70,7 +75,7 @@ class _ContactSharedScreenState extends State<ContactSharedScreen> {
                       Row(children: [
                         const Icon(Icons.phone, size: 18),
                         const SizedBox(width: 8),
-                        Text(user.phone),
+                        Text(user.phone.isEmpty ? 'Not shared' : user.phone),
                       ]),
                       const SizedBox(height: 4),
                       Row(children: [
@@ -82,8 +87,10 @@ class _ContactSharedScreenState extends State<ContactSharedScreen> {
                   ),
                 ),
               )
+            else if (profile.errorMessage != null)
+              Text(profile.errorMessage!, textAlign: TextAlign.center)
             else
-              const CircularProgressIndicator(),
+              const Center(child: CircularProgressIndicator()),
             const SizedBox(height: 32),
             CustomButton(
               label: 'Mark as Handed Over',

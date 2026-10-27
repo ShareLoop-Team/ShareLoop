@@ -3,8 +3,11 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/item_controller.dart';
+import '../../core/constants/app_colors.dart';
+import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../models/item_post_model.dart';
+import '../../widgets/confirm_dialog.dart';
 import '../../widgets/custom_button.dart';
 
 /// View: full details of a Give Away post with a "Request this item" action
@@ -13,6 +16,27 @@ class ItemDetailsScreen extends StatelessWidget {
   const ItemDetailsScreen({super.key, required this.postId});
 
   final String postId;
+
+  Future<void> _confirmDelete(BuildContext context, ItemPostModel post) async {
+    final l10n = AppLocalizations.of(context);
+    final itemController = context.read<ItemController>();
+    final navigator = Navigator.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await confirmDestructiveAction(
+      context,
+      title: l10n.postDeleteConfirm,
+      message: l10n.postDeleteMessage,
+      actionLabel: l10n.requestsDeleteAction,
+    );
+    if (!confirmed) return;
+    final error = await itemController.deletePost(post.id);
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
+    navigator.pop();
+    messenger.showSnackBar(SnackBar(content: Text(l10n.postDeleted)));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,6 +56,23 @@ class ItemDetailsScreen extends StatelessWidget {
     }
 
     final isOwner = currentUser != null && currentUser.id == post.donorId;
+    final isSelectedRequester =
+        currentUser != null && currentUser.id == post.selectedRequesterId;
+    final handoverPending = post.status == ItemPostStatus.pendingHandover;
+    final placeholder = Center(
+      child: Icon(
+        Icons.inventory_2_outlined,
+        size: 64,
+        color: Theme.of(context).colorScheme.onPrimaryContainer,
+      ),
+    );
+    final arrangeHandover = CustomButton(
+      label: 'Arrange Handover',
+      onPressed: () => Navigator.of(context).pushNamed(
+        AppRoutes.contactShared,
+        arguments: post.id,
+      ),
+    );
 
     return Scaffold(
       appBar: AppBar(title: Text(post.title)),
@@ -43,15 +84,23 @@ class ItemDetailsScreen extends StatelessWidget {
             Container(
               height: 180,
               width: double.infinity,
+              clipBehavior: Clip.antiAlias,
               decoration: BoxDecoration(
                 color: Theme.of(context).colorScheme.primaryContainer,
                 borderRadius: BorderRadius.circular(16),
               ),
-              child: Icon(
-                Icons.inventory_2_outlined,
-                size: 64,
-                color: Theme.of(context).colorScheme.onPrimaryContainer,
-              ),
+              child: post.photoUrls.isEmpty
+                  ? placeholder
+                  : PageView(
+                      children: [
+                        for (final url in post.photoUrls)
+                          Image.network(
+                            url,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, _, _) => placeholder,
+                          ),
+                      ],
+                    ),
             ),
             const SizedBox(height: 16),
             Text(post.title, style: Theme.of(context).textTheme.titleLarge),
@@ -70,14 +119,39 @@ class ItemDetailsScreen extends StatelessWidget {
             Text('Posted by ${post.donorName}',
                 style: Theme.of(context).textTheme.bodyMedium),
             const SizedBox(height: 32),
-            if (isOwner)
+            if (isOwner) ...[
+              if (handoverPending) ...[
+                arrangeHandover,
+                const SizedBox(height: 12),
+              ],
               CustomButton(
                 label: 'View Incoming Requests',
                 onPressed: () => Navigator.of(context).pushNamed(
                   AppRoutes.incomingRequests,
                   arguments: post.id,
                 ),
-              )
+              ),
+              if (itemController.canDeletePost(post)) ...[
+                const SizedBox(height: 12),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () => _confirmDelete(context, post),
+                    icon: const Icon(Icons.delete_outline),
+                    label: Text(AppLocalizations.of(context).postDelete),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      side: const BorderSide(color: AppColors.error),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ] else if (isSelectedRequester && handoverPending)
+              arrangeHandover
             else if (post.status == ItemPostStatus.active)
               CustomButton(
                 label: 'Request this item',

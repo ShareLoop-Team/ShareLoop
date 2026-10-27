@@ -11,9 +11,15 @@ class RegisterController extends ChangeNotifier {
 
   bool obscurePassword = true;
   String? district;
+  bool agreedToTerms = false;
 
   void togglePasswordVisibility() {
     obscurePassword = !obscurePassword;
+    notifyListeners();
+  }
+
+  void setAgreedToTerms(bool value) {
+    agreedToTerms = value;
     notifyListeners();
   }
 
@@ -24,20 +30,19 @@ class RegisterController extends ChangeNotifier {
 
   /// Registers and replaces the register screen with home on success. On
   /// failure [AuthController.errorMessage] is set for the View to show.
-  ///
-  /// The password is validated by the View but not stored: the user
-  /// repository has no password field yet.
   Future<void> submit({
     required AuthController auth,
     required NavigatorState navigator,
     required String name,
     required String email,
+    required String password,
     required String phone,
     required String city,
   }) async {
     final success = await auth.register(
       name: name,
       email: email,
+      password: password,
       phone: phone,
       district: district ?? '',
       city: city,

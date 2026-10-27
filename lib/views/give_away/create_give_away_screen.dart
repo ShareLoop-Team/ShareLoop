@@ -10,22 +10,39 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/item_request_model.dart';
+import '../../models/photo_upload.dart';
+import '../../widgets/post_form_widgets.dart';
 
 /// View: form to publish a new Give Away post (photos, details, category,
-/// condition, location). Opened from the Home "Give" card and nav tab.
+/// condition, location). Shown as the home shell's Give tab, or pushed as
+/// its own route from "I can help" on a community request ([forRequest]),
+/// which pre-fills the item name and category.
 ///
 /// Always uses the light brand theme, like the home shell it opens from.
 class CreateGiveAwayScreen extends StatelessWidget {
-  const CreateGiveAwayScreen({super.key});
+  const CreateGiveAwayScreen({super.key, this.forRequest, this.onClose});
+
+  final ItemRequestModel? forRequest;
+
+  /// Called on back and after publishing instead of popping the route,
+  /// for when the form is a tab rather than a pushed page.
+  final VoidCallback? onClose;
 
   @override
   Widget build(BuildContext context) {
-    return Theme(data: AppTheme.lightTheme, child: const _GiveForm());
+    return Theme(
+      data: AppTheme.lightTheme,
+      child: _GiveForm(forRequest: forRequest, onClose: onClose),
+    );
   }
 }
 
 class _GiveForm extends StatefulWidget {
-  const _GiveForm();
+  const _GiveForm({this.forRequest, this.onClose});
+
+  final ItemRequestModel? forRequest;
+  final VoidCallback? onClose;
 
   @override
   State<_GiveForm> createState() => _GiveFormState();
@@ -52,6 +69,14 @@ class _GiveFormState extends State<_GiveForm> {
   @override
   void initState() {
     super.initState();
+    final request = widget.forRequest;
+    if (request != null) {
+      _titleController.text =
+          request.itemName.isEmpty ? request.description : request.itemName;
+      if (AppConstants.itemCategories.contains(request.category)) {
+        _category = request.category;
+      }
+    }
     // Most people give from where they live, so start from their profile.
     final user = context.read<AuthController>().currentUser;
     if (user != null) {
@@ -150,13 +175,24 @@ class _GiveFormState extends State<_GiveForm> {
           category: _category!,
           district: _district!,
           city: _cityController.text.trim(),
-          photoPaths: _photos.map((p) => p.file.path).toList(),
+          photos: [
+            for (final photo in _photos)
+              PhotoUpload(
+                bytes: photo.bytes,
+                mimeType: photo.file.mimeType,
+                name: photo.file.name,
+              ),
+          ],
         );
     if (!mounted) return;
     setState(() => _submitting = false);
     if (error == null) {
       messenger.showSnackBar(SnackBar(content: Text(l10n.givePublished)));
-      Navigator.of(context).pop();
+      if (widget.onClose case final onClose?) {
+        onClose();
+      } else {
+        Navigator.of(context).pop();
+      }
     } else {
       messenger.showSnackBar(SnackBar(content: Text(error)));
     }
@@ -183,9 +219,13 @@ class _GiveFormState extends State<_GiveForm> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                _Header(title: l10n.giveTitle, subtitle: l10n.giveSubtitle),
+                PostFormHeader(
+                  title: l10n.giveTitle,
+                  subtitle: l10n.giveSubtitle,
+                  onBack: widget.onClose,
+                ),
                 const SizedBox(height: 24),
-                _FieldLabel(
+                PostFieldLabel(
                   l10n.givePhotos,
                   trailing: '${_photos.length}/$_maxPhotos',
                 ),
@@ -197,18 +237,18 @@ class _GiveFormState extends State<_GiveForm> {
                       setState(() => _photos.removeAt(index)),
                 ),
                 const SizedBox(height: 20),
-                _FieldLabel(l10n.giveItemTitle),
+                PostFieldLabel(l10n.giveItemTitle),
                 TextFormField(
                   controller: _titleController,
                   maxLength: _titleMaxLength,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.next,
-                  decoration: _inputDecoration(hint: l10n.giveItemTitleHint)
+                  decoration: postInputDecoration(hint: l10n.giveItemTitleHint)
                       .copyWith(counterText: ''),
                   validator: (v) => required(v, l10n.giveItemTitleRequired),
                 ),
                 const SizedBox(height: 20),
-                _FieldLabel(l10n.giveDescription),
+                PostFieldLabel(l10n.giveDescription),
                 TextFormField(
                   controller: _descriptionController,
                   maxLength: _descriptionMaxLength,
@@ -216,34 +256,21 @@ class _GiveFormState extends State<_GiveForm> {
                   maxLines: 5,
                   textCapitalization: TextCapitalization.sentences,
                   decoration:
-                      _inputDecoration(hint: l10n.giveDescriptionHint),
+                      postInputDecoration(hint: l10n.giveDescriptionHint),
                   validator: (v) =>
                       required(v, l10n.giveDescriptionRequired),
                 ),
                 const SizedBox(height: 12),
-                _FieldLabel(l10n.giveCategory),
-                DropdownButtonFormField<String>(
-                  initialValue: _category,
-                  isExpanded: true,
-                  hint: Text(
-                    l10n.giveCategoryHint,
-                    style: const TextStyle(color: AppColors.textSecondary),
-                  ),
-                  decoration: _inputDecoration(),
-                  dropdownColor: AppColors.white,
-                  borderRadius: BorderRadius.circular(14),
-                  icon: const Icon(
-                    Icons.keyboard_arrow_down,
-                    color: AppColors.textSecondary,
-                  ),
-                  items: AppConstants.itemCategories
-                      .map((c) => DropdownMenuItem(value: c, child: Text(c)))
-                      .toList(),
+                PostFieldLabel(l10n.giveCategory),
+                PostDropdownField(
+                  value: _category,
+                  hint: l10n.giveCategoryHint,
+                  options: AppConstants.itemCategories,
                   onChanged: (value) => setState(() => _category = value),
                   validator: (v) => required(v, l10n.giveCategoryRequired),
                 ),
                 const SizedBox(height: 20),
-                _FieldLabel(l10n.giveCondition),
+                PostFieldLabel(l10n.giveCondition),
                 _ConditionSelector(
                   selected: _condition,
                   onChanged: (value) => setState(() => _condition = value),
@@ -256,35 +283,12 @@ class _GiveFormState extends State<_GiveForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _FieldLabel(l10n.district),
-                          DropdownButtonFormField<String>(
-                            initialValue: _district,
-                            isExpanded: true,
-                            hint: Text(
-                              l10n.giveDistrictHint,
-                              style: const TextStyle(
-                                color: AppColors.textSecondary,
-                              ),
-                            ),
-                            decoration: _inputDecoration(),
-                            dropdownColor: AppColors.white,
-                            borderRadius: BorderRadius.circular(14),
+                          PostFieldLabel(l10n.district),
+                          PostDropdownField(
+                            value: _district,
+                            hint: l10n.giveDistrictHint,
+                            options: AppConstants.sriLankanDistricts,
                             menuMaxHeight: 320,
-                            icon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: AppColors.textSecondary,
-                            ),
-                            items: AppConstants.sriLankanDistricts
-                                .map(
-                                  (d) => DropdownMenuItem(
-                                    value: d,
-                                    child: Text(
-                                      d,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                )
-                                .toList(),
                             onChanged: (value) =>
                                 setState(() => _district = value),
                             validator: (v) =>
@@ -298,13 +302,13 @@ class _GiveFormState extends State<_GiveForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          _FieldLabel(l10n.cityTown),
+                          PostFieldLabel(l10n.cityTown),
                           TextFormField(
                             controller: _cityController,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.done,
                             decoration:
-                                _inputDecoration(hint: l10n.giveCityHint),
+                                postInputDecoration(hint: l10n.giveCityHint),
                             validator: (v) =>
                                 required(v, l10n.giveCityRequired),
                           ),
@@ -318,8 +322,9 @@ class _GiveFormState extends State<_GiveForm> {
           ),
         ),
       ),
-      bottomNavigationBar: _PublishBar(
+      bottomNavigationBar: PostSubmitBar(
         label: l10n.givePublish,
+        icon: Icons.check,
         isLoading: _submitting,
         onPressed: _submit,
       ),
@@ -334,116 +339,6 @@ class _PickedPhoto {
 
   final XFile file;
   final Uint8List bytes;
-}
-
-/// White rounded field with a light outline, green when focused.
-InputDecoration _inputDecoration({String? hint}) {
-  OutlineInputBorder border(Color color, {double width = 1}) =>
-      OutlineInputBorder(
-        borderRadius: BorderRadius.circular(14),
-        borderSide: BorderSide(color: color, width: width),
-      );
-
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: const TextStyle(color: AppColors.textSecondary),
-    filled: true,
-    fillColor: AppColors.white,
-    contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
-    border: border(AppColors.border),
-    enabledBorder: border(AppColors.border),
-    focusedBorder: border(AppColors.deepGreen, width: 1.5),
-    errorBorder: border(AppColors.error),
-    focusedErrorBorder: border(AppColors.error, width: 1.5),
-  );
-}
-
-class _Header extends StatelessWidget {
-  const _Header({required this.title, required this.subtitle});
-
-  final String title;
-  final String subtitle;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Row(
-      children: [
-        Material(
-          color: AppColors.white,
-          shape: const CircleBorder(
-            side: BorderSide(color: AppColors.softMint),
-          ),
-          child: IconButton(
-            icon: const Icon(
-              Icons.arrow_back_ios_new,
-              size: 18,
-              color: AppColors.ink,
-            ),
-            tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-            onPressed: () => Navigator.of(context).maybePop(),
-          ),
-        ),
-        const SizedBox(width: 14),
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                title,
-                style: textTheme.titleLarge?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                ),
-              ),
-              const SizedBox(height: 2),
-              Text(
-                subtitle,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class _FieldLabel extends StatelessWidget {
-  const _FieldLabel(this.text, {this.trailing});
-
-  final String text;
-  final String? trailing;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: 8),
-      child: Row(
-        children: [
-          Expanded(
-            child: Text(
-              text,
-              style: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-                color: AppColors.ink,
-              ),
-            ),
-          ),
-          if (trailing != null)
-            Text(
-              trailing!,
-              style: textTheme.bodySmall?.copyWith(
-                color: AppColors.textSecondary,
-              ),
-            ),
-        ],
-      ),
-    );
-  }
 }
 
 /// Large drop zone while empty; then a row of thumbnails (first is the
@@ -734,68 +629,6 @@ class _ConditionSelector extends StatelessWidget {
             ),
           ),
       ],
-    );
-  }
-}
-
-/// White bar pinned to the bottom holding the full-width publish button.
-class _PublishBar extends StatelessWidget {
-  const _PublishBar({
-    required this.label,
-    required this.isLoading,
-    required this.onPressed,
-  });
-
-  final String label;
-  final bool isLoading;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.border)),
-      ),
-      child: SafeArea(
-        top: false,
-        child: Padding(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 12),
-          child: ElevatedButton(
-            onPressed: isLoading ? null : onPressed,
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColors.deepGreen,
-              foregroundColor: AppColors.white,
-              disabledBackgroundColor:
-                  AppColors.deepGreen.withValues(alpha: 0.6),
-              elevation: 0,
-              minimumSize: const Size.fromHeight(54),
-              shape: const StadiumBorder(),
-              textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.w700,
-                  ),
-            ),
-            child: isLoading
-                ? const SizedBox.square(
-                    dimension: 22,
-                    child: CircularProgressIndicator(
-                      strokeWidth: 2,
-                      color: AppColors.white,
-                    ),
-                  )
-                : Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const Icon(Icons.check, size: 20),
-                      const SizedBox(width: 8),
-                      Flexible(
-                        child: Text(label, overflow: TextOverflow.ellipsis),
-                      ),
-                    ],
-                  ),
-          ),
-        ),
-      ),
     );
   }
 }

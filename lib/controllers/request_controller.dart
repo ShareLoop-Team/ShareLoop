@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/errors/app_exception.dart';
 import '../models/item_request_model.dart';
 import '../repositories/item_request_repository.dart';
 
@@ -17,10 +18,16 @@ class RequestController extends ChangeNotifier {
 
   Future<void> loadRequests() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    allRequests = await _repository.getAllRequests();
-    isLoading = false;
-    notifyListeners();
+    try {
+      allRequests = await _repository.getAllRequests();
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   List<ItemRequestModel> requestsForPost(String itemPostId) =>
@@ -41,6 +48,7 @@ class RequestController extends ChangeNotifier {
       final matchesCategory = category == null || r.category == category;
       final matchesDistrict = district == null || r.district == district;
       final matchesSearch = q.isEmpty ||
+          r.itemName.toLowerCase().contains(q) ||
           r.description.toLowerCase().contains(q) ||
           r.reason.toLowerCase().contains(q);
       return r.itemPostId == null &&
@@ -54,14 +62,20 @@ class RequestController extends ChangeNotifier {
     required String requesterId,
     required String requesterName,
     String? itemPostId,
+    String itemName = '',
     required String description,
     required String reason,
+    String notes = '',
     required String category,
     required String district,
     required String city,
   }) async {
-    if (description.trim().isEmpty || reason.trim().isEmpty) {
-      errorMessage = 'Description and reason are required.';
+    // A standalone request must say what is needed; a targeted one names
+    // the post's item.
+    if ((itemPostId == null && itemName.trim().isEmpty) ||
+        description.trim().isEmpty ||
+        reason.trim().isEmpty) {
+      errorMessage = 'Item name, description and reason are required.';
       notifyListeners();
       return errorMessage;
     }
@@ -70,31 +84,35 @@ class RequestController extends ChangeNotifier {
       requesterId: requesterId,
       requesterName: requesterName,
       itemPostId: itemPostId,
+      itemName: itemName.trim(),
       description: description.trim(),
       reason: reason.trim(),
+      notes: notes.trim(),
       category: category,
       district: district,
       city: city.trim(),
       createdAt: DateTime.now(),
     );
-    await _repository.createRequest(request);
+    try {
+      await _repository.createRequest(request);
+    } on AppException catch (e) {
+      return e.message;
+    }
     await loadRequests();
     return null;
   }
 
-  Future<void> approveRequest(String requestId) async {
-    final request = allRequests.firstWhere((r) => r.id == requestId);
-    await _repository.updateRequest(
-      request.copyWith(status: ItemRequestStatus.approved),
-    );
-    await loadRequests();
-  }
-
-  Future<void> rejectRequest(String requestId) async {
-    final request = allRequests.firstWhere((r) => r.id == requestId);
-    await _repository.updateRequest(
-      request.copyWith(status: ItemRequestStatus.rejected),
-    );
-    await loadRequests();
+  /// Removes the requester's own request. Updates the list in place so the
+  /// page doesn't flash a loading state. Returns an error message on
+  /// failure. (Requests are approved through ItemController.selectRequester.)
+  Future<String?> deleteRequest(String requestId) async {
+    try {
+      await _repository.deleteRequest(requestId);
+    } on AppException catch (e) {
+      return e.message;
+    }
+    allRequests = allRequests.where((r) => r.id != requestId).toList();
+    notifyListeners();
+    return null;
   }
 }

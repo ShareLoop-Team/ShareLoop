@@ -139,7 +139,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ListTile(
             contentPadding: const EdgeInsets.symmetric(horizontal: 20),
             title: Text(
-              request.description,
+              request.itemName.isEmpty
+                  ? request.description
+                  : request.itemName,
               style: const TextStyle(fontWeight: FontWeight.w600),
             ),
             subtitle: Text(

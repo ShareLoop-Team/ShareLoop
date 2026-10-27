@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/errors/app_exception.dart';
 import '../models/item_post_model.dart';
 import '../models/item_request_model.dart';
 import '../models/rating_review_model.dart';
@@ -32,15 +33,38 @@ class ProfileController extends ChangeNotifier {
   List<ItemRequestModel> myRequests = [];
   List<RatingReviewModel> myReviews = [];
   bool isLoading = false;
+  String? errorMessage;
 
   Future<void> loadProfile(String userId) async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    user = await _userRepository.getUserById(userId);
-    myPosts = await _postRepository.getPostsByDonor(userId);
-    myRequests = await _requestRepository.getRequestsByUser(userId);
-    myReviews = await _ratingRepository.getRatingsForUser(userId);
-    isLoading = false;
+    try {
+      user = await _userRepository.getUserById(userId);
+      myPosts = await _postRepository.getPostsByDonor(userId);
+      myRequests = await _requestRepository.getRequestsByUser(userId);
+      myReviews = await _ratingRepository.getRatingsForUser(userId);
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
+  }
+
+  /// The other party of a handover, shown on the contact screen. Kept apart
+  /// from [user] so it never replaces the signed-in user's own profile.
+  UserModel? contact;
+
+  Future<void> loadContact(String userId) async {
+    contact = null;
+    errorMessage = null;
+    notifyListeners();
+    try {
+      contact = await _userRepository.getUserById(userId);
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    }
     notifyListeners();
   }
 
@@ -59,7 +83,13 @@ class ProfileController extends ChangeNotifier {
       district: district,
       city: city.trim(),
     );
-    await _userRepository.updateUser(updated);
+    try {
+      await _userRepository.updateUser(updated);
+    } on AppException catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+      return false;
+    }
     user = updated;
     notifyListeners();
     return true;

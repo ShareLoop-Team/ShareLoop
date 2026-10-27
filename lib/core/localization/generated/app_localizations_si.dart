@@ -107,7 +107,8 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginWelcomeBack => 'නැවත සාදරයෙන් පිළිගනිමු';
 
   @override
-  String get loginSubtitle => 'දිගටම බෙදාගැනීමට සහ සම්බන්ධ වීමට ඇතුල් වන්න';
+  String get loginSubtitle =>
+      'ඔබේ විස්තර ඇතුළත් කරන්න හෝ සමාජ මාධ්‍ය හරහා ඉදිරියට යන්න';
 
   @override
   String get loginEmailHint => 'ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න';
@@ -138,38 +139,65 @@ class AppLocalizationsSi extends AppLocalizations {
       'මුරපදය යළි සැකසීම තවම ලබා ගත නොහැක.';
 
   @override
+  String get loginResetEnterEmail =>
+      'මුරපදය යළි සැකසීමට ඉහත ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.';
+
+  @override
+  String loginResetSent(String email) {
+    return '$email සඳහා ගිණුමක් තිබේ නම්, මුරපදය යළි සැකසීමේ සබැඳියක් එවනු ලැබේ.';
+  }
+
+  @override
   String get loginSignIn => 'ඇතුල් වන්න';
 
   @override
   String get loginOr => 'හෝ';
 
   @override
-  String get loginNoAccount => 'ගිණුමක් නැද්ද?';
+  String get loginNoAccount => 'නව පරිශීලකයෙක්ද?';
 
   @override
   String get loginCreateAccount => 'ගිණුමක් සාදන්න';
 
   @override
-  String get registerTitle => 'ShareLoop වෙත සාදරයෙන් පිළිගනිමු!';
+  String get loginEmailLabel => 'ඊමේල්';
 
   @override
-  String get registerSubtitle =>
-      'ඔබ අසල භාණ්ඩ දීම සහ සොයා ගැනීම ආරම්භ කිරීමට ගිණුමක් සාදන්න.';
+  String get loginPasswordLabel => 'මුරපදය';
+
+  @override
+  String get loginOrContinueWith => 'හෝ මෙයින් ඉදිරියට යන්න';
+
+  @override
+  String get loginWithGoogle => 'Google සමඟ ඇතුල් වන්න';
+
+  @override
+  String get loginWithFacebook => 'Facebook සමඟ ඇතුල් වන්න';
+
+  @override
+  String get loginSocialUnavailable =>
+      'සමාජ මාධ්‍ය හරහා ඇතුල් වීම තවම ලබා ගත නොහැක.';
+
+  @override
+  String get registerTitle => 'ගිණුමක් සාදන්න';
+
+  @override
+  String get registerSubtitle => 'ප්‍රජාවට එක්වී බෙදාගැනීම අරඹන්න';
 
   @override
   String get registerNameHint => 'ඔබේ සම්පූර්ණ නම ඇතුළත් කරන්න';
 
   @override
-  String get registerPhoneHint => 'ඔබේ දුරකථන අංකය ඇතුළත් කරන්න';
+  String get registerPhoneHint => '07X XXX XXXX';
 
   @override
   String get registerDistrictHint => 'ඔබේ දිස්ත්‍රික්කය තෝරන්න';
 
   @override
-  String get registerCityHint => 'ඔබේ නගරය ඇතුළත් කරන්න';
+  String get registerCityHint => 'උදා. මීගමුව';
 
   @override
-  String get registerConfirmPasswordHint => 'මුරපදය තහවුරු කරන්න';
+  String get registerConfirmPasswordHint => 'මුරපදය නැවත ඇතුළත් කරන්න';
 
   @override
   String get registerNameRequired => 'නම අවශ්‍යයි';
@@ -192,13 +220,55 @@ class AppLocalizationsSi extends AppLocalizations {
   String get registerPasswordMismatch => 'මුරපද නොගැළපේ';
 
   @override
-  String get registerButton => 'ලියාපදිංචි වන්න';
+  String get registerButton => 'ගිණුම සාදන්න';
 
   @override
   String get registerHaveAccount => 'දැනටමත් ගිණුමක් තිබේද?';
 
   @override
   String get registerSignIn => 'ඇතුල් වන්න';
+
+  @override
+  String get registerNameLabel => 'සම්පූර්ණ නම';
+
+  @override
+  String get registerPasswordHint => 'මුරපදයක් සාදන්න';
+
+  @override
+  String get registerConfirmPasswordLabel => 'මුරපදය තහවුරු කරන්න';
+
+  @override
+  String get registerPhoneLabel => 'දුරකථන අංකය';
+
+  @override
+  String get registerDistrictLabel => 'දිස්ත්‍රික්කය';
+
+  @override
+  String get registerCityLabel => 'නගරය';
+
+  @override
+  String registerAgreeTerms(String terms, String privacy) {
+    return 'මම $terms සහ $privacy වලට එකඟ වෙමි';
+  }
+
+  @override
+  String get registerTerms => 'නියමයන්';
+
+  @override
+  String get registerPrivacyPolicy => 'පෞද්ගලිකත්ව ප්‍රතිපත්තිය';
+
+  @override
+  String get registerTermsRequired =>
+      'කරුණාකර නියමයන් සහ පෞද්ගලිකත්ව ප්‍රතිපත්තිය පිළිගන්න';
+
+  @override
+  String get registerOrSignUpWith => 'හෝ මෙයින් ලියාපදිංචි වන්න';
+
+  @override
+  String get registerWithGoogle => 'Google සමඟ ලියාපදිංචි වන්න';
+
+  @override
+  String get registerWithFacebook => 'Facebook සමඟ ලියාපදිංචි වන්න';
 
   @override
   String homeGreeting(String name) {
@@ -333,6 +403,111 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get givePublished => 'ඔබේ අයිතමය දැන් පළ වී ඇත!';
+
+  @override
+  String get requestsSubtitle => 'අයිතමයක් අවශ්‍ය ඔබ අසල සිටින අය';
+
+  @override
+  String get requestsNew => 'නව';
+
+  @override
+  String get requestsAll => 'සියලු ඉල්ලීම්';
+
+  @override
+  String get requestsMine => 'මගේ ඉල්ලීම්';
+
+  @override
+  String get requestsICanHelp => 'මට උදව් කළ හැක';
+
+  @override
+  String get requestsDelete => 'ඉල්ලීම මකන්න';
+
+  @override
+  String get requestsDeleteConfirm => 'මෙම ඉල්ලීම මකන්නද?';
+
+  @override
+  String get requestsDeleteMessage =>
+      'පරිත්‍යාගශීලීන්ට එය තවදුරටත් නොපෙනේ. මෙය අහෝසි කළ නොහැක.';
+
+  @override
+  String get requestsDeleteAction => 'මකන්න';
+
+  @override
+  String get requestsDeleted => 'ඉල්ලීම මකා දමන ලදී.';
+
+  @override
+  String get postDelete => 'පළකිරීම මකන්න';
+
+  @override
+  String get postDeleteConfirm => 'මෙම පළකිරීම මකන්නද?';
+
+  @override
+  String get postDeleteMessage =>
+      'එය ලැයිස්තුවෙන් ඉවත් කෙරෙන අතර ඒ සඳහා වූ ඉල්ලීම් අවලංගු වේ. මෙය අහෝසි කළ නොහැක.';
+
+  @override
+  String get postDeleted => 'පළකිරීම මකා දමන ලදී.';
+
+  @override
+  String get statusOpen => 'විවෘතයි';
+
+  @override
+  String get statusDonorReviewing => 'පරිත්‍යාගශීලී සලකා බලයි';
+
+  @override
+  String get requestTitle => 'අයිතමයක් ඉල්ලන්න';
+
+  @override
+  String get requestSubtitle => 'ඔබට අවශ්‍ය දේ ඔබේ ප්‍රජාවෙන් ඉල්ලන්න';
+
+  @override
+  String get requestInfoTitle => 'ඔබේ ප්‍රජාව උදව් කිරීමට සූදානම්.';
+
+  @override
+  String get requestInfoBody =>
+      'පරිත්‍යාගශීලීන් තෝරා ගැනීමට පෙර ඔබේ හේතුව කියවයි, එබැවින් පැහැදිලිව සහ අවංකව ලියන්න.';
+
+  @override
+  String get requestYouAreRequesting => 'ඔබ ඉල්ලන්නේ';
+
+  @override
+  String get requestItemName => 'අයිතමයේ නම';
+
+  @override
+  String get requestItemNameHint => 'උදා: 10 ශ්‍රේණියේ විද්‍යා පෙළපොත';
+
+  @override
+  String get requestItemNameRequired => 'කරුණාකර අයිතමයේ නම ඇතුළත් කරන්න';
+
+  @override
+  String get requestDescriptionHint =>
+      'ඔබට හරියටම අවශ්‍ය කුමක්ද? ප්‍රමාණය, සංස්කරණය හෝ වෙනත් විස්තර';
+
+  @override
+  String get requestReason => 'ඔබට එය අවශ්‍ය ඇයි?';
+
+  @override
+  String get requestReasonHint =>
+      'කෙටි හේතුවක් පරිත්‍යාගශීලීන්ට සාධාරණව තෝරා ගැනීමට උදව් වේ';
+
+  @override
+  String get requestReasonHelper =>
+      'පරිත්‍යාගශීලීන් ඉල්ලීම් සමාලෝචනය කරන විට පෙන්වයි';
+
+  @override
+  String get requestReasonRequired => 'කරුණාකර ඔබට එය අවශ්‍ය ඇයි දැයි කියන්න';
+
+  @override
+  String get requestNotes => 'අමතර සටහන්';
+
+  @override
+  String get requestOptional => '(අත්‍යවශ්‍ය නැත)';
+
+  @override
+  String get requestNotesHint => 'පරිත්‍යාගශීලීන් දැනගත යුතු වෙනත් ඕනෑම දෙයක්';
+
+  @override
+  String get requestSubmitted => 'ඔබේ ඉල්ලීම ඉදිරිපත් කර ඇත.';
 
   @override
   String get profileTitle => 'මගේ පැතිකඩ';

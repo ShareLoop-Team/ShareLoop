@@ -43,16 +43,21 @@ class _RatingReviewScreenState extends State<RatingReviewScreen> {
         : post.donorId;
     if (rateeId == null) return;
 
+    final messenger = ScaffoldMessenger.of(context);
     setState(() => _submitting = true);
-    await context.read<RatingController>().submitRating(
+    final error = await context.read<RatingController>().submitRating(
           itemPostId: widget.postId,
           raterId: currentUser.id,
           rateeId: rateeId,
           stars: _stars,
           comment: _commentController.text,
         );
-    setState(() => _submitting = false);
     if (!mounted) return;
+    setState(() => _submitting = false);
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
     Navigator.of(context).pushNamedAndRemoveUntil(
       AppRoutes.home,
       (route) => false,

@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/errors/app_exception.dart';
 import '../models/category_model.dart';
 import '../models/item_post_model.dart';
 import '../models/user_model.dart';
@@ -17,54 +18,55 @@ class AdminController extends ChangeNotifier {
   List<ItemPostModel> posts = [];
   List<CategoryModel> categories = [];
   bool isLoading = false;
+  String? errorMessage;
 
-  Future<void> loadUsers() async {
+  /// Runs [action] with loading state, keeping its error for the View.
+  Future<void> _run(Future<void> Function() action) async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    users = await _repository.getAllUsers();
-    isLoading = false;
-    notifyListeners();
+    try {
+      await action();
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
-  Future<void> loadPosts() async {
-    isLoading = true;
-    notifyListeners();
-    posts = await _repository.getAllPosts();
-    isLoading = false;
-    notifyListeners();
-  }
+  Future<void> loadUsers() =>
+      _run(() async => users = await _repository.getAllUsers());
 
-  Future<void> loadCategories() async {
-    isLoading = true;
-    notifyListeners();
-    categories = await _repository.getAllCategories();
-    isLoading = false;
-    notifyListeners();
-  }
+  Future<void> loadPosts() =>
+      _run(() async => posts = await _repository.getAllPosts());
 
-  Future<void> removeUser(String id) async {
-    await _repository.removeUser(id);
-    await loadUsers();
-  }
+  Future<void> loadCategories() =>
+      _run(() async => categories = await _repository.getAllCategories());
 
-  Future<void> removePost(String id) async {
-    await _repository.removePost(id);
-    await loadPosts();
-  }
+  Future<void> removeUser(String id) => _run(() async {
+        await _repository.removeUser(id);
+        users = await _repository.getAllUsers();
+      });
 
-  Future<void> addCategory(String name, String iconName) async {
-    await _repository.addCategory(
-      CategoryModel(
-        id: 'c${DateTime.now().microsecondsSinceEpoch}',
-        name: name,
-        iconName: iconName,
-      ),
-    );
-    await loadCategories();
-  }
+  Future<void> removePost(String id) => _run(() async {
+        await _repository.removePost(id);
+        posts = await _repository.getAllPosts();
+      });
 
-  Future<void> removeCategory(String id) async {
-    await _repository.removeCategory(id);
-    await loadCategories();
-  }
+  Future<void> addCategory(String name, String iconName) => _run(() async {
+        await _repository.addCategory(
+          CategoryModel(
+            id: 'c${DateTime.now().microsecondsSinceEpoch}',
+            name: name,
+            iconName: iconName,
+          ),
+        );
+        categories = await _repository.getAllCategories();
+      });
+
+  Future<void> removeCategory(String id) => _run(() async {
+        await _repository.removeCategory(id);
+        categories = await _repository.getAllCategories();
+      });
 }

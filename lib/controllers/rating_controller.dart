@@ -1,24 +1,21 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/errors/app_exception.dart';
 import '../models/rating_review_model.dart';
 import '../repositories/rating_repository.dart';
-import '../repositories/user_repository.dart';
 
-/// Controller: coordinates submitting a rating/review after handover and
-/// recomputing the ratee's average rating.
+/// Controller: coordinates submitting a rating/review after handover. The
+/// repository keeps the ratee's average rating up to date.
 class RatingController extends ChangeNotifier {
-  RatingController({
-    RatingRepository? ratingRepository,
-    UserRepository? userRepository,
-  })  : _ratingRepository = ratingRepository ?? RatingRepository(),
-        _userRepository = userRepository ?? UserRepository();
+  RatingController({RatingRepository? ratingRepository})
+      : _ratingRepository = ratingRepository ?? RatingRepository();
 
   final RatingRepository _ratingRepository;
-  final UserRepository _userRepository;
 
   bool isLoading = false;
   String? errorMessage;
 
+  /// Returns an error message, or null once the rating is saved.
   Future<String?> submitRating({
     required String itemPostId,
     required String raterId,
@@ -32,35 +29,27 @@ class RatingController extends ChangeNotifier {
       return errorMessage;
     }
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
 
-    await _ratingRepository.addRating(
-      RatingReviewModel(
-        id: 'rv${DateTime.now().microsecondsSinceEpoch}',
-        itemPostId: itemPostId,
-        raterId: raterId,
-        rateeId: rateeId,
-        stars: stars,
-        comment: comment.trim(),
-        createdAt: DateTime.now(),
-      ),
-    );
-
-    final ratings = await _ratingRepository.getRatingsForUser(rateeId);
-    final average =
-        ratings.map((r) => r.stars).reduce((a, b) => a + b) / ratings.length;
-    final ratee = await _userRepository.getUserById(rateeId);
-    if (ratee != null) {
-      await _userRepository.updateUser(
-        ratee.copyWith(
-          averageRating: average,
-          ratingCount: ratings.length,
+    try {
+      await _ratingRepository.addRating(
+        RatingReviewModel(
+          id: 'rv${DateTime.now().microsecondsSinceEpoch}',
+          itemPostId: itemPostId,
+          raterId: raterId,
+          rateeId: rateeId,
+          stars: stars,
+          comment: comment.trim(),
+          createdAt: DateTime.now(),
         ),
       );
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } finally {
+      isLoading = false;
+      notifyListeners();
     }
-
-    isLoading = false;
-    notifyListeners();
-    return null;
+    return errorMessage;
   }
 }

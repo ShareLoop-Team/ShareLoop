@@ -1,9 +1,9 @@
 # ShareLoop
 
-A Flutter front-end for **ShareLoop** — a recycling & item-sharing platform for
-Sri Lanka ("Give What You Don't Need. Get What You Do."). This is the UI
-layer only: all data is mocked in-memory, ready to be swapped for a real
-REST API later without touching any View or Controller code.
+A Flutter app for **ShareLoop** — a recycling & item-sharing platform for
+Sri Lanka ("Give What You Don't Need. Get What You Do."), backed by Firebase
+Authentication and Supabase (see [Backend](#backend)), with an in-memory
+mock mode for tests and offline UI work.
 
 ## Architecture
 
@@ -13,8 +13,9 @@ Repository/Service layer, as described in `doc/MVC_Architecture_in_Mobile_Applic
 ```
 View (Flutter widgets)
   -> Controller (ChangeNotifier, via Provider)
-    -> Repository (mock CRUD, async)
-      -> Service (MockDataService: in-memory hard-coded data)
+    -> Repository (interface; Supabase or mock implementation)
+      -> Service (BackendService: Firebase + Supabase,
+                  or MockDataService: in-memory data)
 ```
 
 - **Models** (`lib/models/`): plain data classes (`UserModel`, `ItemPostModel`,
@@ -97,13 +98,16 @@ flutter analyze
 flutter test
 ```
 
-## Notes for backend integration
+## Backend
 
-- Replace the body of `MockDataService` with real HTTP calls (or inject a
-  different implementation) — repositories already use `Future<...>`
-  signatures that match a typical REST client.
-- `AuthController.login`/`register` and `UserRepository` are the natural
-  seam for wiring real authentication.
-- `image_picker` results are currently stored as local file paths only
-  (`ItemPostModel.photoPaths`); a real backend would upload these and store
-  returned URLs instead.
+Firebase Authentication (sign-in) + Supabase (Postgres, Storage). See
+[doc/BACKEND.md](doc/BACKEND.md) for the architecture, schema, security
+model and setup steps.
+
+```bash
+cp .env.example .env    # fill in the Supabase URL and publishable key
+flutter run --dart-define-from-file=.env
+```
+
+Without those values the app runs on the in-memory mock data, which is
+also what the tests use.

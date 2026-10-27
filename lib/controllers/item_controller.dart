@@ -1,23 +1,26 @@
 import 'package:flutter/foundation.dart';
 
+import '../core/errors/app_exception.dart';
+import '../models/exchange_model.dart';
 import '../models/item_post_model.dart';
+import '../models/photo_upload.dart';
+import '../repositories/exchange_repository.dart';
 import '../repositories/item_post_repository.dart';
-import '../repositories/user_repository.dart';
 
 /// Controller: coordinates browsing, filtering, and creating Give Away
-/// posts, plus the donor's requester-selection action.
+/// posts, plus the handover workflow (requester selection, confirmation).
 class ItemController extends ChangeNotifier {
   ItemController({
     ItemPostRepository? repository,
-    UserRepository? userRepository,
+    ExchangeRepository? exchangeRepository,
   })  : _repository = repository ?? ItemPostRepository(),
-        _userRepository = userRepository ?? UserRepository();
+        _exchangeRepository = exchangeRepository ?? ExchangeRepository();
 
   final ItemPostRepository _repository;
-  final UserRepository _userRepository;
+  final ExchangeRepository _exchangeRepository;
 
   List<ItemPostModel> _allPosts = [];
-  Map<String, int> _donationCountByDonor = {};
+  final Map<String, ExchangeModel> _exchanges = {};
   bool isLoading = false;
   String? errorMessage;
 
@@ -40,16 +43,25 @@ class ItemController extends ChangeNotifier {
 
   Future<void> loadPosts() async {
     isLoading = true;
+    errorMessage = null;
     notifyListeners();
-    _allPosts = await _repository.getAllPosts();
-    final users = await _userRepository.getAllUsers();
-    _donationCountByDonor = {for (final u in users) u.id: u.donationCount};
-    isLoading = false;
-    notifyListeners();
+    try {
+      _allPosts = await _repository.getAllPosts();
+    } on AppException catch (e) {
+      errorMessage = e.message;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   /// Donation count of a post's donor, used to show their badge on cards.
-  int donorDonationCount(String donorId) => _donationCountByDonor[donorId] ?? 0;
+  int donorDonationCount(String donorId) {
+    for (final post in _allPosts) {
+      if (post.donorId == donorId) return post.donorDonationCount;
+    }
+    return 0;
+  }
 
   List<ItemPostModel> postsByDonor(String donorId) =>
       _allPosts.where((p) => p.donorId == donorId).toList();
@@ -76,6 +88,7 @@ class ItemController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Returns an error message, or null once the post is published.
   Future<String?> createPost({
     required String donorId,
     required String donorName,
@@ -85,7 +98,7 @@ class ItemController extends ChangeNotifier {
     required String category,
     required String district,
     required String city,
-    List<String> photoPaths = const [],
+    List<PhotoUpload> photos = const [],
   }) async {
     if (title.trim().isEmpty || description.trim().isEmpty) {
       errorMessage = 'Title and description are required.';
@@ -102,31 +115,89 @@ class ItemController extends ChangeNotifier {
       category: category,
       district: district,
       city: city.trim(),
-      photoPaths: photoPaths,
       createdAt: DateTime.now(),
     );
-    await _repository.createPost(post);
+    try {
+      await _repository.createPost(post, photos: photos);
+    } on AppException catch (e) {
+      return e.message;
+    }
     await loadPosts();
     return null;
   }
 
-  Future<void> selectRequester(String postId, String requesterId) async {
-    final post = await _repository.getPostById(postId);
-    if (post == null) return;
-    final updated = post.copyWith(
-      status: ItemPostStatus.pendingHandover,
-      selectedRequesterId: requesterId,
-    );
-    await _repository.updatePost(updated);
-    await loadPosts();
+  /// Whether the donor may still delete the post: not once a requester has
+  /// been chosen and the handover is underway.
+  bool canDeletePost(ItemPostModel post) =>
+      post.status != ItemPostStatus.pendingHandover;
+
+  /// Removes the donor's own post. Updates the list in place so the feed
+  /// doesn't flash a loading state. Returns an error message on failure.
+  Future<String?> deletePost(String postId) async {
+    try {
+      await _repository.deletePost(postId);
+    } on AppException catch (e) {
+      return e.message;
+    }
+    _allPosts = _allPosts.where((p) => p.id != postId).toList();
+    notifyListeners();
+    return null;
   }
 
-  Future<void> markCompleted(String postId) async {
-    final post = await _repository.getPostById(postId);
-    if (post == null) return;
-    await _repository.updatePost(
-      post.copyWith(status: ItemPostStatus.completed),
+  /// The handover for [postId] once loaded (see [loadExchange]), if the
+  /// signed-in user is part of it.
+  ExchangeModel? exchangeFor(String postId) => _exchanges[postId];
+
+  Future<void> loadExchange(String postId) async {
+    try {
+      final exchange = await _exchangeRepository.getExchangeForPost(postId);
+      if (exchange == null) {
+        _exchanges.remove(postId);
+      } else {
+        _exchanges[postId] = exchange;
+      }
+      notifyListeners();
+    } on AppException catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+    }
+  }
+
+  /// The donor selects one request for their post. Returns an error
+  /// message, or null on success.
+  Future<String?> selectRequester(String postId, String requestId) {
+    return _runExchangeStep(
+      postId,
+      () => _exchangeRepository.selectRequester(
+        postId: postId,
+        requestId: requestId,
+      ),
     );
+  }
+
+  /// The signed-in party confirms the handover; the post completes once
+  /// both parties have. Returns an error message, or null on success.
+  Future<String?> confirmHandover(String postId) =>
+      _runExchangeStep(postId, () => _exchangeRepository.confirmHandover(postId));
+
+  Future<String?> cancelExchange(String postId) =>
+      _runExchangeStep(postId, () => _exchangeRepository.cancelExchange(postId));
+
+  Future<String?> _runExchangeStep(
+    String postId,
+    Future<ExchangeModel> Function() step,
+  ) async {
+    try {
+      final exchange = await step();
+      if (exchange.status == ExchangeStatus.cancelled) {
+        _exchanges.remove(postId);
+      } else {
+        _exchanges[postId] = exchange;
+      }
+    } on AppException catch (e) {
+      return e.message;
+    }
     await loadPosts();
+    return null;
   }
 }

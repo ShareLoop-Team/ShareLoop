@@ -10,9 +10,12 @@ import 'controllers/language_controller.dart';
 import 'controllers/profile_controller.dart';
 import 'controllers/rating_controller.dart';
 import 'controllers/request_controller.dart';
+import 'core/config/backend_config.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'models/item_request_model.dart';
+import 'services/backend_service.dart';
 import 'views/admin/manage_categories_screen.dart';
 import 'views/admin/manage_users_screen.dart';
 import 'views/admin/moderate_posts_screen.dart';
@@ -33,7 +36,12 @@ import 'views/requests/create_request_screen.dart';
 import 'views/settings/settings_screen.dart';
 import 'views/splash/splash_screen.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  // Without SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY the app runs on mock data.
+  if (BackendConfig.isConfigured) {
+    await BackendService.initialize();
+  }
   runApp(const ShareLoopApp());
 }
 
@@ -106,7 +114,9 @@ class ShareLoopApp extends StatelessWidget {
                   );
                 case AppRoutes.createGiveAway:
                   return MaterialPageRoute(
-                    builder: (_) => const CreateGiveAwayScreen(),
+                    builder: (_) => CreateGiveAwayScreen(
+                      forRequest: settings.arguments as ItemRequestModel?,
+                    ),
                   );
                 case AppRoutes.itemDetails:
                   return MaterialPageRoute(

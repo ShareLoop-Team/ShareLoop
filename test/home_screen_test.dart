@@ -96,6 +96,35 @@ void main() {
     expect(find.text('Grade 5 A/L notes for Maths'), findsOneWidget);
   });
 
+  testWidgets('Give tab shows the form above the nav bar', (tester) async {
+    await _pumpHome(tester);
+
+    await tester.tap(find.byIcon(Icons.card_giftcard_outlined).last);
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish Item'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+    expect(
+      tester.widget<NavigationBar>(find.byType(NavigationBar)).selectedIndex,
+      1,
+    );
+
+    // The form's back button returns to the Home tab.
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    expect(find.text('Available near you'), findsOneWidget);
+  });
+
+  testWidgets('Give an Item card opens the Give tab', (tester) async {
+    await _pumpHome(tester);
+
+    await tester.tap(find.text('Give an Item'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Publish Item'), findsOneWidget);
+    expect(find.byType(NavigationBar), findsOneWidget);
+  });
+
   for (final size in const [Size(320, 568), Size(360, 800)]) {
     testWidgets('does not overflow at $size', (tester) async {
       await _pumpHome(tester, size: size);

@@ -104,10 +104,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get onboardingRegister => 'Register';
 
   @override
-  String get loginWelcomeBack => 'Welcome back';
+  String get loginWelcomeBack => 'Welcome back!';
 
   @override
-  String get loginSubtitle => 'Sign in to continue sharing and connecting';
+  String get loginSubtitle => 'Fill your details or continue with social media';
 
   @override
   String get loginEmailHint => 'Enter your Email';
@@ -138,38 +138,64 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password reset isn\'t available yet.';
 
   @override
+  String get loginResetEnterEmail =>
+      'Enter your email above to reset your password.';
+
+  @override
+  String loginResetSent(String email) {
+    return 'If an account exists for $email, a password reset link is on its way.';
+  }
+
+  @override
   String get loginSignIn => 'Sign In';
 
   @override
   String get loginOr => 'or';
 
   @override
-  String get loginNoAccount => 'Don\'t have an account?';
+  String get loginNoAccount => 'New user?';
 
   @override
   String get loginCreateAccount => 'Create Account';
 
   @override
-  String get registerTitle => 'Welcome to ShareLoop!';
+  String get loginEmailLabel => 'Email';
 
   @override
-  String get registerSubtitle =>
-      'Create your account to start giving and finding items near you.';
+  String get loginPasswordLabel => 'Password';
+
+  @override
+  String get loginOrContinueWith => 'or continue with';
+
+  @override
+  String get loginWithGoogle => 'Sign in with Google';
+
+  @override
+  String get loginWithFacebook => 'Sign in with Facebook';
+
+  @override
+  String get loginSocialUnavailable => 'Social sign-in isn\'t available yet.';
+
+  @override
+  String get registerTitle => 'Create account';
+
+  @override
+  String get registerSubtitle => 'Join the community and start sharing';
 
   @override
   String get registerNameHint => 'Enter your full name';
 
   @override
-  String get registerPhoneHint => 'Enter your phone number';
+  String get registerPhoneHint => '07X XXX XXXX';
 
   @override
   String get registerDistrictHint => 'Select your district';
 
   @override
-  String get registerCityHint => 'Enter your city / town';
+  String get registerCityHint => 'e.g. Negombo';
 
   @override
-  String get registerConfirmPasswordHint => 'Confirm password';
+  String get registerConfirmPasswordHint => 'Re-enter your password';
 
   @override
   String get registerNameRequired => 'Name is required';
@@ -192,13 +218,55 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerPasswordMismatch => 'Passwords do not match';
 
   @override
-  String get registerButton => 'Register';
+  String get registerButton => 'Create Account';
 
   @override
   String get registerHaveAccount => 'Already have an account?';
 
   @override
   String get registerSignIn => 'Sign In';
+
+  @override
+  String get registerNameLabel => 'Full name';
+
+  @override
+  String get registerPasswordHint => 'Create a password';
+
+  @override
+  String get registerConfirmPasswordLabel => 'Confirm password';
+
+  @override
+  String get registerPhoneLabel => 'Phone number';
+
+  @override
+  String get registerDistrictLabel => 'District';
+
+  @override
+  String get registerCityLabel => 'City / Town';
+
+  @override
+  String registerAgreeTerms(String terms, String privacy) {
+    return 'I agree to the $terms and $privacy';
+  }
+
+  @override
+  String get registerTerms => 'Terms';
+
+  @override
+  String get registerPrivacyPolicy => 'Privacy Policy';
+
+  @override
+  String get registerTermsRequired =>
+      'Please accept the Terms and Privacy Policy';
+
+  @override
+  String get registerOrSignUpWith => 'or sign up with';
+
+  @override
+  String get registerWithGoogle => 'Sign up with Google';
+
+  @override
+  String get registerWithFacebook => 'Sign up with Facebook';
 
   @override
   String homeGreeting(String name) {
@@ -332,6 +400,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get givePublished => 'Your item is now live!';
+
+  @override
+  String get requestsSubtitle => 'People near you who need an item';
+
+  @override
+  String get requestsNew => 'New';
+
+  @override
+  String get requestsAll => 'All requests';
+
+  @override
+  String get requestsMine => 'My requests';
+
+  @override
+  String get requestsICanHelp => 'I can help';
+
+  @override
+  String get requestsDelete => 'Delete request';
+
+  @override
+  String get requestsDeleteConfirm => 'Delete this request?';
+
+  @override
+  String get requestsDeleteMessage =>
+      'Donors will no longer see it. This can\'t be undone.';
+
+  @override
+  String get requestsDeleteAction => 'Delete';
+
+  @override
+  String get requestsDeleted => 'Request deleted.';
+
+  @override
+  String get postDelete => 'Delete post';
+
+  @override
+  String get postDeleteConfirm => 'Delete this post?';
+
+  @override
+  String get postDeleteMessage =>
+      'It will be removed from the feed and any requests for it will be cancelled. This can\'t be undone.';
+
+  @override
+  String get postDeleted => 'Post deleted.';
+
+  @override
+  String get statusOpen => 'Open';
+
+  @override
+  String get statusDonorReviewing => 'Donor reviewing';
+
+  @override
+  String get requestTitle => 'Request an Item';
+
+  @override
+  String get requestSubtitle => 'Ask your community for what you need';
+
+  @override
+  String get requestInfoTitle => 'Your community is here to help.';
+
+  @override
+  String get requestInfoBody =>
+      'Donors read your reason before choosing, so be clear and honest.';
+
+  @override
+  String get requestYouAreRequesting => 'You\'re requesting';
+
+  @override
+  String get requestItemName => 'Item name';
+
+  @override
+  String get requestItemNameHint => 'e.g. Grade 10 Science Textbook';
+
+  @override
+  String get requestItemNameRequired => 'Please enter the item name';
+
+  @override
+  String get requestDescriptionHint =>
+      'What exactly do you need? Size, edition, or any details';
+
+  @override
+  String get requestReason => 'Why do you need it?';
+
+  @override
+  String get requestReasonHint => 'A short reason helps donors choose fairly';
+
+  @override
+  String get requestReasonHelper => 'Shown to donors when they review requests';
+
+  @override
+  String get requestReasonRequired => 'Please tell donors why you need it';
+
+  @override
+  String get requestNotes => 'Additional notes';
+
+  @override
+  String get requestOptional => '(optional)';
+
+  @override
+  String get requestNotesHint => 'Anything else donors should know';
+
+  @override
+  String get requestSubmitted => 'Your request has been submitted.';
 
   @override
   String get profileTitle => 'My Profile';
