@@ -1,4 +1,4 @@
-package com.example.shareloop
+package com.shareloop.app
 
 import io.flutter.embedding.android.FlutterActivity
 
