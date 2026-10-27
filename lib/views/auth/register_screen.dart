@@ -62,6 +62,7 @@ class _RegisterViewState extends State<_RegisterView> {
       navigator: Navigator.of(context),
       name: _nameController.text,
       email: _emailController.text,
+      password: _passwordController.text,
       phone: _phoneController.text,
       city: _cityController.text,
     );

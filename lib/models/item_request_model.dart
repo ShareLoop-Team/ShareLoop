@@ -7,8 +7,10 @@ class ItemRequestModel {
   final String requesterId;
   final String requesterName;
   final String? itemPostId;
+  final String itemName; // empty on older requests; fall back to description
   final String description;
   final String reason;
+  final String notes; // optional extra info for donors
   final String category;
   final String district;
   final String city;
@@ -20,8 +22,10 @@ class ItemRequestModel {
     required this.requesterId,
     required this.requesterName,
     this.itemPostId,
+    this.itemName = '',
     required this.description,
     required this.reason,
+    this.notes = '',
     required this.category,
     required this.district,
     required this.city,
@@ -35,8 +39,10 @@ class ItemRequestModel {
       requesterId: requesterId,
       requesterName: requesterName,
       itemPostId: itemPostId,
+      itemName: itemName,
       description: description,
       reason: reason,
+      notes: notes,
       category: category,
       district: district,
       city: city,

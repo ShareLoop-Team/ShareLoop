@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../../controllers/item_controller.dart';
 import '../../controllers/request_controller.dart';
 import '../../core/routes/app_routes.dart';
+import '../../models/item_request_model.dart';
 import '../../widgets/empty_state.dart';
 
 /// View: lets a donor review each requester's stated reason and select
@@ -13,7 +14,7 @@ class IncomingRequestsScreen extends StatelessWidget {
 
   final String postId;
 
-  Future<void> _select(BuildContext context, String requesterId) async {
+  Future<void> _select(BuildContext context, String requestId) async {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -33,9 +34,16 @@ class IncomingRequestsScreen extends StatelessWidget {
       ),
     );
     if (confirmed != true || !context.mounted) return;
-    await context.read<ItemController>().selectRequester(postId, requesterId);
-    if (!context.mounted) return;
-    await context.read<RequestController>().approveRequest(requesterId);
+    final requestController = context.read<RequestController>();
+    final messenger = ScaffoldMessenger.of(context);
+    final error =
+        await context.read<ItemController>().selectRequester(postId, requestId);
+    // Statuses changed server-side (selected approved), so refresh either way.
+    await requestController.loadRequests();
+    if (error != null) {
+      messenger.showSnackBar(SnackBar(content: Text(error)));
+      return;
+    }
     if (!context.mounted) return;
     Navigator.of(context).pushReplacementNamed(
       AppRoutes.contactShared,
@@ -67,14 +75,24 @@ class IncomingRequestsScreen extends StatelessWidget {
                             style: Theme.of(context).textTheme.titleMedium),
                         const SizedBox(height: 8),
                         Text('Reason: ${request.reason}'),
+                        if (request.notes.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text('Notes: ${request.notes}'),
+                        ],
                         const SizedBox(height: 16),
                         Align(
                           alignment: Alignment.centerRight,
-                          child: FilledButton(
-                            onPressed: () =>
-                                _select(context, request.id),
-                            child: const Text('Select Requester'),
-                          ),
+                          child: switch (request.status) {
+                            ItemRequestStatus.pending => FilledButton(
+                                onPressed: () =>
+                                    _select(context, request.id),
+                                child: const Text('Select Requester'),
+                              ),
+                            ItemRequestStatus.approved =>
+                              const Text('Selected'),
+                            ItemRequestStatus.rejected =>
+                              const Text('Declined'),
+                          },
                         ),
                       ],
                     ),

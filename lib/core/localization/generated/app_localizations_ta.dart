@@ -139,6 +139,15 @@ class AppLocalizationsTa extends AppLocalizations {
       'கடவுச்சொல் மீட்டமைப்பு இன்னும் கிடைக்கவில்லை.';
 
   @override
+  String get loginResetEnterEmail =>
+      'கடவுச்சொல்லை மீட்டமைக்க மேலே உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்.';
+
+  @override
+  String loginResetSent(String email) {
+    return '$email க்கு கணக்கு இருந்தால், கடவுச்சொல் மீட்டமைப்பு இணைப்பு அனுப்பப்படும்.';
+  }
+
+  @override
   String get loginSignIn => 'உள்நுழைய';
 
   @override
@@ -336,6 +345,113 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get givePublished => 'உங்கள் பொருள் இப்போது வெளியிடப்பட்டது!';
+
+  @override
+  String get requestsSubtitle => 'உங்கள் அருகில் பொருள் தேவைப்படுபவர்கள்';
+
+  @override
+  String get requestsNew => 'புதிய';
+
+  @override
+  String get requestsAll => 'அனைத்து கோரிக்கைகள்';
+
+  @override
+  String get requestsMine => 'எனது கோரிக்கைகள்';
+
+  @override
+  String get requestsICanHelp => 'நான் உதவுகிறேன்';
+
+  @override
+  String get requestsDelete => 'கோரிக்கையை நீக்கு';
+
+  @override
+  String get requestsDeleteConfirm => 'இந்தக் கோரிக்கையை நீக்கவா?';
+
+  @override
+  String get requestsDeleteMessage =>
+      'நன்கொடையாளர்களுக்கு இது இனி தெரியாது. இதைச் செயல்தவிர்க்க முடியாது.';
+
+  @override
+  String get requestsDeleteAction => 'நீக்கு';
+
+  @override
+  String get requestsDeleted => 'கோரிக்கை நீக்கப்பட்டது.';
+
+  @override
+  String get postDelete => 'இடுகையை நீக்கு';
+
+  @override
+  String get postDeleteConfirm => 'இந்த இடுகையை நீக்கவா?';
+
+  @override
+  String get postDeleteMessage =>
+      'இது பட்டியலிலிருந்து அகற்றப்படும், இதற்கான கோரிக்கைகள் ரத்து செய்யப்படும். இதைச் செயல்தவிர்க்க முடியாது.';
+
+  @override
+  String get postDeleted => 'இடுகை நீக்கப்பட்டது.';
+
+  @override
+  String get statusOpen => 'திறந்துள்ளது';
+
+  @override
+  String get statusDonorReviewing => 'நன்கொடையாளர் பரிசீலிக்கிறார்';
+
+  @override
+  String get requestTitle => 'ஒரு பொருளைக் கோருங்கள்';
+
+  @override
+  String get requestSubtitle =>
+      'உங்களுக்குத் தேவையானதை உங்கள் சமூகத்திடம் கேளுங்கள்';
+
+  @override
+  String get requestInfoTitle => 'உங்கள் சமூகம் உதவத் தயாராக உள்ளது.';
+
+  @override
+  String get requestInfoBody =>
+      'நன்கொடையாளர்கள் தேர்வு செய்வதற்கு முன் உங்கள் காரணத்தைப் படிப்பார்கள், எனவே தெளிவாகவும் நேர்மையாகவும் எழுதுங்கள்.';
+
+  @override
+  String get requestYouAreRequesting => 'நீங்கள் கோருவது';
+
+  @override
+  String get requestItemName => 'பொருளின் பெயர்';
+
+  @override
+  String get requestItemNameHint => 'எ.கா. தரம் 10 அறிவியல் பாடநூல்';
+
+  @override
+  String get requestItemNameRequired => 'பொருளின் பெயரை உள்ளிடுங்கள்';
+
+  @override
+  String get requestDescriptionHint =>
+      'உங்களுக்கு சரியாக என்ன தேவை? அளவு, பதிப்பு அல்லது பிற விவரங்கள்';
+
+  @override
+  String get requestReason => 'இது ஏன் தேவை?';
+
+  @override
+  String get requestReasonHint =>
+      'சுருக்கமான காரணம் நன்கொடையாளர்கள் நியாயமாகத் தேர்வு செய்ய உதவும்';
+
+  @override
+  String get requestReasonHelper =>
+      'கோரிக்கைகளை மதிப்பாய்வு செய்யும்போது நன்கொடையாளர்களுக்குக் காட்டப்படும்';
+
+  @override
+  String get requestReasonRequired =>
+      'இது ஏன் தேவை என்று நன்கொடையாளர்களிடம் சொல்லுங்கள்';
+
+  @override
+  String get requestNotes => 'கூடுதல் குறிப்புகள்';
+
+  @override
+  String get requestOptional => '(விருப்பத்தேர்வு)';
+
+  @override
+  String get requestNotesHint => 'நன்கொடையாளர்கள் அறிய வேண்டிய வேறு ஏதேனும்';
+
+  @override
+  String get requestSubmitted => 'உங்கள் கோரிக்கை சமர்ப்பிக்கப்பட்டது.';
 
   @override
   String get profileTitle => 'எனது சுயவிவரம்';

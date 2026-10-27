@@ -1,41 +1,24 @@
+import '../core/config/backend_config.dart';
 import '../models/item_request_model.dart';
-import '../services/mock_data_service.dart';
+import 'mock/mock_item_request_repository.dart';
+import 'supabase/supabase_item_request_repository.dart';
 
-/// Repository: mock data access for item requests (standalone needs and
-/// responses to a specific give-away post).
-class ItemRequestRepository {
-  final MockDataService _data = MockDataService.instance;
+/// Repository: item requests (standalone needs and responses to a specific
+/// give-away post). Approval happens through [ExchangeRepository].
+abstract class ItemRequestRepository {
+  factory ItemRequestRepository() => BackendConfig.isConfigured
+      ? SupabaseItemRequestRepository()
+      : MockItemRequestRepository();
 
-  Future<List<ItemRequestModel>> getAllRequests() async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    return List.unmodifiable(_data.itemRequests.reversed);
-  }
+  /// Every request the user may see: public needs, their own requests, and
+  /// requests on their posts. Newest first.
+  Future<List<ItemRequestModel>> getAllRequests();
 
-  Future<List<ItemRequestModel>> getRequestsForPost(String itemPostId) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _data.itemRequests
-        .where((r) => r.itemPostId == itemPostId)
-        .toList();
-  }
+  Future<List<ItemRequestModel>> getRequestsForPost(String itemPostId);
 
-  Future<List<ItemRequestModel>> getRequestsByUser(String requesterId) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _data.itemRequests
-        .where((r) => r.requesterId == requesterId)
-        .toList();
-  }
+  Future<List<ItemRequestModel>> getRequestsByUser(String requesterId);
 
-  Future<ItemRequestModel> createRequest(ItemRequestModel request) async {
-    await Future.delayed(const Duration(milliseconds: 250));
-    _data.itemRequests.add(request);
-    return request;
-  }
+  Future<ItemRequestModel> createRequest(ItemRequestModel request);
 
-  Future<void> updateRequest(ItemRequestModel request) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    final index = _data.itemRequests.indexWhere((r) => r.id == request.id);
-    if (index != -1) {
-      _data.itemRequests[index] = request;
-    }
-  }
+  Future<void> deleteRequest(String id);
 }

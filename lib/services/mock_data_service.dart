@@ -1,14 +1,14 @@
 import '../models/badge_model.dart';
 import '../models/category_model.dart';
+import '../models/exchange_model.dart';
 import '../models/item_post_model.dart';
 import '../models/item_request_model.dart';
 import '../models/rating_review_model.dart';
 import '../models/user_model.dart';
 
 /// Service: single in-memory source of hard-coded ("mock") data, shared by
-/// all repositories. Stands in for a REST API/database today — repositories
-/// depend on this service, not the other way around, so swapping it for a
-/// real HTTP client later requires no controller or view changes.
+/// the mock repositories. Used when no backend is configured (tests and
+/// offline UI work); see BackendConfig.
 class MockDataService {
   MockDataService._internal() {
     _seed();
@@ -22,7 +22,9 @@ class MockDataService {
   final List<RatingReviewModel> ratings = [];
   final List<CategoryModel> categories = [];
   final List<BadgeModel> badges = [];
+  final List<ExchangeModel> exchanges = [];
 
+  /// Signed-in user; nobody until login/register, like a fresh install.
   String? currentUserId;
 
   void _seed() {
@@ -197,6 +199,42 @@ class MockDataService {
         city: 'Nugegoda',
         createdAt: DateTime.now().subtract(const Duration(hours: 5)),
       ),
+      ItemRequestModel(
+        id: 'r3',
+        requesterId: 'u4',
+        requesterName: 'Priya Rajan',
+        itemName: 'School shoes, size 4',
+        description: 'Black school shoes, size 4, any brand.',
+        reason: "My daughter's shoes are worn out before the new term starts.",
+        category: 'Shoes',
+        district: 'Kandy',
+        city: 'Peradeniya',
+        createdAt: DateTime.now().subtract(const Duration(days: 1)),
+      ),
+      ItemRequestModel(
+        id: 'r4',
+        requesterId: 'u3',
+        requesterName: 'Sunil Fernando',
+        itemName: 'Study lamp',
+        description: 'A rechargeable desk lamp for studying.',
+        reason: 'Frequent power cuts at night and I need light to study.',
+        category: 'Electronics',
+        district: 'Galle',
+        city: 'Hikkaduwa',
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ItemRequestModel(
+        id: 'r5',
+        requesterId: 'u2',
+        requesterName: 'Kamani Silva',
+        itemName: 'Rice cooker',
+        description: 'A small rice cooker in working condition.',
+        reason: 'Moving into a new boarding place and starting with nothing.',
+        category: 'Household Items',
+        district: 'Gampaha',
+        city: 'Negombo',
+        createdAt: DateTime.now().subtract(const Duration(days: 3)),
+      ),
     ]);
 
     ratings.addAll([
@@ -210,7 +248,5 @@ class MockDataService {
         createdAt: DateTime.now().subtract(const Duration(days: 5)),
       ),
     ]);
-
-    currentUserId = 'u1';
   }
 }

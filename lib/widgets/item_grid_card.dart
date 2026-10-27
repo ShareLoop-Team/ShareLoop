@@ -7,13 +7,16 @@ import '../models/item_post_model.dart';
 
 /// Reusable photo-first card for Give Away posts in two-column grids:
 /// condition tag over the image, then title, category · district, and the
-/// donor's badge with how long ago the item was posted.
+/// donor's badge with how long ago the item was posted. The donor's own
+/// posts get a delete button over the image when [onDelete] is set.
 class ItemGridCard extends StatelessWidget {
   const ItemGridCard({
     super.key,
     required this.post,
     required this.donorBadge,
     required this.onTap,
+    this.onDelete,
+    this.deleteTooltip,
   });
 
   /// Height of the image area; grids use it to size each tile.
@@ -24,6 +27,8 @@ class ItemGridCard extends StatelessWidget {
   /// Badge name (Bronze, Silver, Gold, Platinum) or null for new donors.
   final String? donorBadge;
   final VoidCallback onTap;
+  final VoidCallback? onDelete;
+  final String? deleteTooltip;
 
   static Color _badgeColor(String? badge) {
     switch (badge) {
@@ -47,6 +52,11 @@ class ItemGridCard extends StatelessWidget {
     final donorLabel = donorBadge == null
         ? l10n.homeNewDonor
         : l10n.homeDonorBadge(donorBadge!);
+    final placeholder = Icon(
+      Icons.image_outlined,
+      size: 36,
+      color: AppColors.deepGreen.withValues(alpha: 0.7),
+    );
 
     return Material(
       color: AppColors.white,
@@ -64,11 +74,13 @@ class ItemGridCard extends StatelessWidget {
                   Positioned.fill(
                     child: ColoredBox(
                       color: AppColors.paleMint,
-                      child: Icon(
-                        Icons.image_outlined,
-                        size: 36,
-                        color: AppColors.deepGreen.withValues(alpha: 0.7),
-                      ),
+                      child: post.photoUrls.isEmpty
+                          ? placeholder
+                          : Image.network(
+                              post.photoUrls.first,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, _, _) => placeholder,
+                            ),
                     ),
                   ),
                   Positioned(
@@ -92,6 +104,20 @@ class ItemGridCard extends StatelessWidget {
                       ),
                     ),
                   ),
+                  if (onDelete != null)
+                    Positioned(
+                      top: 4,
+                      right: 4,
+                      child: IconButton(
+                        onPressed: onDelete,
+                        tooltip: deleteTooltip,
+                        icon: const Icon(Icons.delete_outline, size: 20),
+                        color: AppColors.error,
+                        style: IconButton.styleFrom(
+                          backgroundColor: AppColors.white,
+                        ),
+                      ),
+                    ),
                 ],
               ),
             ),

@@ -8,8 +8,8 @@ import 'auth_controller.dart';
 class LoginController extends ChangeNotifier {
   bool obscurePassword = true;
 
-  /// UI-only for now: [AuthController] has no persistent "remember me"
-  /// session yet, so this value is not stored anywhere.
+  /// UI-only: Firebase Authentication always keeps the session until the
+  /// user logs out, so this value is not stored anywhere.
   bool rememberMe = false;
 
   void togglePasswordVisibility() {

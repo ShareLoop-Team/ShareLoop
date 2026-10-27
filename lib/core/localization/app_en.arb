@@ -42,6 +42,15 @@
   "loginRememberMe": "Remember me",
   "loginForgotPassword": "Forgot password?",
   "loginForgotPasswordUnavailable": "Password reset isn't available yet.",
+  "loginResetEnterEmail": "Enter your email above to reset your password.",
+  "loginResetSent": "If an account exists for {email}, a password reset link is on its way.",
+  "@loginResetSent": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "loginSignIn": "Sign In",
   "loginOr": "or",
   "loginNoAccount": "Don't have an account?",
@@ -60,7 +69,9 @@
   "registerPasswordTooShort": "Password must be at least {min} characters",
   "@registerPasswordTooShort": {
     "placeholders": {
-      "min": {"type": "int"}
+      "min": {
+        "type": "int"
+      }
     }
   },
   "registerPasswordMismatch": "Passwords do not match",
@@ -70,7 +81,9 @@
   "homeGreeting": "Hello, {name}. What are you sharing today?",
   "@homeGreeting": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "homeGreetingGuest": "Hello! What are you sharing today?",
@@ -88,14 +101,18 @@
   "homeDonorBadge": "{badge} donor",
   "@homeDonorBadge": {
     "placeholders": {
-      "badge": {"type": "String"}
+      "badge": {
+        "type": "String"
+      }
     }
   },
   "homeNewDonor": "New donor",
   "homeRequestedBy": "Requested by {name}",
   "@homeRequestedBy": {
     "placeholders": {
-      "name": {"type": "String"}
+      "name": {
+        "type": "String"
+      }
     }
   },
   "giveTitle": "Give an Item",
@@ -124,6 +141,39 @@
   "giveCityRequired": "Enter a city",
   "givePublish": "Publish Item",
   "givePublished": "Your item is now live!",
+  "requestsSubtitle": "People near you who need an item",
+  "requestsNew": "New",
+  "requestsAll": "All requests",
+  "requestsMine": "My requests",
+  "requestsICanHelp": "I can help",
+  "requestsDelete": "Delete request",
+  "requestsDeleteConfirm": "Delete this request?",
+  "requestsDeleteMessage": "Donors will no longer see it. This can't be undone.",
+  "requestsDeleteAction": "Delete",
+  "requestsDeleted": "Request deleted.",
+  "postDelete": "Delete post",
+  "postDeleteConfirm": "Delete this post?",
+  "postDeleteMessage": "It will be removed from the feed and any requests for it will be cancelled. This can't be undone.",
+  "postDeleted": "Post deleted.",
+  "statusOpen": "Open",
+  "statusDonorReviewing": "Donor reviewing",
+  "requestTitle": "Request an Item",
+  "requestSubtitle": "Ask your community for what you need",
+  "requestInfoTitle": "Your community is here to help.",
+  "requestInfoBody": "Donors read your reason before choosing, so be clear and honest.",
+  "requestYouAreRequesting": "You're requesting",
+  "requestItemName": "Item name",
+  "requestItemNameHint": "e.g. Grade 10 Science Textbook",
+  "requestItemNameRequired": "Please enter the item name",
+  "requestDescriptionHint": "What exactly do you need? Size, edition, or any details",
+  "requestReason": "Why do you need it?",
+  "requestReasonHint": "A short reason helps donors choose fairly",
+  "requestReasonHelper": "Shown to donors when they review requests",
+  "requestReasonRequired": "Please tell donors why you need it",
+  "requestNotes": "Additional notes",
+  "requestOptional": "(optional)",
+  "requestNotesHint": "Anything else donors should know",
+  "requestSubmitted": "Your request has been submitted.",
   "profileTitle": "My Profile",
   "profileEditProfile": "Edit Profile",
   "profileItemsGiven": "Items given",
@@ -131,14 +181,20 @@
   "profileNextBadge": "Next badge: {badge}",
   "@profileNextBadge": {
     "placeholders": {
-      "badge": {"type": "String"}
+      "badge": {
+        "type": "String"
+      }
     }
   },
   "profileBadgeProgress": "{count} of {total} items",
   "@profileBadgeProgress": {
     "placeholders": {
-      "count": {"type": "int"},
-      "total": {"type": "int"}
+      "count": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
     }
   },
   "profileAllBadgesEarned": "Every badge earned. Thank you!",
@@ -167,19 +223,25 @@
   "timeMinutesAgo": "{count}m ago",
   "@timeMinutesAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeHoursAgo": "{count}h ago",
   "@timeHoursAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   },
   "timeDaysAgo": "{count}d ago",
   "@timeDaysAgo": {
     "placeholders": {
-      "count": {"type": "int"}
+      "count": {
+        "type": "int"
+      }
     }
   }
 }

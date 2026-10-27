@@ -39,10 +39,17 @@ dependencies:
 
   # State management: controllers (ChangeNotifier) notify views via Provider.
   provider: ^6.1.2
-  # Photo selection for Give Away posts (mocked storage, no backend upload).
+  # Photo selection for Give Away posts (uploaded to Supabase Storage).
   image_picker: ^1.1.2
   # Date formatting and localization helpers.
   intl: ^0.20.3
+
+  # Backend: Firebase Authentication signs users in; Supabase (Postgres +
+  # Storage) holds the data and accepts the Firebase ID token. Only used
+  # when SUPABASE_URL is defined; otherwise the app runs on mock data.
+  firebase_core: ^4.15.0
+  firebase_auth: ^6.7.0
+  supabase_flutter: ^2.18.0
 dev_dependencies:
   flutter_test:
     sdk: flutter

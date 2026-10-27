@@ -1,31 +1,39 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../controllers/request_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
+import '../../core/routes/app_routes.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/item_request_model.dart';
+import '../../widgets/confirm_dialog.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_indicator.dart';
 
-/// View: standalone item requests from the community, optionally narrowed
-/// by category/district/search. Built as a sliver for scrolling pages.
+/// View: item requests as cards, newest first. Shows standalone community
+/// requests narrowed by category/district/search, or with [onlyMine] the
+/// signed-in user's own requests (including ones for specific posts).
+/// Built as a sliver for scrolling pages.
 class RequestsTab extends StatelessWidget {
   const RequestsTab({
     super.key,
     this.category,
     this.district,
     this.query = '',
+    this.onlyMine = false,
   });
 
   final String? category;
   final String? district;
   final String query;
+  final bool onlyMine;
 
   @override
   Widget build(BuildContext context) {
     final requestController = context.watch<RequestController>();
+    final userId = context.watch<AuthController>().currentUser?.id;
     final l10n = AppLocalizations.of(context);
 
     if (requestController.isLoading) {
@@ -34,15 +42,23 @@ class RequestsTab extends StatelessWidget {
         child: LoadingIndicator(),
       );
     }
-    final requests = requestController.communityRequests(
-      category: category,
-      district: district,
-      query: query,
-    );
+    final requests = (onlyMine
+        ? requestController
+            .requestsByUser(userId ?? '')
+            .where((r) => category == null || r.category == category)
+            .toList()
+        : requestController.communityRequests(
+            category: category,
+            district: district,
+            query: query,
+          ))
+      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     if (requests.isEmpty) {
       return SliverFillRemaining(
         hasScrollBody: false,
-        child: EmptyState(message: l10n.noOpenRequests),
+        child: EmptyState(
+          message: onlyMine ? l10n.profileNoRequests : l10n.noOpenRequests,
+        ),
       );
     }
     return SliverPadding(
@@ -50,57 +66,290 @@ class RequestsTab extends StatelessWidget {
       sliver: SliverList.separated(
         itemCount: requests.length,
         separatorBuilder: (_, _) => const SizedBox(height: 12),
-        itemBuilder: (context, index) =>
-            _RequestCard(request: requests[index]),
+        itemBuilder: (context, index) => _RequestCard(
+          request: requests[index],
+          isMine: requests[index].requesterId == userId,
+        ),
       ),
     );
   }
 }
 
 class _RequestCard extends StatelessWidget {
-  const _RequestCard({required this.request});
+  const _RequestCard({required this.request, required this.isMine});
+
+  final ItemRequestModel request;
+  final bool isMine;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
+    final isStandalone = request.itemPostId == null;
+    final canHelp = isStandalone &&
+        !isMine &&
+        request.status == ItemRequestStatus.pending;
+    // Once a donor has chosen this request, the handover depends on it.
+    final canDelete = isMine && request.status != ItemRequestStatus.approved;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: AppColors.white,
+        borderRadius: BorderRadius.circular(18),
+        boxShadow: [
+          BoxShadow(
+            color: AppColors.ink.withValues(alpha: 0.05),
+            blurRadius: 12,
+            offset: const Offset(0, 2),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: Text(
+                  request.itemName.isEmpty
+                      ? request.description
+                      : request.itemName,
+                  style: textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.ink,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              _StatusPill(request: request),
+            ],
+          ),
+          const SizedBox(height: 6),
+          Text(
+            request.reason,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodyMedium?.copyWith(
+              color: AppColors.textSecondary,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              _Tag(
+                label: request.category,
+                background: AppColors.paleMint,
+                foreground: AppColors.deepGreen,
+              ),
+              _Tag(
+                label: request.district,
+                icon: Icons.location_on_outlined,
+                background: AppColors.mutedSurface,
+                foreground: AppColors.textSecondary,
+              ),
+            ],
+          ),
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 12),
+            child: Divider(height: 1, color: AppColors.border),
+          ),
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColors.softMint,
+                child: Text(
+                  request.requesterName.isEmpty
+                      ? '?'
+                      : request.requesterName[0].toUpperCase(),
+                  style: textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: AppColors.deepGreen,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      request.requesterName,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodyMedium?.copyWith(
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.ink,
+                      ),
+                    ),
+                    Text(
+                      '${request.city} · ${timeAgo(l10n, request.createdAt)}',
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: textTheme.bodySmall?.copyWith(
+                        color: AppColors.textSecondary,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (canHelp) ...[
+                const SizedBox(width: 8),
+                // Long translations shrink the button rather than overflow.
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 140),
+                  child: OutlinedButton(
+                    // Opens the Give form pre-filled with what they need.
+                    onPressed: () => Navigator.of(context).pushNamed(
+                      AppRoutes.createGiveAway,
+                      arguments: request,
+                    ),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.deepGreen,
+                      side: const BorderSide(color: AppColors.deepGreen),
+                      shape: const StadiumBorder(),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 18,
+                        vertical: 12,
+                      ),
+                      textStyle: textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    child: Text(
+                      l10n.requestsICanHelp,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ),
+              ] else if (canDelete)
+                IconButton(
+                  onPressed: () => _confirmDelete(context),
+                  tooltip: l10n.requestsDelete,
+                  icon: const Icon(Icons.delete_outline),
+                  color: AppColors.error,
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+
+  Future<void> _confirmDelete(BuildContext context) async {
+    final l10n = AppLocalizations.of(context);
+    final controller = context.read<RequestController>();
+    final messenger = ScaffoldMessenger.of(context);
+    final confirmed = await confirmDestructiveAction(
+      context,
+      title: l10n.requestsDeleteConfirm,
+      message: l10n.requestsDeleteMessage,
+      actionLabel: l10n.requestsDeleteAction,
+    );
+    if (!confirmed) return;
+    final error = await controller.deleteRequest(request.id);
+    messenger.showSnackBar(
+      SnackBar(content: Text(error ?? l10n.requestsDeleted)),
+    );
+  }
+}
+
+/// Where the request stands: open to any donor, being reviewed by the
+/// donor of a specific post, or decided.
+class _StatusPill extends StatelessWidget {
+  const _StatusPill({required this.request});
 
   final ItemRequestModel request;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final textTheme = Theme.of(context).textTheme;
+    final (label, icon, color) = switch (request.status) {
+      ItemRequestStatus.pending when request.itemPostId == null => (
+          l10n.statusOpen,
+          Icons.radio_button_unchecked,
+          AppColors.deepGreen,
+        ),
+      ItemRequestStatus.pending => (
+          l10n.statusDonorReviewing,
+          Icons.schedule,
+          AppColors.amber,
+        ),
+      ItemRequestStatus.approved => (
+          l10n.statusApproved,
+          Icons.check_circle_outline,
+          AppColors.deepGreen,
+        ),
+      ItemRequestStatus.rejected => (
+          l10n.statusNotSelected,
+          Icons.remove_circle_outline,
+          AppColors.textSecondary,
+        ),
+    };
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(16),
+        color: color.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(12),
       ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
         children: [
+          Icon(icon, size: 12, color: color),
+          const SizedBox(width: 4),
           Text(
-            request.description,
-            style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+            label,
+            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w700,
+                  // Amber text is too faint on its own tint.
+                  color: color == AppColors.amber ? AppColors.ink : color,
+                ),
           ),
-          const SizedBox(height: 4),
+        ],
+      ),
+    );
+  }
+}
+
+class _Tag extends StatelessWidget {
+  const _Tag({
+    required this.label,
+    required this.background,
+    required this.foreground,
+    this.icon,
+  });
+
+  final String label;
+  final Color background;
+  final Color foreground;
+  final IconData? icon;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (icon != null) ...[
+            Icon(icon, size: 14, color: foreground),
+            const SizedBox(width: 4),
+          ],
           Text(
-            request.reason,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          const SizedBox(height: 10),
-          Text(
-            '${request.category} · ${request.district}',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.deepGreen,
-              fontWeight: FontWeight.w600,
-            ),
-          ),
-          const SizedBox(height: 2),
-          Text(
-            '${l10n.homeRequestedBy(request.requesterName)} · '
-            '${timeAgo(l10n, request.createdAt)}',
-            style: textTheme.bodySmall,
+            label,
+            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                  color: foreground,
+                  fontWeight: FontWeight.w600,
+                ),
           ),
         ],
       ),

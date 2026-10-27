@@ -1,18 +1,17 @@
+import '../core/config/backend_config.dart';
 import '../models/rating_review_model.dart';
-import '../services/mock_data_service.dart';
+import 'mock/mock_rating_repository.dart';
+import 'supabase/supabase_rating_repository.dart';
 
-/// Repository: mock data access for ratings and reviews left after handover.
-class RatingRepository {
-  final MockDataService _data = MockDataService.instance;
+/// Repository: ratings and reviews left after handover.
+abstract class RatingRepository {
+  factory RatingRepository() => BackendConfig.isConfigured
+      ? SupabaseRatingRepository()
+      : MockRatingRepository();
 
-  Future<List<RatingReviewModel>> getRatingsForUser(String rateeId) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return _data.ratings.where((r) => r.rateeId == rateeId).toList();
-  }
+  Future<List<RatingReviewModel>> getRatingsForUser(String rateeId);
 
-  Future<RatingReviewModel> addRating(RatingReviewModel rating) async {
-    await Future.delayed(const Duration(milliseconds: 200));
-    _data.ratings.add(rating);
-    return rating;
-  }
+  /// Saves the rating and updates the ratee's average. On the real backend
+  /// the ratee is derived from the exchange, not taken from [rating].
+  Future<RatingReviewModel> addRating(RatingReviewModel rating);
 }

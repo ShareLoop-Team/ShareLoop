@@ -58,12 +58,27 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  void _showForgotPasswordUnavailable(AppLocalizations l10n) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(l10n.loginForgotPasswordUnavailable)),
-      );
+  /// Emails a reset link to the address typed in the email field.
+  Future<void> _forgotPassword(
+    AppLocalizations l10n,
+    AuthController auth,
+  ) async {
+    final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
+    void show(String message) =>
+        messenger.showSnackBar(SnackBar(content: Text(message)));
+
+    if (!auth.supportsPasswordReset) {
+      show(l10n.loginForgotPasswordUnavailable);
+      return;
+    }
+    final email = _emailController.text.trim();
+    if (email.isEmpty) {
+      show(l10n.loginResetEnterEmail);
+      return;
+    }
+    final error = await auth.sendPasswordReset(email);
+    if (!mounted) return;
+    show(error ?? l10n.loginResetSent(email));
   }
 
   @override
@@ -187,7 +202,7 @@ class _LoginViewState extends State<_LoginView> {
                                     alignment: AlignmentDirectional.centerEnd,
                                     child: TextButton(
                                       onPressed: () =>
-                                          _showForgotPasswordUnavailable(l10n),
+                                          _forgotPassword(l10n, auth),
                                       style: TextButton.styleFrom(
                                         foregroundColor: AppColors.brightGreen,
                                         padding: const EdgeInsets.symmetric(

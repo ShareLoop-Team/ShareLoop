@@ -8,6 +8,8 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
+import '../../widgets/category_chip.dart';
+import '../../widgets/segmented_toggle.dart';
 import 'give_away_tab.dart';
 import 'requests_tab.dart';
 
@@ -15,8 +17,13 @@ import 'requests_tab.dart';
 /// Away / Requests switch, category chips, and the matching items near you.
 /// Filters live in [ItemController] so the grid and request list share them.
 class HomeFeed extends StatefulWidget {
-  const HomeFeed({super.key, required this.onOpenProfile});
+  const HomeFeed({
+    super.key,
+    required this.onOpenGive,
+    required this.onOpenProfile,
+  });
 
+  final VoidCallback onOpenGive;
   final VoidCallback onOpenProfile;
 
   @override
@@ -140,8 +147,7 @@ class _HomeFeedState extends State<HomeFeed> {
                             title: l10n.homeGiveItemTitle,
                             subtitle: l10n.homeGiveItemSubtitle,
                             filled: true,
-                            onTap: () => Navigator.of(context)
-                                .pushNamed(AppRoutes.createGiveAway),
+                            onTap: widget.onOpenGive,
                           ),
                         ),
                         const SizedBox(width: 12),
@@ -159,7 +165,7 @@ class _HomeFeedState extends State<HomeFeed> {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  _SegmentedToggle(
+                  SegmentedToggle(
                     labels: [l10n.giveAway, l10n.requests],
                     selectedIndex: _showRequests ? 1 : 0,
                     onChanged: (index) =>
@@ -170,7 +176,7 @@ class _HomeFeedState extends State<HomeFeed> {
               ),
             ),
             SliverToBoxAdapter(
-              child: _CategoryChips(
+              child: CategoryChipsRow(
                 allLabel: l10n.homeAllCategories,
                 selected: itemController.categoryFilter,
                 onSelected: itemController.setCategoryFilter,
@@ -403,151 +409,6 @@ class _ActionCard extends StatelessWidget {
                 ),
               ),
             ],
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class _SegmentedToggle extends StatelessWidget {
-  const _SegmentedToggle({
-    required this.labels,
-    required this.selectedIndex,
-    required this.onChanged,
-  });
-
-  final List<String> labels;
-  final int selectedIndex;
-  final ValueChanged<int> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(4),
-      decoration: BoxDecoration(
-        color: AppColors.mutedSurface,
-        borderRadius: BorderRadius.circular(26),
-      ),
-      child: Row(
-        children: [
-          for (var i = 0; i < labels.length; i++)
-            Expanded(
-              child: Semantics(
-                button: true,
-                selected: i == selectedIndex,
-                child: GestureDetector(
-                  behavior: HitTestBehavior.opaque,
-                  onTap: () => onChanged(i),
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 200),
-                    padding: const EdgeInsets.symmetric(vertical: 12),
-                    decoration: BoxDecoration(
-                      color: i == selectedIndex ? AppColors.white : null,
-                      borderRadius: BorderRadius.circular(22),
-                      boxShadow: i == selectedIndex
-                          ? [
-                              BoxShadow(
-                                color: AppColors.ink.withValues(alpha: 0.08),
-                                blurRadius: 8,
-                                offset: const Offset(0, 2),
-                              ),
-                            ]
-                          : null,
-                    ),
-                    alignment: Alignment.center,
-                    child: Text(
-                      labels[i],
-                      style: textTheme.titleSmall?.copyWith(
-                        fontWeight: FontWeight.w700,
-                        color: i == selectedIndex
-                            ? AppColors.deepGreen
-                            : AppColors.textSecondary,
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _CategoryChips extends StatelessWidget {
-  const _CategoryChips({
-    required this.allLabel,
-    required this.selected,
-    required this.onSelected,
-  });
-
-  final String allLabel;
-  final String? selected;
-  final ValueChanged<String?> onSelected;
-
-  @override
-  Widget build(BuildContext context) {
-    final chips = <(String, String?)>[
-      (allLabel, null),
-      for (final category in AppConstants.itemCategories) (category, category),
-    ];
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      child: Row(
-        children: [
-          for (final (label, value) in chips)
-            Padding(
-              padding: const EdgeInsets.only(right: 8),
-              child: _Pill(
-                label: label,
-                selected: selected == value,
-                onTap: () => onSelected(value),
-              ),
-            ),
-        ],
-      ),
-    );
-  }
-}
-
-class _Pill extends StatelessWidget {
-  const _Pill({
-    required this.label,
-    required this.selected,
-    required this.onTap,
-  });
-
-  final String label;
-  final bool selected;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Semantics(
-      selected: selected,
-      button: true,
-      child: Material(
-        color: selected ? AppColors.deepGreen : AppColors.white,
-        shape: StadiumBorder(
-          side: BorderSide(
-            color: selected ? AppColors.deepGreen : AppColors.softMint,
-          ),
-        ),
-        clipBehavior: Clip.antiAlias,
-        child: InkWell(
-          onTap: onTap,
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 9),
-            child: Text(
-              label,
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: selected ? AppColors.white : AppColors.ink,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
-            ),
           ),
         ),
       ),

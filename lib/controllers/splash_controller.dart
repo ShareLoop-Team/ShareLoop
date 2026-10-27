@@ -11,8 +11,9 @@ class SplashController {
   /// not after it.
   static const Duration minimumDisplayDuration = Duration(seconds: 1);
 
-  /// The splash always hands off to the onboarding/welcome screen, which
-  /// offers Get started (register) and Sign in (login).
+  /// A restored session goes straight to home; otherwise the splash hands
+  /// off to the onboarding/welcome screen, which offers Get started
+  /// (register) and Sign in (login).
   ///
   /// Resolves after both session restoration has finished and
   /// [minimumDisplayDuration] has elapsed, whichever is later.
@@ -21,8 +22,8 @@ class SplashController {
     try {
       await auth.restoreSession();
     } catch (error, stackTrace) {
-      // Routing does not depend on the restored session, so a failure must not
-      // strand the user on the splash. Report it rather than hiding it.
+      // A failed restore just means signing in again, so it must not strand
+      // the user on the splash. Report it rather than hiding it.
       FlutterError.reportError(
         FlutterErrorDetails(
           exception: error,
@@ -33,6 +34,6 @@ class SplashController {
       );
     }
     await minimumDisplay;
-    return AppRoutes.onboarding;
+    return auth.currentUser != null ? AppRoutes.home : AppRoutes.onboarding;
   }
 }

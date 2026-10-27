@@ -13,6 +13,9 @@ class UserModel {
   final int ratingCount;
   final bool isAdmin;
 
+  /// Suspended by an admin: cannot sign in, post or request.
+  final bool isSuspended;
+
   const UserModel({
     required this.id,
     required this.name,
@@ -25,6 +28,7 @@ class UserModel {
     this.averageRating = 0.0,
     this.ratingCount = 0,
     this.isAdmin = false,
+    this.isSuspended = false,
   });
 
   UserModel copyWith({
@@ -38,6 +42,7 @@ class UserModel {
     double? averageRating,
     int? ratingCount,
     bool? isAdmin,
+    bool? isSuspended,
   }) {
     return UserModel(
       id: id,
@@ -51,6 +56,7 @@ class UserModel {
       averageRating: averageRating ?? this.averageRating,
       ratingCount: ratingCount ?? this.ratingCount,
       isAdmin: isAdmin ?? this.isAdmin,
+      isSuspended: isSuspended ?? this.isSuspended,
     );
   }
 }

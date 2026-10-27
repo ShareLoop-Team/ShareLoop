@@ -1,46 +1,33 @@
+import '../core/config/backend_config.dart';
 import '../models/category_model.dart';
 import '../models/item_post_model.dart';
 import '../models/user_model.dart';
-import '../services/mock_data_service.dart';
+import 'mock/mock_admin_repository.dart';
+import 'supabase/supabase_admin_repository.dart';
 
-/// Repository: mock data access for admin moderation (users, posts,
-/// categories).
-class AdminRepository {
-  final MockDataService _data = MockDataService.instance;
+/// Repository: admin moderation (users, posts, categories). The backend
+/// only allows these for admin accounts.
+abstract class AdminRepository {
+  factory AdminRepository() => BackendConfig.isConfigured
+      ? SupabaseAdminRepository()
+      : MockAdminRepository();
 
-  Future<List<UserModel>> getAllUsers() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return List.unmodifiable(_data.users);
-  }
+  /// Active (not suspended) users.
+  Future<List<UserModel>> getAllUsers();
 
-  Future<void> removeUser(String id) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _data.users.removeWhere((u) => u.id == id);
-  }
+  /// Suspends the account; it can be restored from the database.
+  Future<void> removeUser(String id);
 
-  Future<List<ItemPostModel>> getAllPosts() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return List.unmodifiable(_data.itemPosts);
-  }
+  /// Posts not hidden by moderation.
+  Future<List<ItemPostModel>> getAllPosts();
 
-  Future<void> removePost(String id) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _data.itemPosts.removeWhere((p) => p.id == id);
-  }
+  /// Hides the post from everyone but its donor.
+  Future<void> removePost(String id);
 
-  Future<List<CategoryModel>> getAllCategories() async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    return List.unmodifiable(_data.categories);
-  }
+  Future<List<CategoryModel>> getAllCategories();
 
-  Future<CategoryModel> addCategory(CategoryModel category) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _data.categories.add(category);
-    return category;
-  }
+  Future<CategoryModel> addCategory(CategoryModel category);
 
-  Future<void> removeCategory(String id) async {
-    await Future.delayed(const Duration(milliseconds: 150));
-    _data.categories.removeWhere((c) => c.id == id);
-  }
+  /// Retires the category; posts already using it keep it.
+  Future<void> removeCategory(String id);
 }

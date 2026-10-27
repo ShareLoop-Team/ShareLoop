@@ -138,6 +138,15 @@ class AppLocalizationsEn extends AppLocalizations {
       'Password reset isn\'t available yet.';
 
   @override
+  String get loginResetEnterEmail =>
+      'Enter your email above to reset your password.';
+
+  @override
+  String loginResetSent(String email) {
+    return 'If an account exists for $email, a password reset link is on its way.';
+  }
+
+  @override
   String get loginSignIn => 'Sign In';
 
   @override
@@ -332,6 +341,109 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get givePublished => 'Your item is now live!';
+
+  @override
+  String get requestsSubtitle => 'People near you who need an item';
+
+  @override
+  String get requestsNew => 'New';
+
+  @override
+  String get requestsAll => 'All requests';
+
+  @override
+  String get requestsMine => 'My requests';
+
+  @override
+  String get requestsICanHelp => 'I can help';
+
+  @override
+  String get requestsDelete => 'Delete request';
+
+  @override
+  String get requestsDeleteConfirm => 'Delete this request?';
+
+  @override
+  String get requestsDeleteMessage =>
+      'Donors will no longer see it. This can\'t be undone.';
+
+  @override
+  String get requestsDeleteAction => 'Delete';
+
+  @override
+  String get requestsDeleted => 'Request deleted.';
+
+  @override
+  String get postDelete => 'Delete post';
+
+  @override
+  String get postDeleteConfirm => 'Delete this post?';
+
+  @override
+  String get postDeleteMessage =>
+      'It will be removed from the feed and any requests for it will be cancelled. This can\'t be undone.';
+
+  @override
+  String get postDeleted => 'Post deleted.';
+
+  @override
+  String get statusOpen => 'Open';
+
+  @override
+  String get statusDonorReviewing => 'Donor reviewing';
+
+  @override
+  String get requestTitle => 'Request an Item';
+
+  @override
+  String get requestSubtitle => 'Ask your community for what you need';
+
+  @override
+  String get requestInfoTitle => 'Your community is here to help.';
+
+  @override
+  String get requestInfoBody =>
+      'Donors read your reason before choosing, so be clear and honest.';
+
+  @override
+  String get requestYouAreRequesting => 'You\'re requesting';
+
+  @override
+  String get requestItemName => 'Item name';
+
+  @override
+  String get requestItemNameHint => 'e.g. Grade 10 Science Textbook';
+
+  @override
+  String get requestItemNameRequired => 'Please enter the item name';
+
+  @override
+  String get requestDescriptionHint =>
+      'What exactly do you need? Size, edition, or any details';
+
+  @override
+  String get requestReason => 'Why do you need it?';
+
+  @override
+  String get requestReasonHint => 'A short reason helps donors choose fairly';
+
+  @override
+  String get requestReasonHelper => 'Shown to donors when they review requests';
+
+  @override
+  String get requestReasonRequired => 'Please tell donors why you need it';
+
+  @override
+  String get requestNotes => 'Additional notes';
+
+  @override
+  String get requestOptional => '(optional)';
+
+  @override
+  String get requestNotesHint => 'Anything else donors should know';
+
+  @override
+  String get requestSubmitted => 'Your request has been submitted.';
 
   @override
   String get profileTitle => 'My Profile';

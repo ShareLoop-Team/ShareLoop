@@ -1,15 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
+import '../../controllers/request_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/category_chip.dart';
+import '../../widgets/segmented_toggle.dart';
+import '../give_away/create_give_away_screen.dart';
 import '../profile/profile_screen.dart';
 import 'home_feed.dart';
 import 'requests_tab.dart';
 
-/// View: main shell with a bottom navigation bar for Home, Give (opens the
-/// create-post form), community Requests, and Profile.
+/// View: main shell with a bottom navigation bar for Home, Give (the
+/// create-post form), community Requests, and Profile. System back on any
+/// tab other than Home returns to Home.
 ///
 /// Always uses the light brand theme so it matches the design even when the
 /// device is in dark mode (same as the onboarding and login screens).
@@ -37,23 +43,22 @@ class _HomeShellState extends State<_HomeShell> {
 
   int _navIndex = _homeIndex;
 
-  void _onNavTap(int index) {
-    // "Give" is an action, not a page: open the form and keep the tab.
-    if (index == _giveIndex) {
-      Navigator.of(context).pushNamed(AppRoutes.createGiveAway);
-      return;
-    }
-    setState(() => _navIndex = index);
-  }
+  void _onNavTap(int index) => setState(() => _navIndex = index);
 
   Widget _buildBody() {
     switch (_navIndex) {
+      case _giveIndex:
+        // Leaving the tab disposes the form, so it starts fresh next time.
+        return CreateGiveAwayScreen(onClose: () => _onNavTap(_homeIndex));
       case _requestsIndex:
         return const _RequestsPage();
       case _profileIndex:
         return const ProfileScreen();
       default:
-        return HomeFeed(onOpenProfile: () => _onNavTap(_profileIndex));
+        return HomeFeed(
+          onOpenGive: () => _onNavTap(_giveIndex),
+          onOpenProfile: () => _onNavTap(_profileIndex),
+        );
     }
   }
 
@@ -61,6 +66,16 @@ class _HomeShellState extends State<_HomeShell> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    return PopScope(
+      canPop: _navIndex == _homeIndex,
+      onPopInvokedWithResult: (didPop, _) {
+        if (!didPop) _onNavTap(_homeIndex);
+      },
+      child: _buildScaffold(l10n, textTheme),
+    );
+  }
+
+  Widget _buildScaffold(AppLocalizations l10n, TextTheme textTheme) {
     return Scaffold(
       body: _buildBody(),
       bottomNavigationBar: DecoratedBox(
@@ -118,43 +133,104 @@ class _HomeShellState extends State<_HomeShell> {
   }
 }
 
-/// All open community requests, with a shortcut to post a new one.
-class _RequestsPage extends StatelessWidget {
+/// Community requests (or just the user's own), filterable by category,
+/// with a shortcut to post a new one.
+class _RequestsPage extends StatefulWidget {
   const _RequestsPage();
+
+  @override
+  State<_RequestsPage> createState() => _RequestsPageState();
+}
+
+class _RequestsPageState extends State<_RequestsPage> {
+  bool _showMine = false;
+  String? _category;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final textTheme = Theme.of(context).textTheme;
     return SafeArea(
       bottom: false,
-      child: CustomScrollView(
-        slivers: [
-          SliverPadding(
-            padding: const EdgeInsets.fromLTRB(20, 16, 12, 16),
-            sliver: SliverToBoxAdapter(
-              child: Row(
+      child: RefreshIndicator(
+        onRefresh: () => context.read<RequestController>().loadRequests(),
+        child: CustomScrollView(
+          slivers: [
+            SliverPadding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 16),
+              sliver: SliverList.list(
                 children: [
-                  Expanded(
-                    child: Text(
-                      l10n.requests,
-                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                            fontWeight: FontWeight.w800,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              l10n.requests,
+                              style: textTheme.headlineSmall?.copyWith(
+                                fontWeight: FontWeight.w800,
+                                color: AppColors.ink,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              l10n.requestsSubtitle,
+                              style: textTheme.bodyMedium?.copyWith(
+                                color: AppColors.textSecondary,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton.icon(
+                        onPressed: () => Navigator.of(context)
+                            .pushNamed(AppRoutes.createRequest),
+                        icon: const Icon(Icons.add, size: 20),
+                        label: Text(l10n.requestsNew),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppColors.deepGreen,
+                          foregroundColor: AppColors.white,
+                          elevation: 4,
+                          shadowColor: AppColors.deepGreen.withValues(
+                            alpha: 0.4,
                           ),
-                    ),
+                          shape: const StadiumBorder(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 18,
+                            vertical: 12,
+                          ),
+                          textStyle: textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
-                  IconButton(
-                    icon: const Icon(Icons.add, color: AppColors.deepGreen),
-                    tooltip: l10n.homeRequestItemTitle,
-                    onPressed: () =>
-                        Navigator.of(context).pushNamed(AppRoutes.createRequest),
+                  const SizedBox(height: 16),
+                  SegmentedToggle(
+                    labels: [l10n.requestsAll, l10n.requestsMine],
+                    selectedIndex: _showMine ? 1 : 0,
+                    onChanged: (index) =>
+                        setState(() => _showMine = index == 1),
                   ),
                 ],
               ),
             ),
-          ),
-          const RequestsTab(),
-          const SliverToBoxAdapter(child: SizedBox(height: 24)),
-        ],
+            SliverToBoxAdapter(
+              child: CategoryChipsRow(
+                allLabel: l10n.homeAllCategories,
+                selected: _category,
+                onSelected: (value) => setState(() => _category = value),
+              ),
+            ),
+            const SliverToBoxAdapter(child: SizedBox(height: 16)),
+            RequestsTab(category: _category, onlyMine: _showMine),
+            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+          ],
+        ),
       ),
     );
   }
