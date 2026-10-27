@@ -31,8 +31,8 @@
   "onboardingDescription": "Give what you no longer need. Find what you do. Share items for free with your community across Sri Lanka.",
   "onboardingLogIn": "Log in",
   "onboardingRegister": "Register",
-  "loginWelcomeBack": "Welcome back",
-  "loginSubtitle": "Sign in to continue sharing and connecting",
+  "loginWelcomeBack": "Welcome back!",
+  "loginSubtitle": "Fill your details or continue with social media",
   "loginEmailHint": "Enter your Email",
   "loginPasswordHint": "Enter Password",
   "loginEmailRequired": "Email is required",
@@ -53,15 +53,21 @@
   },
   "loginSignIn": "Sign In",
   "loginOr": "or",
-  "loginNoAccount": "Don't have an account?",
+  "loginNoAccount": "New user?",
   "loginCreateAccount": "Create Account",
-  "registerTitle": "Welcome to ShareLoop!",
-  "registerSubtitle": "Create your account to start giving and finding items near you.",
+  "loginEmailLabel": "Email",
+  "loginPasswordLabel": "Password",
+  "loginOrContinueWith": "or continue with",
+  "loginWithGoogle": "Sign in with Google",
+  "loginWithFacebook": "Sign in with Facebook",
+  "loginSocialUnavailable": "Social sign-in isn't available yet.",
+  "registerTitle": "Create account",
+  "registerSubtitle": "Join the community and start sharing",
   "registerNameHint": "Enter your full name",
-  "registerPhoneHint": "Enter your phone number",
+  "registerPhoneHint": "07X XXX XXXX",
   "registerDistrictHint": "Select your district",
-  "registerCityHint": "Enter your city / town",
-  "registerConfirmPasswordHint": "Confirm password",
+  "registerCityHint": "e.g. Negombo",
+  "registerConfirmPasswordHint": "Re-enter your password",
   "registerNameRequired": "Name is required",
   "registerPhoneRequired": "Phone number is required",
   "registerDistrictRequired": "Please select your district",
@@ -75,9 +81,32 @@
     }
   },
   "registerPasswordMismatch": "Passwords do not match",
-  "registerButton": "Register",
+  "registerButton": "Create Account",
   "registerHaveAccount": "Already have an account?",
   "registerSignIn": "Sign In",
+  "registerNameLabel": "Full name",
+  "registerPasswordHint": "Create a password",
+  "registerConfirmPasswordLabel": "Confirm password",
+  "registerPhoneLabel": "Phone number",
+  "registerDistrictLabel": "District",
+  "registerCityLabel": "City / Town",
+  "registerAgreeTerms": "I agree to the {terms} and {privacy}",
+  "@registerAgreeTerms": {
+    "placeholders": {
+      "terms": {
+        "type": "String"
+      },
+      "privacy": {
+        "type": "String"
+      }
+    }
+  },
+  "registerTerms": "Terms",
+  "registerPrivacyPolicy": "Privacy Policy",
+  "registerTermsRequired": "Please accept the Terms and Privacy Policy",
+  "registerOrSignUpWith": "or sign up with",
+  "registerWithGoogle": "Sign up with Google",
+  "registerWithFacebook": "Sign up with Facebook",
   "homeGreeting": "Hello, {name}. What are you sharing today?",
   "@homeGreeting": {
     "placeholders": {

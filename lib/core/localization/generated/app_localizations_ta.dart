@@ -108,7 +108,8 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loginWelcomeBack => 'மீண்டும் வருக';
 
   @override
-  String get loginSubtitle => 'தொடர்ந்து பகிரவும் இணையவும் உள்நுழையுங்கள்';
+  String get loginSubtitle =>
+      'உங்கள் விவரங்களை நிரப்புங்கள் அல்லது சமூக ஊடகம் மூலம் தொடருங்கள்';
 
   @override
   String get loginEmailHint => 'உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்';
@@ -154,32 +155,51 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loginOr => 'அல்லது';
 
   @override
-  String get loginNoAccount => 'கணக்கு இல்லையா?';
+  String get loginNoAccount => 'புதிய பயனரா?';
 
   @override
   String get loginCreateAccount => 'கணக்கை உருவாக்கு';
 
   @override
-  String get registerTitle => 'ShareLoop-க்கு வருக!';
+  String get loginEmailLabel => 'மின்னஞ்சல்';
 
   @override
-  String get registerSubtitle =>
-      'உங்கள் அருகில் பொருட்களைக் கொடுக்கவும் கண்டறியவும் கணக்கை உருவாக்குங்கள்.';
+  String get loginPasswordLabel => 'கடவுச்சொல்';
+
+  @override
+  String get loginOrContinueWith => 'அல்லது இதன் மூலம் தொடருங்கள்';
+
+  @override
+  String get loginWithGoogle => 'Google மூலம் உள்நுழை';
+
+  @override
+  String get loginWithFacebook => 'Facebook மூலம் உள்நுழை';
+
+  @override
+  String get loginSocialUnavailable =>
+      'சமூக ஊடக உள்நுழைவு இன்னும் கிடைக்கவில்லை.';
+
+  @override
+  String get registerTitle => 'கணக்கை உருவாக்கு';
+
+  @override
+  String get registerSubtitle => 'சமூகத்தில் இணைந்து பகிரத் தொடங்குங்கள்';
 
   @override
   String get registerNameHint => 'உங்கள் முழுப் பெயரை உள்ளிடுங்கள்';
 
   @override
-  String get registerPhoneHint => 'உங்கள் தொலைபேசி எண்ணை உள்ளிடுங்கள்';
+  String get registerPhoneHint => '07X XXX XXXX';
 
   @override
   String get registerDistrictHint => 'உங்கள் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
 
   @override
-  String get registerCityHint => 'உங்கள் நகரத்தை உள்ளிடுங்கள்';
+  String get registerCityHint => 'எ.கா. நீர்கொழும்பு';
 
   @override
-  String get registerConfirmPasswordHint => 'கடவுச்சொல்லை உறுதிப்படுத்துங்கள்';
+  String get registerConfirmPasswordHint =>
+      'கடவுச்சொல்லை மீண்டும் உள்ளிடுங்கள்';
 
   @override
   String get registerNameRequired => 'பெயர் தேவை';
@@ -202,13 +222,55 @@ class AppLocalizationsTa extends AppLocalizations {
   String get registerPasswordMismatch => 'கடவுச்சொற்கள் பொருந்தவில்லை';
 
   @override
-  String get registerButton => 'பதிவு செய்ய';
+  String get registerButton => 'கணக்கை உருவாக்கு';
 
   @override
   String get registerHaveAccount => 'ஏற்கனவே கணக்கு உள்ளதா?';
 
   @override
   String get registerSignIn => 'உள்நுழைய';
+
+  @override
+  String get registerNameLabel => 'முழுப் பெயர்';
+
+  @override
+  String get registerPasswordHint => 'கடவுச்சொல்லை உருவாக்குங்கள்';
+
+  @override
+  String get registerConfirmPasswordLabel => 'கடவுச்சொல்லை உறுதிப்படுத்துங்கள்';
+
+  @override
+  String get registerPhoneLabel => 'தொலைபேசி எண்';
+
+  @override
+  String get registerDistrictLabel => 'மாவட்டம்';
+
+  @override
+  String get registerCityLabel => 'நகரம்';
+
+  @override
+  String registerAgreeTerms(String terms, String privacy) {
+    return '$terms மற்றும் $privacy ஆகியவற்றை ஏற்கிறேன்';
+  }
+
+  @override
+  String get registerTerms => 'விதிமுறைகள்';
+
+  @override
+  String get registerPrivacyPolicy => 'தனியுரிமைக் கொள்கை';
+
+  @override
+  String get registerTermsRequired =>
+      'விதிமுறைகள் மற்றும் தனியுரிமைக் கொள்கையை ஏற்கவும்';
+
+  @override
+  String get registerOrSignUpWith => 'அல்லது இதன் மூலம் பதிவு செய்யுங்கள்';
+
+  @override
+  String get registerWithGoogle => 'Google மூலம் பதிவு செய்';
+
+  @override
+  String get registerWithFacebook => 'Facebook மூலம் பதிவு செய்';
 
   @override
   String homeGreeting(String name) {

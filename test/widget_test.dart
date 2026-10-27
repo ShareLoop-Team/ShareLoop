@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
@@ -42,7 +42,7 @@ void main() {
 
     await tester.tap(find.text('Register'));
     await tester.pumpAndSettle();
-    expect(find.text('Welcome to ShareLoop!'), findsOneWidget);
+    expect(find.text('Create account'), findsOneWidget);
 
     // The design has no app bar, so go back with the system back action.
     await tester.binding.handlePopRoute();
@@ -56,7 +56,7 @@ void main() {
     await tester.tap(find.text('Log in'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Welcome back'), findsOneWidget);
+    expect(find.text('Welcome back!'), findsOneWidget);
   });
 
   testWidgets('Keeps brand light colors when the device is in dark mode', (
@@ -101,7 +101,7 @@ void main() {
       await tester.ensureVisible(find.text('Log in'));
       await tester.tap(find.text('Log in'));
       await tester.pumpAndSettle();
-      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Welcome back!'), findsOneWidget);
     }
 
     testWidgets('toggles password visibility', (tester) async {
@@ -125,10 +125,12 @@ void main() {
     testWidgets('Create Account opens registration', (tester) async {
       await openLogin(tester);
 
+      await tester.ensureVisible(find.text('Create Account'));
+      await tester.pumpAndSettle();
       await tester.tap(find.text('Create Account'));
       await tester.pumpAndSettle();
-      expect(find.text('Welcome to ShareLoop!'), findsOneWidget);
-      expect(find.text('Welcome back'), findsNothing);
+      expect(find.text('Create account'), findsOneWidget);
+      expect(find.text('Welcome back!'), findsNothing);
     });
 
     for (final size in const [Size(320, 480), Size(360, 800)]) {
@@ -148,12 +150,13 @@ void main() {
       await tester.ensureVisible(find.text('Register'));
       await tester.tap(find.text('Register'));
       await tester.pumpAndSettle();
-      expect(find.text('Welcome to ShareLoop!'), findsOneWidget);
+      expect(find.text('Create account'), findsOneWidget);
     }
 
     Future<void> tapRegisterButton(WidgetTester tester) async {
-      final button = find.widgetWithText(ElevatedButton, 'Register');
+      final button = find.widgetWithText(ElevatedButton, 'Create Account');
       await tester.ensureVisible(button);
+      await tester.pumpAndSettle();
       await tester.tap(button);
       await tester.pumpAndSettle();
     }
@@ -165,16 +168,34 @@ void main() {
       expect(find.text('Name is required'), findsOneWidget);
       expect(find.text('Please select your district'), findsOneWidget);
       expect(find.text('Password is required'), findsOneWidget);
+      expect(
+        find.text('Please accept the Terms and Privacy Policy'),
+        findsOneWidget,
+      );
+    });
+
+    testWidgets('ticking the terms box clears its error', (tester) async {
+      await openRegister(tester);
+      await tapRegisterButton(tester);
+      const error = 'Please accept the Terms and Privacy Policy';
+      expect(find.text(error), findsOneWidget);
+
+      final checkbox = find.byType(Checkbox);
+      await tester.ensureVisible(checkbox);
+      await tester.pumpAndSettle();
+      await tester.tap(checkbox);
+      await tapRegisterButton(tester);
+      expect(find.text(error), findsNothing);
     });
 
     testWidgets('rejects mismatched passwords', (tester) async {
       await openRegister(tester);
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'Enter Password'),
+        find.widgetWithText(TextFormField, 'Create a password'),
         'secret1',
       );
       await tester.enterText(
-        find.widgetWithText(TextFormField, 'Confirm password'),
+        find.widgetWithText(TextFormField, 'Re-enter your password'),
         'secret2',
       );
       await tapRegisterButton(tester);
@@ -186,10 +207,11 @@ void main() {
       await openRegister(tester);
       final signIn = find.text('Sign In');
       await tester.ensureVisible(signIn);
+      await tester.pumpAndSettle();
       await tester.tap(signIn);
       await tester.pumpAndSettle();
 
-      expect(find.text('Welcome back'), findsOneWidget);
+      expect(find.text('Welcome back!'), findsOneWidget);
     });
 
     for (final size in const [Size(320, 480), Size(360, 800)]) {

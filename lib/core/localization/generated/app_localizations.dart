@@ -289,13 +289,13 @@ abstract class AppLocalizations {
   /// No description provided for @loginWelcomeBack.
   ///
   /// In en, this message translates to:
-  /// **'Welcome back'**
+  /// **'Welcome back!'**
   String get loginWelcomeBack;
 
   /// No description provided for @loginSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Sign in to continue sharing and connecting'**
+  /// **'Fill your details or continue with social media'**
   String get loginSubtitle;
 
   /// No description provided for @loginEmailHint.
@@ -379,7 +379,7 @@ abstract class AppLocalizations {
   /// No description provided for @loginNoAccount.
   ///
   /// In en, this message translates to:
-  /// **'Don\'t have an account?'**
+  /// **'New user?'**
   String get loginNoAccount;
 
   /// No description provided for @loginCreateAccount.
@@ -388,16 +388,52 @@ abstract class AppLocalizations {
   /// **'Create Account'**
   String get loginCreateAccount;
 
+  /// No description provided for @loginEmailLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Email'**
+  String get loginEmailLabel;
+
+  /// No description provided for @loginPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Password'**
+  String get loginPasswordLabel;
+
+  /// No description provided for @loginOrContinueWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or continue with'**
+  String get loginOrContinueWith;
+
+  /// No description provided for @loginWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Google'**
+  String get loginWithGoogle;
+
+  /// No description provided for @loginWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with Facebook'**
+  String get loginWithFacebook;
+
+  /// No description provided for @loginSocialUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Social sign-in isn\'t available yet.'**
+  String get loginSocialUnavailable;
+
   /// No description provided for @registerTitle.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to ShareLoop!'**
+  /// **'Create account'**
   String get registerTitle;
 
   /// No description provided for @registerSubtitle.
   ///
   /// In en, this message translates to:
-  /// **'Create your account to start giving and finding items near you.'**
+  /// **'Join the community and start sharing'**
   String get registerSubtitle;
 
   /// No description provided for @registerNameHint.
@@ -409,7 +445,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerPhoneHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter your phone number'**
+  /// **'07X XXX XXXX'**
   String get registerPhoneHint;
 
   /// No description provided for @registerDistrictHint.
@@ -421,13 +457,13 @@ abstract class AppLocalizations {
   /// No description provided for @registerCityHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter your city / town'**
+  /// **'e.g. Negombo'**
   String get registerCityHint;
 
   /// No description provided for @registerConfirmPasswordHint.
   ///
   /// In en, this message translates to:
-  /// **'Confirm password'**
+  /// **'Re-enter your password'**
   String get registerConfirmPasswordHint;
 
   /// No description provided for @registerNameRequired.
@@ -469,7 +505,7 @@ abstract class AppLocalizations {
   /// No description provided for @registerButton.
   ///
   /// In en, this message translates to:
-  /// **'Register'**
+  /// **'Create Account'**
   String get registerButton;
 
   /// No description provided for @registerHaveAccount.
@@ -483,6 +519,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In'**
   String get registerSignIn;
+
+  /// No description provided for @registerNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name'**
+  String get registerNameLabel;
+
+  /// No description provided for @registerPasswordHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Create a password'**
+  String get registerPasswordHint;
+
+  /// No description provided for @registerConfirmPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm password'**
+  String get registerConfirmPasswordLabel;
+
+  /// No description provided for @registerPhoneLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get registerPhoneLabel;
+
+  /// No description provided for @registerDistrictLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'District'**
+  String get registerDistrictLabel;
+
+  /// No description provided for @registerCityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'City / Town'**
+  String get registerCityLabel;
+
+  /// No description provided for @registerAgreeTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the {terms} and {privacy}'**
+  String registerAgreeTerms(String terms, String privacy);
+
+  /// No description provided for @registerTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms'**
+  String get registerTerms;
+
+  /// No description provided for @registerPrivacyPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy Policy'**
+  String get registerPrivacyPolicy;
+
+  /// No description provided for @registerTermsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please accept the Terms and Privacy Policy'**
+  String get registerTermsRequired;
+
+  /// No description provided for @registerOrSignUpWith.
+  ///
+  /// In en, this message translates to:
+  /// **'or sign up with'**
+  String get registerOrSignUpWith;
+
+  /// No description provided for @registerWithGoogle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Google'**
+  String get registerWithGoogle;
+
+  /// No description provided for @registerWithFacebook.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign up with Facebook'**
+  String get registerWithFacebook;
 
   /// No description provided for @homeGreeting.
   ///

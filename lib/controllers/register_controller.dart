@@ -11,9 +11,15 @@ class RegisterController extends ChangeNotifier {
 
   bool obscurePassword = true;
   String? district;
+  bool agreedToTerms = false;
 
   void togglePasswordVisibility() {
     obscurePassword = !obscurePassword;
+    notifyListeners();
+  }
+
+  void setAgreedToTerms(bool value) {
+    agreedToTerms = value;
     notifyListeners();
   }
 

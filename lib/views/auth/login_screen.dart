@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
@@ -30,11 +31,6 @@ class _LoginView extends StatefulWidget {
 }
 
 class _LoginViewState extends State<_LoginView> {
-  static const String _wordmarkAsset =
-      'assets/images/shareloop_wordmark_green.png';
-  static const String _illustrationAsset =
-      'assets/images/login_illustration.png';
-
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
@@ -81,171 +77,181 @@ class _LoginViewState extends State<_LoginView> {
     show(error ?? l10n.loginResetSent(email));
   }
 
+  /// Social sign-in isn't wired to a provider yet.
+  void _socialSignIn(AppLocalizations l10n) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(l10n.loginSocialUnavailable)));
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
     final auth = context.watch<AuthController>();
 
-    return Scaffold(
-      body: Stack(
-        children: [
-          const AuthCornerCircles(),
-          SafeArea(
-            child: Center(
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
+      child: Scaffold(
+        backgroundColor: AppColors.canvas,
+        body: CustomScrollView(
+          slivers: [
+            SliverToBoxAdapter(
+              child: AuthHeader(
+                leading: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: Semantics(
+                    label: l10n.appTitle,
+                    child: const Icon(
+                      Icons.eco_outlined,
+                      color: AppColors.white,
+                      size: 26,
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Center(
                 child: ConstrainedBox(
                   constraints: const BoxConstraints(maxWidth: 480),
-                  child: ListenableBuilder(
-                    listenable: _controller,
-                    builder: (context, _) => Form(
-                      key: _formKey,
-                      child: AutofillGroup(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.stretch,
-                          children: [
-                            Semantics(
-                              label: l10n.appTitle,
-                              child: ExcludeSemantics(
-                                child: Image.asset(
-                                  _wordmarkAsset,
-                                  height: 24,
-                                  fit: BoxFit.contain,
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 56),
-                            Semantics(
-                              header: true,
-                              child: Text(
-                                l10n.loginWelcomeBack,
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(28, 0, 28, 16),
+                    child: ListenableBuilder(
+                      listenable: _controller,
+                      builder: (context, _) => Form(
+                        key: _formKey,
+                        child: AutofillGroup(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.stretch,
+                            children: [
+                              AuthAccentTitle(text: l10n.loginWelcomeBack),
+                              const SizedBox(height: 6),
+                              Text(
+                                l10n.loginSubtitle,
                                 textAlign: TextAlign.center,
-                                style: textTheme.headlineSmall?.copyWith(
-                                  fontWeight: FontWeight.w800,
+                                style: textTheme.bodyMedium?.copyWith(
+                                  color: AppColors.textSecondary,
+                                  height: 1.4,
                                 ),
                               ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              l10n.loginSubtitle,
-                              textAlign: TextAlign.center,
-                              style: textTheme.bodyMedium?.copyWith(
-                                color: AppColors.textSecondary,
-                                height: 1.5,
+                              const SizedBox(height: 20),
+                              AuthFieldLabel(l10n.loginEmailLabel),
+                              TextFormField(
+                                controller: _emailController,
+                                decoration: authInputDecoration(
+                                  l10n.loginEmailHint,
+                                ),
+                                keyboardType: TextInputType.emailAddress,
+                                textInputAction: TextInputAction.next,
+                                autofillHints: const [AutofillHints.email],
+                                validator: (value) =>
+                                    (value == null || value.trim().isEmpty)
+                                    ? l10n.loginEmailRequired
+                                    : null,
                               ),
-                            ),
-                            const SizedBox(height: 16),
-                            const ExcludeSemantics(
-                              child: Center(
-                                child: SizedBox(
-                                  width: 185,
-                                  child: AspectRatio(
-                                    aspectRatio: 185 / 138,
-                                    child: Image(
-                                      image: AssetImage(_illustrationAsset),
-                                      fit: BoxFit.contain,
+                              const SizedBox(height: 16),
+                              AuthFieldLabel(l10n.loginPasswordLabel),
+                              TextFormField(
+                                controller: _passwordController,
+                                obscureText: _controller.obscurePassword,
+                                textInputAction: TextInputAction.done,
+                                autofillHints: const [AutofillHints.password],
+                                onFieldSubmitted: (_) => _submit(auth),
+                                decoration: authInputDecoration(
+                                  l10n.loginPasswordHint,
+                                  suffixIcon: PasswordVisibilityButton(
+                                    obscured: _controller.obscurePassword,
+                                    onPressed:
+                                        _controller.togglePasswordVisibility,
+                                    showTooltip: l10n.loginShowPassword,
+                                    hideTooltip: l10n.loginHidePassword,
+                                  ),
+                                ),
+                                validator: (value) =>
+                                    (value == null || value.isEmpty)
+                                    ? l10n.loginPasswordRequired
+                                    : null,
+                              ),
+                              const SizedBox(height: 12),
+                              Row(
+                                children: [
+                                  Flexible(
+                                    child: _RememberMe(
+                                      label: l10n.loginRememberMe,
+                                      value: _controller.rememberMe,
+                                      onChanged: _controller.setRememberMe,
                                     ),
                                   ),
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 28),
-                            TextFormField(
-                              controller: _emailController,
-                              decoration: authInputDecoration(
-                                l10n.loginEmailHint,
-                              ),
-                              keyboardType: TextInputType.emailAddress,
-                              textInputAction: TextInputAction.next,
-                              autofillHints: const [AutofillHints.email],
-                              validator: (value) =>
-                                  (value == null || value.trim().isEmpty)
-                                  ? l10n.loginEmailRequired
-                                  : null,
-                            ),
-                            const SizedBox(height: 14),
-                            TextFormField(
-                              controller: _passwordController,
-                              obscureText: _controller.obscurePassword,
-                              textInputAction: TextInputAction.done,
-                              autofillHints: const [AutofillHints.password],
-                              onFieldSubmitted: (_) => _submit(auth),
-                              decoration: authInputDecoration(
-                                l10n.loginPasswordHint,
-                                suffixIcon: PasswordVisibilityButton(
-                                  obscured: _controller.obscurePassword,
-                                  onPressed:
-                                      _controller.togglePasswordVisibility,
-                                  showTooltip: l10n.loginShowPassword,
-                                  hideTooltip: l10n.loginHidePassword,
-                                ),
-                              ),
-                              validator: (value) =>
-                                  (value == null || value.isEmpty)
-                                  ? l10n.loginPasswordRequired
-                                  : null,
-                            ),
-                            const SizedBox(height: 12),
-                            Row(
-                              children: [
-                                Flexible(
-                                  child: _RememberMe(
-                                    label: l10n.loginRememberMe,
-                                    value: _controller.rememberMe,
-                                    onChanged: _controller.setRememberMe,
-                                  ),
-                                ),
-                                const SizedBox(width: 8),
-                                Flexible(
-                                  child: Align(
-                                    alignment: AlignmentDirectional.centerEnd,
-                                    child: TextButton(
-                                      onPressed: () =>
-                                          _forgotPassword(l10n, auth),
-                                      style: TextButton.styleFrom(
-                                        foregroundColor: AppColors.brightGreen,
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 4,
+                                  const SizedBox(width: 8),
+                                  Flexible(
+                                    child: Align(
+                                      alignment:
+                                          AlignmentDirectional.centerEnd,
+                                      child: TextButton(
+                                        onPressed: () =>
+                                            _forgotPassword(l10n, auth),
+                                        style: TextButton.styleFrom(
+                                          foregroundColor: AppColors.deepGreen,
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 4,
+                                          ),
+                                          textStyle: textTheme.bodySmall
+                                              ?.copyWith(
+                                                fontWeight: FontWeight.w700,
+                                              ),
                                         ),
-                                        textStyle: textTheme.bodySmall,
-                                      ),
-                                      child: Text(
-                                        l10n.loginForgotPassword,
-                                        textAlign: TextAlign.end,
+                                        child: Text(
+                                          l10n.loginForgotPassword,
+                                          textAlign: TextAlign.end,
+                                        ),
                                       ),
                                     ),
+                                  ),
+                                ],
+                              ),
+                              if (auth.errorMessage != null) ...[
+                                const SizedBox(height: 8),
+                                Text(
+                                  auth.errorMessage!,
+                                  textAlign: TextAlign.center,
+                                  style: textTheme.bodySmall?.copyWith(
+                                    color: AppColors.error,
                                   ),
                                 ),
                               ],
-                            ),
-                            if (auth.errorMessage != null) ...[
-                              const SizedBox(height: 8),
-                              Text(
-                                auth.errorMessage!,
-                                textAlign: TextAlign.center,
-                                style: textTheme.bodySmall?.copyWith(
-                                  color: AppColors.error,
+                              const SizedBox(height: 20),
+                              AuthSubmitButton(
+                                label: l10n.loginSignIn,
+                                isLoading: auth.isLoading,
+                                onPressed: () => _submit(auth),
+                              ),
+                              const SizedBox(height: 16),
+                              AuthOrDivider(label: l10n.loginOrContinueWith),
+                              const SizedBox(height: 16),
+                              AuthSocialButton(
+                                asset: AuthSocialButton.googleLogo,
+                                label: l10n.loginWithGoogle,
+                                onPressed: () => _socialSignIn(l10n),
+                              ),
+                              const SizedBox(height: 14),
+                              AuthSocialButton(
+                                asset: AuthSocialButton.facebookLogo,
+                                label: l10n.loginWithFacebook,
+                                onPressed: () => _socialSignIn(l10n),
+                              ),
+                              const Spacer(),
+                              const SizedBox(height: 24),
+                              AuthSwitchPrompt(
+                                question: l10n.loginNoAccount,
+                                actionLabel: l10n.loginCreateAccount,
+                                onPressed: () => _controller.openRegister(
+                                  Navigator.of(context),
                                 ),
                               ),
                             ],
-                            const SizedBox(height: 28),
-                            AuthPrimaryButton(
-                              label: l10n.loginSignIn,
-                              isLoading: auth.isLoading,
-                              onPressed: () => _submit(auth),
-                            ),
-                            const SizedBox(height: 20),
-                            _OrDivider(label: l10n.loginOr),
-                            const SizedBox(height: 12),
-                            AuthSwitchPrompt(
-                              question: l10n.loginNoAccount,
-                              actionLabel: l10n.loginCreateAccount,
-                              onPressed: () => _controller.openRegister(
-                                Navigator.of(context),
-                              ),
-                            ),
-                          ],
+                          ),
                         ),
                       ),
                     ),
@@ -253,8 +259,8 @@ class _LoginViewState extends State<_LoginView> {
                 ),
               ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -313,35 +319,6 @@ class _RememberMe extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-}
-
-/// Thin line – "or" – thin line.
-class _OrDivider extends StatelessWidget {
-  const _OrDivider({required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final line = Expanded(
-      child: Divider(color: AppColors.textSecondary.withValues(alpha: 0.2)),
-    );
-    return Row(
-      children: [
-        line,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        line,
-      ],
     );
   }
 }
