@@ -149,12 +149,16 @@ class MockDataService {
         donorId: 'u1',
         donorName: 'Nimal Perera',
         title: 'Grade 10 Science Textbook',
-        description: 'Used but in good condition, no torn pages.',
+        description:
+            'Grade 10 Science textbook, "Exploring the Natural World". Used '
+            'for one year but in good condition: no torn pages, only a few '
+            'pencil notes that rub out easily.',
         condition: 'Good',
         category: 'Educational Books',
         district: 'Colombo',
         city: 'Nugegoda',
         createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        photoUrls: const ['assets/images/item_grade10_science.jpg'],
       ),
       ItemPostModel(
         id: 'p2',
