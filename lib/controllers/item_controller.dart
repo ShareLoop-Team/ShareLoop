@@ -41,6 +41,11 @@ class ItemController extends ChangeNotifier {
     }).toList();
   }
 
+  /// [posts] that can still be requested, for the browse lists. Posts with a
+  /// handover underway or done stay in [posts] so their screens can find them.
+  List<ItemPostModel> get availablePosts =>
+      posts.where((p) => p.status == ItemPostStatus.active).toList();
+
   Future<void> loadPosts() async {
     isLoading = true;
     errorMessage = null;

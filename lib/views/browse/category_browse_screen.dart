@@ -21,7 +21,7 @@ class _CategoryBrowseScreenState extends State<CategoryBrowseScreen> {
   @override
   Widget build(BuildContext context) {
     final itemController = context.watch<ItemController>();
-    final items = itemController.posts
+    final items = itemController.availablePosts
         .where((p) => p.category == widget.category)
         .toList();
     return Scaffold(

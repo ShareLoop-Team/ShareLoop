@@ -45,7 +45,7 @@ class GiveAwayTab extends StatelessWidget {
         child: LoadingIndicator(),
       );
     }
-    final posts = itemController.posts;
+    final posts = itemController.availablePosts;
     if (posts.isEmpty) {
       return SliverFillRemaining(
         hasScrollBody: false,

@@ -74,6 +74,9 @@ class ShareLoopApp extends StatelessWidget {
             debugShowCheckedModeBanner: false,
             theme: AppTheme.lightTheme,
             darkTheme: AppTheme.darkTheme,
+            // Most screens are drawn with fixed light colours, so following a
+            // phone in dark mode would mix light and dark screens.
+            themeMode: ThemeMode.light,
             locale: languageController.locale,
             supportedLocales: const [Locale('en'), Locale('si'), Locale('ta')],
             localizationsDelegates: const [
