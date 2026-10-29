@@ -8,6 +8,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/pill_button.dart';
 
 /// View: login form. Validation of empty fields happens in the form; the
 /// login action and navigation are delegated to [LoginController].
@@ -91,20 +92,21 @@ class _LoginViewState extends State<_LoginView> {
     final auth = context.watch<AuthController>();
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+      // Dark status bar icons on the light illustration.
+      value: SystemUiOverlayStyle.dark,
       child: Scaffold(
         backgroundColor: AppColors.canvas,
         body: CustomScrollView(
           slivers: [
             SliverToBoxAdapter(
-              child: AuthHeader(
+              child: _LoginHero(
                 leading: Padding(
                   padding: const EdgeInsets.all(8),
                   child: Semantics(
                     label: l10n.appTitle,
                     child: const Icon(
                       Icons.eco_outlined,
-                      color: AppColors.white,
+                      color: AppColors.deepGreen,
                       size: 26,
                     ),
                   ),
@@ -126,22 +128,18 @@ class _LoginViewState extends State<_LoginView> {
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.stretch,
                             children: [
-                              AuthAccentTitle(text: l10n.loginWelcomeBack),
-                              const SizedBox(height: 6),
-                              Text(
-                                l10n.loginSubtitle,
-                                textAlign: TextAlign.center,
-                                style: textTheme.bodyMedium?.copyWith(
-                                  color: AppColors.textSecondary,
-                                  height: 1.4,
-                                ),
+                              // No visible title in this design; screen
+                              // readers still announce the page.
+                              Semantics(
+                                header: true,
+                                label: l10n.loginWelcomeBack,
+                                child: const SizedBox(height: 12),
                               ),
-                              const SizedBox(height: 20),
-                              AuthFieldLabel(l10n.loginEmailLabel),
                               TextFormField(
                                 controller: _emailController,
-                                decoration: authInputDecoration(
+                                decoration: authPillInputDecoration(
                                   l10n.loginEmailHint,
+                                  icon: Icons.mail_outline,
                                 ),
                                 keyboardType: TextInputType.emailAddress,
                                 textInputAction: TextInputAction.next,
@@ -151,16 +149,16 @@ class _LoginViewState extends State<_LoginView> {
                                     ? l10n.loginEmailRequired
                                     : null,
                               ),
-                              const SizedBox(height: 16),
-                              AuthFieldLabel(l10n.loginPasswordLabel),
+                              const SizedBox(height: 14),
                               TextFormField(
                                 controller: _passwordController,
                                 obscureText: _controller.obscurePassword,
                                 textInputAction: TextInputAction.done,
                                 autofillHints: const [AutofillHints.password],
                                 onFieldSubmitted: (_) => _submit(auth),
-                                decoration: authInputDecoration(
+                                decoration: authPillInputDecoration(
                                   l10n.loginPasswordHint,
+                                  icon: Icons.lock_outline,
                                   suffixIcon: PasswordVisibilityButton(
                                     obscured: _controller.obscurePassword,
                                     onPressed:
@@ -221,28 +219,38 @@ class _LoginViewState extends State<_LoginView> {
                                   ),
                                 ),
                               ],
-                              const SizedBox(height: 20),
-                              AuthSubmitButton(
+                              const SizedBox(height: 16),
+                              PillButton(
                                 label: l10n.loginSignIn,
                                 isLoading: auth.isLoading,
                                 onPressed: () => _submit(auth),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 20),
                               AuthOrDivider(label: l10n.loginOrContinueWith),
                               const SizedBox(height: 16),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.googleLogo,
-                                label: l10n.loginWithGoogle,
-                                onPressed: () => _socialSignIn(l10n),
-                              ),
-                              const SizedBox(height: 14),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.facebookLogo,
-                                label: l10n.loginWithFacebook,
-                                onPressed: () => _socialSignIn(l10n),
+                              Row(
+                                children: [
+                                  Expanded(
+                                    child: AuthSocialTile(
+                                      asset: AuthSocialTile.googleIcon,
+                                      provider: 'Google',
+                                      semanticsLabel: l10n.loginWithGoogle,
+                                      onPressed: () => _socialSignIn(l10n),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 12),
+                                  Expanded(
+                                    child: AuthSocialTile(
+                                      asset: AuthSocialTile.facebookIcon,
+                                      provider: 'Facebook',
+                                      semanticsLabel: l10n.loginWithFacebook,
+                                      onPressed: () => _socialSignIn(l10n),
+                                    ),
+                                  ),
+                                ],
                               ),
                               const Spacer(),
-                              const SizedBox(height: 24),
+                              const SizedBox(height: 20),
                               AuthSwitchPrompt(
                                 question: l10n.loginNoAccount,
                                 actionLabel: l10n.loginCreateAccount,
@@ -261,6 +269,85 @@ class _LoginViewState extends State<_LoginView> {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Full-width illustration with the form's sheet rising over its bottom
+/// edge: rounded top corners, a soft shadow and a small handle.
+class _LoginHero extends StatelessWidget {
+  const _LoginHero({this.leading});
+
+  static const String _asset = 'assets/images/login_hero.jpg';
+  static const double _height = 340;
+  static const double _sheetOverlap = 28;
+
+  final Widget? leading;
+
+  @override
+  Widget build(BuildContext context) {
+    final topInset = MediaQuery.paddingOf(context).top;
+    // Phones: the illustration fills the header edge to edge. Wide windows
+    // (web, tablets) show it whole instead of cropping to a thin band.
+    final fill = MediaQuery.sizeOf(context).width <= 600;
+    return SizedBox(
+      height: _height + topInset,
+      child: Stack(
+        children: [
+          // The illustration's own background, so its edges never show.
+          const Positioned.fill(
+            child: ColoredBox(color: AppColors.introBackground),
+          ),
+          Positioned.fill(
+            bottom: fill ? 0 : _sheetOverlap - 6,
+            child: ExcludeSemantics(
+              child: Image(
+                image: const AssetImage(_asset),
+                fit: fill ? BoxFit.cover : BoxFit.contain,
+                alignment: const Alignment(0, 0.35),
+              ),
+            ),
+          ),
+          if (leading != null)
+            PositionedDirectional(
+              start: 14,
+              top: topInset + 10,
+              child: leading!,
+            ),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            height: _sheetOverlap,
+            child: DecoratedBox(
+              decoration: BoxDecoration(
+                color: AppColors.canvas,
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(_sheetOverlap),
+                ),
+                boxShadow: [
+                  BoxShadow(
+                    color: AppColors.ink.withValues(alpha: 0.08),
+                    blurRadius: 18,
+                    offset: const Offset(0, -4),
+                  ),
+                ],
+              ),
+              child: Align(
+                alignment: const Alignment(0, -0.1),
+                child: Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: AppColors.border,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
       ),
     );
   }
