@@ -1,9 +1,14 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:supabase_flutter/supabase_flutter.dart'
+    show FileObject, FileOptions;
 
+import '../../core/config/backend_config.dart';
 import '../../core/errors/app_exception.dart';
+import '../../models/photo_upload.dart';
 import '../../models/user_model.dart';
 import '../../services/backend_service.dart';
 import '../user_repository.dart';
+import 'storage_photos.dart';
 import 'supabase_rows.dart';
 
 /// [UserRepository] backed by Firebase Authentication (accounts, sessions,
@@ -18,7 +23,7 @@ class SupabaseUserRepository implements UserRepository {
         .select(SupabaseRows.profileSelect)
         .eq('id', id)
         .maybeSingle();
-    return row == null ? null : SupabaseRows.user(row);
+    return row == null ? null : (await SupabaseRows.users([row])).first;
   }
 
   /// Returns the signed-in user's profile, signing them out if it is missing
@@ -146,7 +151,7 @@ class SupabaseUserRepository implements UserRepository {
           .select(SupabaseRows.profileSelect)
           .order('created_at', ascending: false)
           .limit(500);
-      return [for (final row in rows) SupabaseRows.user(row)];
+      return SupabaseRows.users(rows);
     });
   }
 
@@ -165,6 +170,43 @@ class SupabaseUserRepository implements UserRepository {
       await client
           .from('profile_contacts')
           .update({'phone': user.phone}).eq('user_id', user.id);
+    });
+  }
+
+  @override
+  Future<String?> updateAvatar(String userId, PhotoUpload photo) {
+    return BackendService.guard(() async {
+      if (userId != BackendService.requireUid()) {
+        throw const AppException('You can only edit your own profile.');
+      }
+      final (contentType, extension) = StoragePhotos.prepare(photo);
+      final client = BackendService.client;
+      final bucket = client.storage.from(BackendConfig.itemImagesBucket);
+      final previous = await client
+          .from('profiles')
+          .select('avatar_path')
+          .eq('id', userId)
+          .single();
+
+      final path = '$userId/avatar-${StoragePhotos.randomName()}.$extension';
+      await bucket.uploadBinary(
+        path,
+        photo.bytes,
+        fileOptions: FileOptions(contentType: contentType),
+      );
+      try {
+        await client
+            .from('profiles')
+            .update({'avatar_path': path}).eq('id', userId);
+      } catch (_) {
+        // Don't leave an orphaned photo behind when saving fails.
+        await bucket.remove([path]).catchError((_) => <FileObject>[]);
+        rethrow;
+      }
+      if (previous['avatar_path'] case final String old) {
+        await bucket.remove([old]).catchError((_) => <FileObject>[]);
+      }
+      return (await SupabaseRows.signPhotos([path]))[path];
     });
   }
 
