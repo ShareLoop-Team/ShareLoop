@@ -9,6 +9,8 @@ import 'package:shareloop/controllers/language_controller.dart';
 import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/core/theme/app_theme.dart';
+import 'package:shareloop/core/routes/app_routes.dart';
+import 'package:shareloop/views/profile/my_donations_screen.dart';
 import 'package:shareloop/views/profile/profile_screen.dart';
 
 Future<LanguageController> _pumpProfile(
@@ -44,6 +46,11 @@ Future<LanguageController> _pumpProfile(
           ],
           supportedLocales: const [Locale('en'), Locale('si'), Locale('ta')],
           home: const Scaffold(body: ProfileScreen()),
+          onGenerateRoute: (settings) => switch (settings.name) {
+            AppRoutes.myDonations =>
+              MaterialPageRoute(builder: (_) => const MyDonationsScreen()),
+            _ => null,
+          },
         ),
       ),
     ),
@@ -66,7 +73,7 @@ void main() {
     expect(find.text('12 of 25 items'), findsOneWidget);
   });
 
-  testWidgets('My Donations opens a list of the user\'s posts',
+  testWidgets('My Donations opens a page of the user\'s posts',
       (tester) async {
     await _pumpProfile(tester);
 
@@ -74,8 +81,9 @@ void main() {
     await tester.tap(find.text('My Donations'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(BottomSheet), findsOneWidget);
-    expect(find.byType(ListTile), findsWidgets);
+    expect(find.byType(MyDonationsScreen), findsOneWidget);
+    expect(find.text('Items you have given away'), findsOneWidget);
+    expect(find.text('White Cotton T-Shirt'), findsOneWidget);
   });
 
   testWidgets('language picker switches the app language', (tester) async {

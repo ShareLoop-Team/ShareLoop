@@ -379,7 +379,5 @@
         "type": "int"
       }
     }
-  },
-  "profileNoDonations": "You haven't given any items yet.",
-  "profileNoReviews": "No reviews yet."
+  }
 }

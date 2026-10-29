@@ -809,11 +809,4 @@ class AppLocalizationsTa extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get profileNoDonations =>
-      'நீங்கள் இன்னும் எந்தப் பொருளையும் கொடுக்கவில்லை.';
-
-  @override
-  String get profileNoReviews => 'இன்னும் மதிப்புரைகள் இல்லை.';
 }

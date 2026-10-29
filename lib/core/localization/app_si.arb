@@ -235,7 +235,5 @@
   "myReviewsFirstTitle": "ඔබේ පළමු සමාලෝචනය ලබාගන්න",
   "myReviewsFirstBody": "ශ්‍රේණිගත කිරීම් විවෘත කිරීමට භාණ්ඩයක් දී හෝ ලබාගෙන භාරදීම සම්පූර්ණ කරන්න.",
   "myReviewsAction": "භාණ්ඩ බලන්න",
-  "myReviewsCount": "{count, plural, =1{සමාලෝචන 1} other{සමාලෝචන {count}}}",
-  "profileNoDonations": "ඔබ තවම කිසිදු අයිතමයක් දී නැත.",
-  "profileNoReviews": "තවම විචාර නැත."
+  "myReviewsCount": "{count, plural, =1{සමාලෝචන 1} other{සමාලෝචන {count}}}"
 }

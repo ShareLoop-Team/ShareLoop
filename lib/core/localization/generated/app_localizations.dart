@@ -1519,18 +1519,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
   String myReviewsCount(int count);
-
-  /// No description provided for @profileNoDonations.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t given any items yet.'**
-  String get profileNoDonations;
-
-  /// No description provided for @profileNoReviews.
-  ///
-  /// In en, this message translates to:
-  /// **'No reviews yet.'**
-  String get profileNoReviews;
 }
 
 class _AppLocalizationsDelegate

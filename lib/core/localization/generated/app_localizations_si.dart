@@ -799,10 +799,4 @@ class AppLocalizationsSi extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get profileNoDonations => 'ඔබ තවම කිසිදු අයිතමයක් දී නැත.';
-
-  @override
-  String get profileNoReviews => 'තවම විචාර නැත.';
 }

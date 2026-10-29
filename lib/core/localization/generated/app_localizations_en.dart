@@ -796,10 +796,4 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
-
-  @override
-  String get profileNoDonations => 'You haven\'t given any items yet.';
-
-  @override
-  String get profileNoReviews => 'No reviews yet.';
 }
