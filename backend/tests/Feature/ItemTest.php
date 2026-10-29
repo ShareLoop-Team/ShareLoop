@@ -51,6 +51,26 @@ class ItemTest extends ShareLoopTestCase
         $this->getJson('/api/photos/'.$paths[0])->assertStatus(403);
     }
 
+    public function test_photo_urls_use_https_behind_a_proxy(): void
+    {
+        Storage::fake('local');
+        $donor = $this->makeUser();
+        // What Azure App Service's front end adds to every request.
+        $proxy = [
+            'Accept' => 'application/json',
+            'X-Forwarded-Proto' => 'https',
+            'X-Forwarded-Host' => 'shareloop.example.net',
+            'X-Forwarded-Port' => '443',
+        ];
+
+        $url = $this->actingAsUser($donor)->post('/api/items', $this->postData([
+            'photos' => [UploadedFile::fake()->image('bag.jpg', 400, 300)],
+        ]), $proxy)->assertCreated()->json('data.image_urls.0');
+
+        $this->assertStringStartsWith('https://shareloop.example.net/api/photos/', $url);
+        $this->get($url, $proxy)->assertOk();
+    }
+
     public function test_photos_must_be_images_within_limits(): void
     {
         Storage::fake('local');
