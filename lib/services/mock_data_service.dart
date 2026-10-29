@@ -117,25 +117,32 @@ class MockDataService {
         id: 'p5',
         donorId: 'u3',
         donorName: 'Sunil Fernando',
-        title: 'Rice Cooker',
-        description: '1.8L rice cooker, works perfectly.',
+        title: 'Electric Pressure Cooker',
+        description:
+            'Stainless steel multi-cooker with presets for rice, soup, steam '
+            'and slow cooking. All functions work; the inner pot and sealing '
+            'ring are clean. Comes with the lid and power cord.',
         condition: 'Good',
         category: 'Household Items',
         district: 'Galle',
         city: 'Hikkaduwa',
         createdAt: DateTime.now().subtract(const Duration(days: 3)),
+        photoUrls: const ['assets/images/item_pressure_cooker.jpg'],
       ),
       ItemPostModel(
         id: 'p4',
         donorId: 'u4',
         donorName: 'Priya Rajan',
-        title: 'Black School Shoes (Size 6)',
-        description: 'Brand new, bought the wrong size.',
-        condition: 'New',
+        title: 'Leather Wingtip Brogues (Size 9)',
+        description:
+            'Burgundy leather lace-up brogues with a pebbled wingtip toe. '
+            'Worn twice for an event; soles and stitching are like new.',
+        condition: 'Good',
         category: 'Shoes',
         district: 'Kandy',
         city: 'Peradeniya',
         createdAt: DateTime.now().subtract(const Duration(days: 2, hours: 4)),
+        photoUrls: const ['assets/images/item_leather_brogues.jpg'],
       ),
       ItemPostModel(
         id: 'p1',
@@ -153,25 +160,79 @@ class MockDataService {
         id: 'p2',
         donorId: 'u2',
         donorName: 'Kamani Silva',
-        title: 'Kids School Bag',
-        description: 'Barely used, blue colour, good zips.',
+        title: 'Leather School Backpack',
+        description:
+            'Maroon leather backpack with a large main compartment, a zipped '
+            'front pocket and a side bottle holder. Barely used, all zips '
+            'work smoothly.',
         condition: 'Good',
         category: 'School Supplies',
         district: 'Gampaha',
         city: 'Negombo',
         createdAt: DateTime.now().subtract(const Duration(days: 1)),
+        photoUrls: const ['assets/images/item_leather_backpack.jpg'],
       ),
       ItemPostModel(
         id: 'p3',
         donorId: 'u1',
         donorName: 'Nimal Perera',
-        title: 'Men\'s Office Shirts (3)',
-        description: 'Washed and ironed, sizes M.',
+        title: 'White Cotton T-Shirt',
+        description:
+            'Plain white crew-neck T-shirt, size M. Soft cotton, washed and '
+            'ironed, no stains or holes.',
         condition: 'Used',
         category: 'Clothes',
         district: 'Colombo',
         city: 'Nugegoda',
         createdAt: DateTime.now().subtract(const Duration(hours: 10)),
+        photoUrls: const ['assets/images/item_white_tshirt.jpg'],
+      ),
+      ItemPostModel(
+        id: 'p6',
+        donorId: 'u3',
+        donorName: 'Sunil Fernando',
+        title: 'Smartphone',
+        description:
+            'Full-screen smartphone in working condition. No cracks on the '
+            'screen and the battery lasts a full day. Reset to factory '
+            'settings; comes without a charger.',
+        condition: 'Used',
+        category: 'Electronics',
+        district: 'Galle',
+        city: 'Hikkaduwa',
+        createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+        photoUrls: const ['assets/images/item_smartphone.jpg'],
+      ),
+      ItemPostModel(
+        id: 'p7',
+        donorId: 'u2',
+        donorName: 'Kamani Silva',
+        title: 'Slip-On Knit Sneakers (Size 8)',
+        description:
+            'Olive green knit sneakers with a cushioned white sole. Light and '
+            'breathable, easy to slip on. Lightly worn, cleaned and no '
+            'damage.',
+        condition: 'Good',
+        category: 'Shoes',
+        district: 'Gampaha',
+        city: 'Negombo',
+        createdAt: DateTime.now().subtract(const Duration(hours: 6)),
+        photoUrls: const ['assets/images/item_slip_on_sneakers.jpg'],
+      ),
+      ItemPostModel(
+        id: 'p8',
+        donorId: 'u4',
+        donorName: 'Priya Rajan',
+        title: 'Washed Grey Baseball Cap',
+        description:
+            'Vintage-wash grey cotton cap with an adjustable strap at the '
+            'back. One size fits most. Washed and in great shape.',
+        condition: 'Good',
+        category: 'Clothes',
+        district: 'Kandy',
+        city: 'Peradeniya',
+        createdAt: DateTime.now().subtract(const Duration(hours: 1)),
+        photoUrls: const ['assets/images/item_grey_cap.jpg'],
       ),
     ]);
 

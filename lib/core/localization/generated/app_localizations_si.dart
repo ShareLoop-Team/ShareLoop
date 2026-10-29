@@ -98,10 +98,32 @@ class AppLocalizationsSi extends AppLocalizations {
       'ඔබට තවදුරටත් අවශ්‍ය නැති දේ දෙන්න. ඔබට අවශ්‍ය දේ සොයා ගන්න. ශ්‍රී ලංකාව පුරා ඔබේ ප්‍රජාව සමඟ භාණ්ඩ නොමිලේ බෙදා ගන්න.';
 
   @override
-  String get onboardingLogIn => 'ඇතුල් වන්න';
+  String get onboardingGetStarted => 'අරඹමු';
 
   @override
-  String get onboardingRegister => 'ලියාපදිංචි වන්න';
+  String get introSkip => 'මඟ හරින්න';
+
+  @override
+  String get introNext => 'ඊළඟ';
+
+  @override
+  String get introGiveTitle => 'ඔබට අවශ්‍ය නැති දේ දෙන්න';
+
+  @override
+  String get introGiveBody =>
+      'පොත්, ඇඳුම්, ගෘහ භාණ්ඩ සහ තවත් දේ. ඒවා ඉවත නොදමා ළඟ සිටින කෙනෙකුට දෙන්න.';
+
+  @override
+  String get introShareTitle => 'ඔබට අවශ්‍ය දේ ලබාගන්න';
+
+  @override
+  String get introShareBody =>
+      'ඔබේ ප්‍රජාව බෙදාගන්නා නොමිලේ භාණ්ඩ සොයාගෙන ප්‍රයෝජනවත් දේ අපතේ යාම වළක්වන්න.';
+
+  @override
+  String introPageLabel(int current, int total) {
+    return '$total න් $current වන පිටුව';
+  }
 
   @override
   String get loginWelcomeBack => 'නැවත සාදරයෙන් පිළිගනිමු';
@@ -572,13 +594,7 @@ class AppLocalizationsSi extends AppLocalizations {
       'අයිතම දීමට හෝ ඉල්ලීමට නැවත ඇතුල් විය යුතුයි.';
 
   @override
-  String get profileNoDonations => 'ඔබ තවම කිසිදු අයිතමයක් දී නැත.';
-
-  @override
   String get profileNoRequests => 'ඔබ තවම කිසිදු අයිතමයක් ඉල්ලා නැත.';
-
-  @override
-  String get profileNoReviews => 'තවම විචාර නැත.';
 
   @override
   String get statusAvailable => 'ලබාගත හැකි';
@@ -614,5 +630,173 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String timeDaysAgo(int count) {
     return 'දින $countකට පෙර';
+  }
+
+  @override
+  String get itemDetailsTitle => 'භාණ්ඩයේ විස්තර';
+
+  @override
+  String get itemDetailsAvailable => 'ලබා ගත හැක';
+
+  @override
+  String get itemDetailsPendingHandover => 'භාරදීම බලාපොරොත්තුවෙන්';
+
+  @override
+  String get itemDetailsGivenAway => 'දී අවසන්';
+
+  @override
+  String itemDetailsPosted(String time) {
+    return '$time පළ කළා';
+  }
+
+  @override
+  String itemDetailsItemsGiven(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'භාණ්ඩ $countක් දී ඇත',
+      one: 'භාණ්ඩ 1ක් දී ඇත',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get itemDetailsPrivacyNote =>
+      'සම්බන්ධතා විස්තර පෞද්ගලිකව පවතී. පරිත්‍යාගශීලියා සියලු ඉල්ලුම්කරුවන්ගේ හේතු කියවා, තමන් තෝරාගන්නා කෙනා සමඟ පමණක් සම්බන්ධතා විස්තර බෙදා ගනී.';
+
+  @override
+  String get itemDetailsRequest => 'මෙම භාණ්ඩය ඉල්ලන්න';
+
+  @override
+  String get itemDetailsViewRequests => 'ලැබුණු ඉල්ලීම් බලන්න';
+
+  @override
+  String get itemDetailsArrangeHandover => 'භාරදීම සකස් කරන්න';
+
+  @override
+  String get itemDetailsUnavailable => 'මෙම භාණ්ඩය තවදුරටත් ලබා ගත නොහැක.';
+
+  @override
+  String get itemDetailsClosed => 'මෙම භාණ්ඩය සඳහා තවදුරටත් ඉල්ලීම් කළ නොහැක.';
+
+  @override
+  String get itemDetailsShare => 'බෙදාගන්න';
+
+  @override
+  String get itemDetailsViewPhoto => 'ඡායාරූපය සම්පූර්ණ තිරයෙන් බලන්න';
+
+  @override
+  String itemDetailsShareText(
+    String title,
+    String district,
+    String description,
+  ) {
+    return '$title ShareLoop හි නොමිලේ ලබා ගත හැක ($district). $description';
+  }
+
+  @override
+  String get editProfileChangePhoto => 'ඡායාරූපය වෙනස් කරන්න';
+
+  @override
+  String get editProfileEmailLocked => 'ඔබේ ඊමේල් ලිපිනය වෙනස් කළ නොහැක';
+
+  @override
+  String get editProfilePhoneNote =>
+      'පරිත්‍යාගශීලියා ඉල්ලුම්කරුවෙකු තෝරාගත් පසු, ඔබේ දුරකථන අංකය ඔබ හා ගැළපෙන පුද්ගලයා සමඟ පමණක් බෙදා ගනී.';
+
+  @override
+  String get editProfilePhoneInvalid => 'වලංගු දුරකථන අංකයක් ඇතුළත් කරන්න';
+
+  @override
+  String get editProfileSave => 'වෙනස්කම් සුරකින්න';
+
+  @override
+  String get editProfileSaved => 'පැතිකඩ යාවත්කාලීන කළා.';
+
+  @override
+  String get editProfileFailed =>
+      'ඔබේ පැතිකඩ සුරැකීමට නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get myRequestsSubtitle => 'ඔබ ඉල්ලූ භාණ්ඩ';
+
+  @override
+  String get myRequestsEmptyTitle => 'තවම ඉල්ලීම් නැත';
+
+  @override
+  String get myRequestsEmptyBody =>
+      'යමක් අවශ්‍යද? ඔබේ ප්‍රජාවෙන් ඉල්ලන්න. පරිත්‍යාගශීලීන් තෝරා ගැනීමට පෙර ඔබේ හේතුව කියවයි.';
+
+  @override
+  String get myRequestsTipLabel => 'ඉඟිය:';
+
+  @override
+  String get myRequestsTip =>
+      'කෙටි, අවංක හේතුවක් පරිත්‍යාගශීලීන්ට සාධාරණව තෝරා ගැනීමට උදව් වේ.';
+
+  @override
+  String get myRequestsAction => 'භාණ්ඩයක් ඉල්ලන්න';
+
+  @override
+  String get myDonationsSubtitle => 'ඔබ දුන් භාණ්ඩ';
+
+  @override
+  String get myDonationsEmptyTitle => 'තවම පරිත්‍යාග නැත';
+
+  @override
+  String get myDonationsEmptyBody =>
+      'ඔබ දෙන භාණ්ඩ මෙහි පෙන්වයි. ඔබේ පළමු පරිත්‍යාගයෙන් ලාංඡන ගමන ආරම්භ වේ.';
+
+  @override
+  String myDonationsBadgeTitle(String badge) {
+    return '$badge ලාංඡනය';
+  }
+
+  @override
+  String myDonationsBadgeHint(int count, String level) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$level වීමට භාණ්ඩ $countක් දෙන්න',
+      one: '$level වීමට තව භාණ්ඩ 1ක් දෙන්න',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get myDonationsFirstAction => 'ඔබේ පළමු භාණ්ඩය දෙන්න';
+
+  @override
+  String get myDonationsAction => 'භාණ්ඩයක් දෙන්න';
+
+  @override
+  String get myReviewsSubtitle => 'අන් අය ඔබ ගැන කියන දේ';
+
+  @override
+  String get myReviewsEmptyTitle => 'තවම සමාලෝචන නැත';
+
+  @override
+  String get myReviewsEmptyBody =>
+      'සෑම හුවමාරුවකටම පසු ඔබට සහ අනෙක් පුද්ගලයාට එකිනෙකා ශ්‍රේණිගත කළ හැක. හොඳ සමාලෝචන විශ්වාසය ගොඩනඟයි.';
+
+  @override
+  String get myReviewsFirstTitle => 'ඔබේ පළමු සමාලෝචනය ලබාගන්න';
+
+  @override
+  String get myReviewsFirstBody =>
+      'ශ්‍රේණිගත කිරීම් විවෘත කිරීමට භාණ්ඩයක් දී හෝ ලබාගෙන භාරදීම සම්පූර්ණ කරන්න.';
+
+  @override
+  String get myReviewsAction => 'භාණ්ඩ බලන්න';
+
+  @override
+  String myReviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'සමාලෝචන $count',
+      one: 'සමාලෝචන 1',
+    );
+    return '$_temp0';
   }
 }

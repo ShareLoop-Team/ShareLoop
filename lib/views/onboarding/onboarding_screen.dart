@@ -157,13 +157,10 @@ class _OnboardingBodyState extends State<_OnboardingBody>
                           const SizedBox(height: 32),
                           FadeTransition(
                             opacity: _actionsOpacity,
-                            child: _Actions(
-                              logInLabel: l10n.onboardingLogIn,
-                              registerLabel: l10n.onboardingRegister,
-                              onLogIn: () =>
-                                  _controller.openLogin(Navigator.of(context)),
-                              onRegister: () => _controller
-                                  .openRegister(Navigator.of(context)),
+                            child: _GetStartedButton(
+                              label: l10n.onboardingGetStarted,
+                              onPressed: () =>
+                                  _controller.getStarted(Navigator.of(context)),
                             ),
                           ),
                           const SizedBox(height: 16),
@@ -222,53 +219,28 @@ class _Illustration extends StatelessWidget {
   }
 }
 
-/// Full-width pill "Log in" button with a plain "Register" text button below.
-class _Actions extends StatelessWidget {
-  const _Actions({
-    required this.logInLabel,
-    required this.registerLabel,
-    required this.onLogIn,
-    required this.onRegister,
-  });
+/// Full-width pill "Get started" button.
+class _GetStartedButton extends StatelessWidget {
+  const _GetStartedButton({required this.label, required this.onPressed});
 
-  final String logInLabel;
-  final String registerLabel;
-  final VoidCallback onLogIn;
-  final VoidCallback onRegister;
+  final String label;
+  final VoidCallback onPressed;
 
   @override
   Widget build(BuildContext context) {
-    final labelStyle = Theme.of(context).textTheme.titleMedium?.copyWith(
-      fontWeight: FontWeight.w700,
-    );
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        ElevatedButton(
-          onPressed: onLogIn,
-          style: ElevatedButton.styleFrom(
-            backgroundColor: AppColors.deepGreen,
-            foregroundColor: AppColors.white,
-            elevation: 0,
-            minimumSize: const Size.fromHeight(54),
-            shape: const StadiumBorder(),
-            textStyle: labelStyle,
-          ),
-          child: Text(logInLabel),
+    return ElevatedButton(
+      onPressed: onPressed,
+      style: ElevatedButton.styleFrom(
+        backgroundColor: AppColors.deepGreen,
+        foregroundColor: AppColors.white,
+        elevation: 0,
+        minimumSize: const Size.fromHeight(54),
+        shape: const StadiumBorder(),
+        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.w700,
         ),
-        const SizedBox(height: 8),
-        TextButton(
-          onPressed: onRegister,
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.ink,
-            minimumSize: const Size.fromHeight(48),
-            shape: const StadiumBorder(),
-            textStyle: labelStyle,
-          ),
-          child: Text(registerLabel),
-        ),
-      ],
+      ),
+      child: Text(label),
     );
   }
 }

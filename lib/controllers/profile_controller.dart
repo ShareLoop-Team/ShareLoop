@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import '../core/errors/app_exception.dart';
 import '../models/item_post_model.dart';
 import '../models/item_request_model.dart';
+import '../models/photo_upload.dart';
 import '../models/rating_review_model.dart';
 import '../models/user_model.dart';
 import '../repositories/item_post_repository.dart';
@@ -68,22 +69,30 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Saves the edited details, and [photo] as the new profile photo when
+  /// one was picked. On failure [errorMessage] says why.
   Future<bool> updateProfile({
     required String name,
     required String phone,
     required String district,
     required String city,
+    PhotoUpload? photo,
   }) async {
     final current = user;
     if (current == null) return false;
     if (name.trim().isEmpty || phone.trim().isEmpty) return false;
-    final updated = current.copyWith(
+    errorMessage = null;
+    var updated = current.copyWith(
       name: name.trim(),
       phone: phone.trim(),
       district: district,
       city: city.trim(),
     );
     try {
+      if (photo != null) {
+        final avatarUrl = await _userRepository.updateAvatar(current.id, photo);
+        updated = updated.copyWith(avatarUrl: avatarUrl);
+      }
       await _userRepository.updateUser(updated);
     } on AppException catch (e) {
       errorMessage = e.message;

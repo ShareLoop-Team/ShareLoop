@@ -58,7 +58,40 @@ void main() {
     expect(find.text('Available near you'), findsOneWidget);
     expect(find.text('All districts'), findsOneWidget);
     expect(find.byType(ItemGridCard), findsWidgets);
+    // The grid builds lazily, so scroll until a Silver donor's card exists.
+    await tester.scrollUntilVisible(
+      find.textContaining('Silver donor'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
     expect(find.textContaining('Silver donor'), findsWidgets);
+  });
+
+  testWidgets('sample posts show their bundled photos', (tester) async {
+    await _pumpHome(tester);
+
+    Finder assetImage(String name) => find.byWidgetPredicate(
+      (w) =>
+          w is Image &&
+          w.image is AssetImage &&
+          (w.image as AssetImage).assetName == name,
+    );
+
+    // The newest posts are at the top; older ones are built as you scroll.
+    expect(assetImage('assets/images/item_grey_cap.jpg'), findsOneWidget);
+    expect(
+      assetImage('assets/images/item_slip_on_sneakers.jpg'),
+      findsOneWidget,
+    );
+    await tester.scrollUntilVisible(
+      assetImage('assets/images/item_pressure_cooker.jpg'),
+      300,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(
+      assetImage('assets/images/item_pressure_cooker.jpg'),
+      findsOneWidget,
+    );
   });
 
   testWidgets('category chip filters the grid', (tester) async {
@@ -69,8 +102,9 @@ void main() {
     await tester.tap(find.text('Shoes'));
     await tester.pumpAndSettle();
 
-    expect(find.byType(ItemGridCard), findsOneWidget);
-    expect(find.text('Black School Shoes (Size 6)'), findsOneWidget);
+    expect(find.byType(ItemGridCard), findsNWidgets(2));
+    expect(find.text('Leather Wingtip Brogues (Size 9)'), findsOneWidget);
+    expect(find.text('Slip-On Knit Sneakers (Size 8)'), findsOneWidget);
   });
 
   testWidgets('district picker filters the grid', (tester) async {
@@ -81,8 +115,9 @@ void main() {
     await tester.tap(find.text('Galle'));
     await tester.pumpAndSettle();
 
-    expect(find.text('Rice Cooker'), findsOneWidget);
-    expect(find.byType(ItemGridCard), findsOneWidget);
+    expect(find.text('Electric Pressure Cooker'), findsOneWidget);
+    expect(find.text('Smartphone'), findsOneWidget);
+    expect(find.byType(ItemGridCard), findsNWidgets(2));
   });
 
   testWidgets('switches to community requests', (tester) async {

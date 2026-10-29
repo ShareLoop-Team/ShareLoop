@@ -18,7 +18,7 @@ class SupabaseAdminRepository implements AdminRepository {
           .eq('status', 'active')
           .order('created_at', ascending: false)
           .limit(500);
-      return [for (final row in rows) SupabaseRows.user(row)];
+      return SupabaseRows.users(rows);
     });
   }
 

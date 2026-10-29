@@ -8,6 +8,9 @@ class ItemPostModel {
 
   /// The donor's completed donations, for the badge shown on cards.
   final int donorDonationCount;
+
+  /// The donor's average rating (0 when they have no ratings yet).
+  final double donorRating;
   final String title;
   final String description;
   final String condition; // new, good, used
@@ -31,6 +34,7 @@ class ItemPostModel {
     required this.donorId,
     required this.donorName,
     this.donorDonationCount = 0,
+    this.donorRating = 0,
     required this.title,
     required this.description,
     required this.condition,
@@ -48,12 +52,14 @@ class ItemPostModel {
     ItemPostStatus? status,
     String? selectedRequesterId,
     int? donorDonationCount,
+    double? donorRating,
   }) {
     return ItemPostModel(
       id: id,
       donorId: donorId,
       donorName: donorName,
       donorDonationCount: donorDonationCount ?? this.donorDonationCount,
+      donorRating: donorRating ?? this.donorRating,
       title: title,
       description: description,
       condition: condition,

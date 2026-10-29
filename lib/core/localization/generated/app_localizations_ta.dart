@@ -99,10 +99,32 @@ class AppLocalizationsTa extends AppLocalizations {
       'உங்களுக்குத் தேவையில்லாததைக் கொடுங்கள். உங்களுக்குத் தேவையானதைக் கண்டறியுங்கள். இலங்கை முழுவதும் உள்ள உங்கள் சமூகத்துடன் பொருட்களை இலவசமாகப் பகிருங்கள்.';
 
   @override
-  String get onboardingLogIn => 'உள்நுழைய';
+  String get onboardingGetStarted => 'தொடங்குவோம்';
 
   @override
-  String get onboardingRegister => 'பதிவு செய்ய';
+  String get introSkip => 'தவிர்';
+
+  @override
+  String get introNext => 'அடுத்து';
+
+  @override
+  String get introGiveTitle => 'தேவையில்லாததைக் கொடுங்கள்';
+
+  @override
+  String get introGiveBody =>
+      'புத்தகங்கள், உடைகள், தளபாடங்கள் மற்றும் பல. அவற்றை வீசாமல் அருகிலுள்ள ஒருவருக்குக் கொடுங்கள்.';
+
+  @override
+  String get introShareTitle => 'தேவையானதைப் பெறுங்கள்';
+
+  @override
+  String get introShareBody =>
+      'உங்கள் சமூகம் பகிரும் இலவசப் பொருட்களைக் கண்டறிந்து, பயனுள்ள பொருட்கள் வீணாவதைத் தடுங்கள்.';
+
+  @override
+  String introPageLabel(int current, int total) {
+    return '$total இல் பக்கம் $current';
+  }
 
   @override
   String get loginWelcomeBack => 'மீண்டும் வருக';
@@ -580,15 +602,8 @@ class AppLocalizationsTa extends AppLocalizations {
       'பொருட்களைக் கொடுக்க அல்லது கோர மீண்டும் உள்நுழைய வேண்டும்.';
 
   @override
-  String get profileNoDonations =>
-      'நீங்கள் இன்னும் எந்தப் பொருளையும் கொடுக்கவில்லை.';
-
-  @override
   String get profileNoRequests =>
       'நீங்கள் இன்னும் எந்தப் பொருளையும் கோரவில்லை.';
-
-  @override
-  String get profileNoReviews => 'இன்னும் மதிப்புரைகள் இல்லை.';
 
   @override
   String get statusAvailable => 'கிடைக்கிறது';
@@ -624,5 +639,174 @@ class AppLocalizationsTa extends AppLocalizations {
   @override
   String timeDaysAgo(int count) {
     return '$count நாள் முன்';
+  }
+
+  @override
+  String get itemDetailsTitle => 'பொருள் விவரங்கள்';
+
+  @override
+  String get itemDetailsAvailable => 'கிடைக்கிறது';
+
+  @override
+  String get itemDetailsPendingHandover => 'ஒப்படைப்பு நிலுவையில்';
+
+  @override
+  String get itemDetailsGivenAway => 'கொடுக்கப்பட்டது';
+
+  @override
+  String itemDetailsPosted(String time) {
+    return '$time பதிவிடப்பட்டது';
+  }
+
+  @override
+  String itemDetailsItemsGiven(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count பொருட்கள் கொடுக்கப்பட்டன',
+      one: '1 பொருள் கொடுக்கப்பட்டது',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get itemDetailsPrivacyNote =>
+      'தொடர்பு விவரங்கள் தனிப்பட்டவையாக இருக்கும். நன்கொடையாளர் அனைத்து கோரிக்கையாளர்களின் காரணங்களையும் படித்து, தாம் தேர்ந்தெடுக்கும் ஒருவருடன் மட்டுமே தொடர்பு விவரங்களைப் பகிர்வார்.';
+
+  @override
+  String get itemDetailsRequest => 'இந்தப் பொருளைக் கோருங்கள்';
+
+  @override
+  String get itemDetailsViewRequests => 'வந்த கோரிக்கைகளைப் பார்';
+
+  @override
+  String get itemDetailsArrangeHandover => 'ஒப்படைப்பை ஏற்பாடு செய்';
+
+  @override
+  String get itemDetailsUnavailable => 'இந்தப் பொருள் இனி கிடைக்காது.';
+
+  @override
+  String get itemDetailsClosed =>
+      'இந்தப் பொருளுக்கு இனி கோரிக்கைகள் ஏற்கப்படாது.';
+
+  @override
+  String get itemDetailsShare => 'பகிர்';
+
+  @override
+  String get itemDetailsViewPhoto => 'புகைப்படத்தை முழுத் திரையில் பார்';
+
+  @override
+  String itemDetailsShareText(
+    String title,
+    String district,
+    String description,
+  ) {
+    return '$title ShareLoop இல் இலவசமாகக் கிடைக்கிறது ($district). $description';
+  }
+
+  @override
+  String get editProfileChangePhoto => 'புகைப்படத்தை மாற்று';
+
+  @override
+  String get editProfileEmailLocked => 'உங்கள் மின்னஞ்சலை மாற்ற முடியாது';
+
+  @override
+  String get editProfilePhoneNote =>
+      'நன்கொடையாளர் கோரிக்கையாளரைத் தேர்ந்தெடுத்த பிறகு, உங்கள் தொலைபேசி எண் உங்களுடன் பொருந்திய நபருடன் மட்டுமே பகிரப்படும்.';
+
+  @override
+  String get editProfilePhoneInvalid => 'சரியான தொலைபேசி எண்ணை உள்ளிடுங்கள்';
+
+  @override
+  String get editProfileSave => 'மாற்றங்களைச் சேமி';
+
+  @override
+  String get editProfileSaved => 'சுயவிவரம் புதுப்பிக்கப்பட்டது.';
+
+  @override
+  String get editProfileFailed =>
+      'உங்கள் சுயவிவரத்தைச் சேமிக்க முடியவில்லை. மீண்டும் முயலவும்.';
+
+  @override
+  String get myRequestsSubtitle => 'நீங்கள் கேட்ட பொருட்கள்';
+
+  @override
+  String get myRequestsEmptyTitle => 'இதுவரை கோரிக்கைகள் இல்லை';
+
+  @override
+  String get myRequestsEmptyBody =>
+      'ஏதாவது தேவையா? உங்கள் சமூகத்திடம் கேளுங்கள். நன்கொடையாளர்கள் தேர்ந்தெடுக்கும் முன் உங்கள் காரணத்தைப் படிப்பார்கள்.';
+
+  @override
+  String get myRequestsTipLabel => 'குறிப்பு:';
+
+  @override
+  String get myRequestsTip =>
+      'சுருக்கமான, நேர்மையான காரணம் நன்கொடையாளர்கள் நியாயமாகத் தேர்ந்தெடுக்க உதவும்.';
+
+  @override
+  String get myRequestsAction => 'ஒரு பொருளைக் கோருங்கள்';
+
+  @override
+  String get myDonationsSubtitle => 'நீங்கள் கொடுத்த பொருட்கள்';
+
+  @override
+  String get myDonationsEmptyTitle => 'இதுவரை நன்கொடைகள் இல்லை';
+
+  @override
+  String get myDonationsEmptyBody =>
+      'நீங்கள் கொடுக்கும் பொருட்கள் இங்கே தோன்றும். உங்கள் முதல் நன்கொடையுடன் பதக்கப் பயணம் தொடங்கும்.';
+
+  @override
+  String myDonationsBadgeTitle(String badge) {
+    return '$badge பதக்கம்';
+  }
+
+  @override
+  String myDonationsBadgeHint(int count, String level) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$level ஆக $count பொருட்களைக் கொடுங்கள்',
+      one: '$level ஆக இன்னும் 1 பொருளைக் கொடுங்கள்',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get myDonationsFirstAction => 'உங்கள் முதல் பொருளைக் கொடுங்கள்';
+
+  @override
+  String get myDonationsAction => 'ஒரு பொருளைக் கொடுங்கள்';
+
+  @override
+  String get myReviewsSubtitle => 'மற்றவர்கள் உங்களைப் பற்றிச் சொல்வது';
+
+  @override
+  String get myReviewsEmptyTitle => 'இதுவரை மதிப்புரைகள் இல்லை';
+
+  @override
+  String get myReviewsEmptyBody =>
+      'ஒவ்வொரு பரிமாற்றத்திற்குப் பிறகும், நீங்களும் மற்றவரும் ஒருவரை ஒருவர் மதிப்பிடலாம். நல்ல மதிப்புரைகள் நம்பிக்கையை வளர்க்கும்.';
+
+  @override
+  String get myReviewsFirstTitle => 'உங்கள் முதல் மதிப்புரையைப் பெறுங்கள்';
+
+  @override
+  String get myReviewsFirstBody =>
+      'மதிப்பீடுகளைத் திறக்க, ஒரு பொருளைக் கொடுத்து அல்லது பெற்று ஒப்படைப்பை முடிக்கவும்.';
+
+  @override
+  String get myReviewsAction => 'பொருட்களைப் பாருங்கள்';
+
+  @override
+  String myReviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count மதிப்புரைகள்',
+      one: '1 மதிப்புரை',
+    );
+    return '$_temp0';
   }
 }

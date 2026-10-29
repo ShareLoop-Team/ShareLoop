@@ -1,3 +1,4 @@
+import '../../models/photo_upload.dart';
 import '../../models/user_model.dart';
 import '../../services/mock_data_service.dart';
 import '../user_repository.dart';
@@ -71,6 +72,22 @@ class MockUserRepository implements UserRepository {
     if (index != -1) {
       _data.users[index] = user;
     }
+  }
+
+  /// Keeps the photo in memory as a data: URL, so it shows without a
+  /// backend.
+  @override
+  Future<String?> updateAvatar(String userId, PhotoUpload photo) async {
+    await Future.delayed(const Duration(milliseconds: 150));
+    final url = Uri.dataFromBytes(
+      photo.bytes,
+      mimeType: photo.mimeType ?? 'image/jpeg',
+    ).toString();
+    final index = _data.users.indexWhere((u) => u.id == userId);
+    if (index != -1) {
+      _data.users[index] = _data.users[index].copyWith(avatarUrl: url);
+    }
+    return url;
   }
 
   @override

@@ -274,17 +274,53 @@ abstract class AppLocalizations {
   /// **'Give what you no longer need. Find what you do. Share items for free with your community across Sri Lanka.'**
   String get onboardingDescription;
 
-  /// No description provided for @onboardingLogIn.
+  /// No description provided for @onboardingGetStarted.
   ///
   /// In en, this message translates to:
-  /// **'Log in'**
-  String get onboardingLogIn;
+  /// **'Get started'**
+  String get onboardingGetStarted;
 
-  /// No description provided for @onboardingRegister.
+  /// No description provided for @introSkip.
   ///
   /// In en, this message translates to:
-  /// **'Register'**
-  String get onboardingRegister;
+  /// **'Skip'**
+  String get introSkip;
+
+  /// No description provided for @introNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get introNext;
+
+  /// No description provided for @introGiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Give what you don\'t need'**
+  String get introGiveTitle;
+
+  /// No description provided for @introGiveBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Books, clothes, furniture and more. Pass them on to someone nearby instead of throwing them away.'**
+  String get introGiveBody;
+
+  /// No description provided for @introShareTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get what you do'**
+  String get introShareTitle;
+
+  /// No description provided for @introShareBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Find free items shared by your community and help keep useful things out of landfill.'**
+  String get introShareBody;
+
+  /// No description provided for @introPageLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current} of {total}'**
+  String introPageLabel(int current, int total);
 
   /// No description provided for @loginWelcomeBack.
   ///
@@ -1162,23 +1198,11 @@ abstract class AppLocalizations {
   /// **'You\'ll need to log in again to give or request items.'**
   String get profileSignOutMessage;
 
-  /// No description provided for @profileNoDonations.
-  ///
-  /// In en, this message translates to:
-  /// **'You haven\'t given any items yet.'**
-  String get profileNoDonations;
-
   /// No description provided for @profileNoRequests.
   ///
   /// In en, this message translates to:
   /// **'You haven\'t requested any items yet.'**
   String get profileNoRequests;
-
-  /// No description provided for @profileNoReviews.
-  ///
-  /// In en, this message translates to:
-  /// **'No reviews yet.'**
-  String get profileNoReviews;
 
   /// No description provided for @statusAvailable.
   ///
@@ -1239,6 +1263,262 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count}d ago'**
   String timeDaysAgo(int count);
+
+  /// No description provided for @itemDetailsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Item details'**
+  String get itemDetailsTitle;
+
+  /// No description provided for @itemDetailsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Available'**
+  String get itemDetailsAvailable;
+
+  /// No description provided for @itemDetailsPendingHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover pending'**
+  String get itemDetailsPendingHandover;
+
+  /// No description provided for @itemDetailsGivenAway.
+  ///
+  /// In en, this message translates to:
+  /// **'Given away'**
+  String get itemDetailsGivenAway;
+
+  /// No description provided for @itemDetailsPosted.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted {time}'**
+  String itemDetailsPosted(String time);
+
+  /// No description provided for @itemDetailsItemsGiven.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 item given} other{{count} items given}}'**
+  String itemDetailsItemsGiven(int count);
+
+  /// No description provided for @itemDetailsPrivacyNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact details stay private. The donor reads the reasons of all requesters and shares contact details only with the one they select.'**
+  String get itemDetailsPrivacyNote;
+
+  /// No description provided for @itemDetailsRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Request this item'**
+  String get itemDetailsRequest;
+
+  /// No description provided for @itemDetailsViewRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'View incoming requests'**
+  String get itemDetailsViewRequests;
+
+  /// No description provided for @itemDetailsArrangeHandover.
+  ///
+  /// In en, this message translates to:
+  /// **'Arrange handover'**
+  String get itemDetailsArrangeHandover;
+
+  /// No description provided for @itemDetailsUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is no longer available.'**
+  String get itemDetailsUnavailable;
+
+  /// No description provided for @itemDetailsClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This item is no longer available for requests.'**
+  String get itemDetailsClosed;
+
+  /// No description provided for @itemDetailsShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get itemDetailsShare;
+
+  /// No description provided for @itemDetailsViewPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'View photo full screen'**
+  String get itemDetailsViewPhoto;
+
+  /// No description provided for @itemDetailsShareText.
+  ///
+  /// In en, this message translates to:
+  /// **'{title} is free to a good home on ShareLoop ({district}). {description}'**
+  String itemDetailsShareText(
+    String title,
+    String district,
+    String description,
+  );
+
+  /// No description provided for @editProfileChangePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Change photo'**
+  String get editProfileChangePhoto;
+
+  /// No description provided for @editProfileEmailLocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Your email cannot be changed'**
+  String get editProfileEmailLocked;
+
+  /// No description provided for @editProfilePhoneNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your phone number is shared only with the person you are matched with, after the donor selects a requester.'**
+  String get editProfilePhoneNote;
+
+  /// No description provided for @editProfilePhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid phone number'**
+  String get editProfilePhoneInvalid;
+
+  /// No description provided for @editProfileSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get editProfileSave;
+
+  /// No description provided for @editProfileSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated.'**
+  String get editProfileSaved;
+
+  /// No description provided for @editProfileFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t save your profile. Please try again.'**
+  String get editProfileFailed;
+
+  /// No description provided for @myRequestsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Items you have asked for'**
+  String get myRequestsSubtitle;
+
+  /// No description provided for @myRequestsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No requests yet'**
+  String get myRequestsEmptyTitle;
+
+  /// No description provided for @myRequestsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Need something? Ask your community. Donors read your reason before they choose.'**
+  String get myRequestsEmptyBody;
+
+  /// No description provided for @myRequestsTipLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip:'**
+  String get myRequestsTipLabel;
+
+  /// No description provided for @myRequestsTip.
+  ///
+  /// In en, this message translates to:
+  /// **'a short, honest reason helps donors choose fairly.'**
+  String get myRequestsTip;
+
+  /// No description provided for @myRequestsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Request an item'**
+  String get myRequestsAction;
+
+  /// No description provided for @myDonationsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Items you have given away'**
+  String get myDonationsSubtitle;
+
+  /// No description provided for @myDonationsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No donations yet'**
+  String get myDonationsEmptyTitle;
+
+  /// No description provided for @myDonationsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Items you give away will show up here. Your first donation starts your badge journey.'**
+  String get myDonationsEmptyBody;
+
+  /// No description provided for @myDonationsBadgeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{badge} badge'**
+  String myDonationsBadgeTitle(String badge);
+
+  /// No description provided for @myDonationsBadgeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Give 1 more item to become a {level}} other{Give {count} items to become a {level}}}'**
+  String myDonationsBadgeHint(int count, String level);
+
+  /// No description provided for @myDonationsFirstAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Give your first item'**
+  String get myDonationsFirstAction;
+
+  /// No description provided for @myDonationsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Give an item'**
+  String get myDonationsAction;
+
+  /// No description provided for @myReviewsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What others say about you'**
+  String get myReviewsSubtitle;
+
+  /// No description provided for @myReviewsEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No reviews yet'**
+  String get myReviewsEmptyTitle;
+
+  /// No description provided for @myReviewsEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'After each exchange, you and the other person can rate each other. Good reviews build trust.'**
+  String get myReviewsEmptyBody;
+
+  /// No description provided for @myReviewsFirstTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get your first review'**
+  String get myReviewsFirstTitle;
+
+  /// No description provided for @myReviewsFirstBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Give or receive an item and complete the handover to unlock ratings.'**
+  String get myReviewsFirstBody;
+
+  /// No description provided for @myReviewsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Browse items'**
+  String get myReviewsAction;
+
+  /// No description provided for @myReviewsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
+  String myReviewsCount(int count);
 }
 
 class _AppLocalizationsDelegate

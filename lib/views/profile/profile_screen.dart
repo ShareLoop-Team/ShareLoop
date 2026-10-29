@@ -10,13 +10,10 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
-import '../../core/utils/time_ago.dart';
 import '../../models/badge_model.dart';
-import '../../models/item_post_model.dart';
-import '../../models/item_request_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/loading_indicator.dart';
-import '../../widgets/rating_stars.dart';
+import '../../widgets/user_avatar.dart';
 
 /// View: the Profile tab — identity card, giving stats, badge progress,
 /// the user's activity (donations, requests, reviews), settings, and
@@ -46,135 +43,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
       Navigator.of(context).pushNamed(AppRoutes.editProfile);
 
   void _openRoute(String route) => Navigator.of(context).pushNamed(route);
-
-  void _showListSheet({
-    required String title,
-    required String emptyText,
-    required List<Widget> tiles,
-  }) {
-    showModalBottomSheet<void>(
-      context: context,
-      isScrollControlled: true,
-      showDragHandle: true,
-      backgroundColor: AppColors.white,
-      builder: (sheetContext) => Theme(
-        data: AppTheme.lightTheme,
-        child: FractionallySizedBox(
-          heightFactor: 0.7,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: Text(
-                  title,
-                  style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-              Expanded(
-                child: tiles.isEmpty
-                    ? Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(24),
-                          child: Text(
-                            emptyText,
-                            textAlign: TextAlign.center,
-                            style: const TextStyle(
-                              color: AppColors.textSecondary,
-                            ),
-                          ),
-                        ),
-                      )
-                    : ListView.separated(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        itemCount: tiles.length,
-                        itemBuilder: (_, index) => tiles[index],
-                        separatorBuilder: (_, _) => const Divider(
-                          height: 1,
-                          indent: 20,
-                          endIndent: 20,
-                          color: AppColors.border,
-                        ),
-                      ),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  void _showDonations(AppLocalizations l10n, List<ItemPostModel> posts) {
-    _showListSheet(
-      title: l10n.profileMyDonations,
-      emptyText: l10n.profileNoDonations,
-      tiles: [
-        for (final post in posts)
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            title: Text(
-              post.title,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '${post.category} · ${timeAgo(l10n, post.createdAt)}',
-            ),
-            trailing: _StatusChip.forPost(l10n, post.status),
-            onTap: () => Navigator.of(context)
-              ..pop()
-              ..pushNamed(AppRoutes.itemDetails, arguments: post.id),
-          ),
-      ],
-    );
-  }
-
-  void _showRequests(AppLocalizations l10n, List<ItemRequestModel> requests) {
-    _showListSheet(
-      title: l10n.myRequests,
-      emptyText: l10n.profileNoRequests,
-      tiles: [
-        for (final request in requests)
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            title: Text(
-              request.itemName.isEmpty
-                  ? request.description
-                  : request.itemName,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-            ),
-            subtitle: Text(
-              '${request.category} · ${timeAgo(l10n, request.createdAt)}',
-            ),
-            trailing: _StatusChip.forRequest(l10n, request.status),
-          ),
-      ],
-    );
-  }
-
-  void _showReviews(AppLocalizations l10n) {
-    final reviews = context.read<ProfileController>().myReviews;
-    _showListSheet(
-      title: l10n.profileReviews,
-      emptyText: l10n.profileNoReviews,
-      tiles: [
-        for (final review in reviews)
-          ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-            title: Align(
-              alignment: AlignmentDirectional.centerStart,
-              child: RatingStars(rating: review.stars.toDouble(), size: 18),
-            ),
-            subtitle: review.comment.isEmpty ? null : Text(review.comment),
-            trailing: Text(
-              timeAgo(l10n, review.createdAt),
-              style: const TextStyle(color: AppColors.textSecondary),
-            ),
-          ),
-      ],
-    );
-  }
 
   void _showLanguagePicker(AppLocalizations l10n) {
     final languageController = context.read<LanguageController>();
@@ -345,19 +213,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   icon: Icons.card_giftcard_outlined,
                   label: l10n.profileMyDonations,
                   trailing: '${profile.myPosts.length}',
-                  onTap: () => _showDonations(l10n, profile.myPosts),
+                  onTap: () => _openRoute(AppRoutes.myDonations),
                 ),
                 _MenuTile(
                   icon: Icons.format_list_bulleted,
                   label: l10n.myRequests,
                   trailing: '${profile.myRequests.length}',
-                  onTap: () => _showRequests(l10n, profile.myRequests),
+                  onTap: () => _openRoute(AppRoutes.myRequests),
                 ),
                 _MenuTile(
                   icon: Icons.star_border,
                   label: l10n.profileReviews,
                   trailing: '${profile.myReviews.length}',
-                  onTap: () => _showReviews(l10n),
+                  onTap: () => _openRoute(AppRoutes.myReviews),
                 ),
               ],
             ),
@@ -533,20 +401,7 @@ class _IdentityCard extends StatelessWidget {
       padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
       child: Column(
         children: [
-          Container(
-            width: 96,
-            height: 96,
-            decoration: BoxDecoration(
-              color: AppColors.paleMint,
-              shape: BoxShape.circle,
-              border: Border.all(color: AppColors.softMint, width: 2),
-            ),
-            child: const Icon(
-              Icons.person_outline,
-              size: 44,
-              color: AppColors.deepGreen,
-            ),
-          ),
+          UserAvatar(url: user.avatarUrl),
           const SizedBox(height: 14),
           Text(
             user.name,
@@ -888,56 +743,6 @@ class _MenuTile extends StatelessWidget {
             const Icon(Icons.chevron_right, color: AppColors.textSecondary),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _StatusChip extends StatelessWidget {
-  const _StatusChip({required this.label, required this.color});
-
-  factory _StatusChip.forPost(AppLocalizations l10n, ItemPostStatus status) =>
-      switch (status) {
-        ItemPostStatus.active =>
-          _StatusChip(label: l10n.statusAvailable, color: AppColors.deepGreen),
-        ItemPostStatus.pendingHandover =>
-          _StatusChip(label: l10n.statusHandoverPending, color: AppColors.amber),
-        ItemPostStatus.completed =>
-          _StatusChip(label: l10n.statusGiven, color: AppColors.textSecondary),
-      };
-
-  factory _StatusChip.forRequest(
-    AppLocalizations l10n,
-    ItemRequestStatus status,
-  ) =>
-      switch (status) {
-        ItemRequestStatus.pending =>
-          _StatusChip(label: l10n.statusPending, color: AppColors.amber),
-        ItemRequestStatus.approved =>
-          _StatusChip(label: l10n.statusApproved, color: AppColors.deepGreen),
-        ItemRequestStatus.rejected => _StatusChip(
-            label: l10n.statusNotSelected,
-            color: AppColors.textSecondary,
-          ),
-      };
-
-  final String label;
-  final Color color;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-      decoration: BoxDecoration(
-        color: color.withValues(alpha: 0.15),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Text(
-        label,
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(
-              color: color,
-              fontWeight: FontWeight.w700,
-            ),
       ),
     );
   }

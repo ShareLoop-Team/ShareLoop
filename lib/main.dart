@@ -30,8 +30,12 @@ import 'views/handover/contact_shared_screen.dart';
 import 'views/handover/handover_confirmation_screen.dart';
 import 'views/handover/rating_review_screen.dart';
 import 'views/home/home_screen.dart';
+import 'views/onboarding/intro_screen.dart';
 import 'views/onboarding/onboarding_screen.dart';
 import 'views/profile/edit_profile_screen.dart';
+import 'views/profile/my_donations_screen.dart';
+import 'views/profile/my_requests_screen.dart';
+import 'views/profile/my_reviews_screen.dart';
 import 'views/requests/create_request_screen.dart';
 import 'views/settings/settings_screen.dart';
 import 'views/splash/splash_screen.dart';
@@ -86,6 +90,8 @@ class ShareLoopApp extends StatelessWidget {
                   return MaterialPageRoute(
                     builder: (_) => const SplashScreen(),
                   );
+                case AppRoutes.intro:
+                  return MaterialPageRoute(builder: (_) => const IntroScreen());
                 case AppRoutes.onboarding:
                   return MaterialPageRoute(
                     builder: (_) => const OnboardingScreen(),
@@ -101,6 +107,18 @@ class ShareLoopApp extends StatelessWidget {
                 case AppRoutes.editProfile:
                   return MaterialPageRoute(
                     builder: (_) => const EditProfileScreen(),
+                  );
+                case AppRoutes.myDonations:
+                  return MaterialPageRoute(
+                    builder: (_) => const MyDonationsScreen(),
+                  );
+                case AppRoutes.myRequests:
+                  return MaterialPageRoute(
+                    builder: (_) => const MyRequestsScreen(),
+                  );
+                case AppRoutes.myReviews:
+                  return MaterialPageRoute(
+                    builder: (_) => const MyReviewsScreen(),
                   );
                 case AppRoutes.categoryBrowse:
                   return MaterialPageRoute(

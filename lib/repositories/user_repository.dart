@@ -1,4 +1,5 @@
 import '../core/config/backend_config.dart';
+import '../models/photo_upload.dart';
 import '../models/user_model.dart';
 import 'mock/mock_user_repository.dart';
 import 'supabase/supabase_user_repository.dart';
@@ -34,6 +35,10 @@ abstract class UserRepository {
 
   /// Saves the signed-in user's editable details (name, phone, location).
   Future<void> updateUser(UserModel user);
+
+  /// Replaces the signed-in user's profile photo and returns its new
+  /// displayable URL (null if it saved but can't be shown right now).
+  Future<String?> updateAvatar(String userId, PhotoUpload photo);
 
   /// Whether [sendPasswordReset] can actually send an email.
   bool get supportsPasswordReset;
