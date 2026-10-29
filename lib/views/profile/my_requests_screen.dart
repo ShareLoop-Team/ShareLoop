@@ -7,6 +7,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/item_request_model.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/illustrated_empty_state.dart';
 import '../../widgets/info_note.dart';
 import '../../widgets/status_chip.dart';
@@ -136,10 +137,7 @@ class _RequestCard extends StatelessWidget {
               ),
               if (onTap != null) ...[
                 const Spacer(),
-                const Icon(
-                  Icons.chevron_right,
-                  color: AppColors.textSecondary,
-                ),
+                const RowChevron(),
               ],
             ],
           ),

@@ -11,6 +11,7 @@ import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/app_icon.dart';
 
 Future<void> _pumpHome(
   WidgetTester tester, {
@@ -134,7 +135,11 @@ void main() {
   testWidgets('Give tab shows the form above the nav bar', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.card_giftcard_outlined).last);
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is AppIcon && w.glyph == AppGlyph.give,
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Publish Item'), findsOneWidget);
