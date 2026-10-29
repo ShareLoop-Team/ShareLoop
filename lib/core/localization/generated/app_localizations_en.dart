@@ -98,10 +98,32 @@ class AppLocalizationsEn extends AppLocalizations {
       'Give what you no longer need. Find what you do. Share items for free with your community across Sri Lanka.';
 
   @override
-  String get onboardingLogIn => 'Log in';
+  String get onboardingGetStarted => 'Get started';
 
   @override
-  String get onboardingRegister => 'Register';
+  String get introSkip => 'Skip';
+
+  @override
+  String get introNext => 'Next';
+
+  @override
+  String get introGiveTitle => 'Give what you don\'t need';
+
+  @override
+  String get introGiveBody =>
+      'Books, clothes, furniture and more. Pass them on to someone nearby instead of throwing them away.';
+
+  @override
+  String get introShareTitle => 'Get what you do';
+
+  @override
+  String get introShareBody =>
+      'Find free items shared by your community and help keep useful things out of landfill.';
+
+  @override
+  String introPageLabel(int current, int total) {
+    return 'Page $current of $total';
+  }
 
   @override
   String get loginWelcomeBack => 'Welcome back!';
@@ -568,13 +590,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'You\'ll need to log in again to give or request items.';
 
   @override
-  String get profileNoDonations => 'You haven\'t given any items yet.';
-
-  @override
   String get profileNoRequests => 'You haven\'t requested any items yet.';
-
-  @override
-  String get profileNoReviews => 'No reviews yet.';
 
   @override
   String get statusAvailable => 'Available';
@@ -611,4 +627,185 @@ class AppLocalizationsEn extends AppLocalizations {
   String timeDaysAgo(int count) {
     return '${count}d ago';
   }
+
+  @override
+  String get itemDetailsTitle => 'Item details';
+
+  @override
+  String get itemDetailsAvailable => 'Available';
+
+  @override
+  String get itemDetailsPendingHandover => 'Handover pending';
+
+  @override
+  String get itemDetailsGivenAway => 'Given away';
+
+  @override
+  String itemDetailsPosted(String time) {
+    return 'Posted $time';
+  }
+
+  @override
+  String itemDetailsItemsGiven(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count items given',
+      one: '1 item given',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get itemDetailsPrivacyNote =>
+      'Contact details stay private. The donor reads the reasons of all requesters and shares contact details only with the one they select.';
+
+  @override
+  String get itemDetailsRequest => 'Request this item';
+
+  @override
+  String get itemDetailsViewRequests => 'View incoming requests';
+
+  @override
+  String get itemDetailsArrangeHandover => 'Arrange handover';
+
+  @override
+  String get itemDetailsUnavailable => 'This item is no longer available.';
+
+  @override
+  String get itemDetailsClosed =>
+      'This item is no longer available for requests.';
+
+  @override
+  String get itemDetailsShare => 'Share';
+
+  @override
+  String get itemDetailsViewPhoto => 'View photo full screen';
+
+  @override
+  String itemDetailsShareText(
+    String title,
+    String district,
+    String description,
+  ) {
+    return '$title is free to a good home on ShareLoop ($district). $description';
+  }
+
+  @override
+  String get editProfileChangePhoto => 'Change photo';
+
+  @override
+  String get editProfileEmailLocked => 'Your email cannot be changed';
+
+  @override
+  String get editProfilePhoneNote =>
+      'Your phone number is shared only with the person you are matched with, after the donor selects a requester.';
+
+  @override
+  String get editProfilePhoneInvalid => 'Enter a valid phone number';
+
+  @override
+  String get editProfileSave => 'Save Changes';
+
+  @override
+  String get editProfileSaved => 'Profile updated.';
+
+  @override
+  String get editProfileFailed =>
+      'Couldn\'t save your profile. Please try again.';
+
+  @override
+  String get myRequestsSubtitle => 'Items you have asked for';
+
+  @override
+  String get myRequestsEmptyTitle => 'No requests yet';
+
+  @override
+  String get myRequestsEmptyBody =>
+      'Need something? Ask your community. Donors read your reason before they choose.';
+
+  @override
+  String get myRequestsTipLabel => 'Tip:';
+
+  @override
+  String get myRequestsTip =>
+      'a short, honest reason helps donors choose fairly.';
+
+  @override
+  String get myRequestsAction => 'Request an item';
+
+  @override
+  String get myDonationsSubtitle => 'Items you have given away';
+
+  @override
+  String get myDonationsEmptyTitle => 'No donations yet';
+
+  @override
+  String get myDonationsEmptyBody =>
+      'Items you give away will show up here. Your first donation starts your badge journey.';
+
+  @override
+  String myDonationsBadgeTitle(String badge) {
+    return '$badge badge';
+  }
+
+  @override
+  String myDonationsBadgeHint(int count, String level) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Give $count items to become a $level',
+      one: 'Give 1 more item to become a $level',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get myDonationsFirstAction => 'Give your first item';
+
+  @override
+  String get myDonationsAction => 'Give an item';
+
+  @override
+  String get myReviewsSubtitle => 'What others say about you';
+
+  @override
+  String get myReviewsEmptyTitle => 'No reviews yet';
+
+  @override
+  String get myReviewsEmptyBody =>
+      'After each exchange, you and the other person can rate each other. Good reviews build trust.';
+
+  @override
+  String get myReviewsFirstTitle => 'Get your first review';
+
+  @override
+  String get myReviewsFirstBody =>
+      'Give or receive an item and complete the handover to unlock ratings.';
+
+  @override
+  String get myReviewsAction => 'Browse items';
+
+  @override
+  String myReviewsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reviews',
+      one: '1 review',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get onboardingLogIn => 'Log in';
+
+  @override
+  String get onboardingRegister => 'Register';
+
+  @override
+  String get profileNoDonations => 'You haven\'t given any items yet.';
+
+  @override
+  String get profileNoReviews => 'No reviews yet.';
 }

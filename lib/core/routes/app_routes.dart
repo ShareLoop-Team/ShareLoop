@@ -5,11 +5,15 @@ class AppRoutes {
   AppRoutes._();
 
   static const String splash = '/';
+  static const String intro = '/intro';
   static const String onboarding = '/onboarding';
   static const String login = '/login';
   static const String register = '/register';
   static const String home = '/home';
   static const String editProfile = '/profile/edit';
+  static const String myDonations = '/profile/donations';
+  static const String myRequests = '/profile/requests';
+  static const String myReviews = '/profile/reviews';
   static const String categoryBrowse = '/browse/category';
   static const String searchFilter = '/browse/search';
   static const String createGiveAway = '/give-away/create';
