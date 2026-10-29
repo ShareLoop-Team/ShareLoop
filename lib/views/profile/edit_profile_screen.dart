@@ -10,7 +10,9 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/photo_upload.dart';
+import '../../widgets/camera_capture.dart';
 import '../../widgets/info_note.dart';
+import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/subpage_header.dart';
 import '../../widgets/user_avatar.dart';
@@ -51,45 +53,18 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   Future<void> _pickPhoto() async {
-    final l10n = AppLocalizations.of(context);
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      showDragHandle: true,
-      backgroundColor: AppColors.white,
-      builder: (sheetContext) => SafeArea(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            ListTile(
-              leading: const Icon(
-                Icons.photo_camera_outlined,
-                color: AppColors.deepGreen,
-              ),
-              title: Text(l10n.giveTakePhoto),
-              onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.photo_library_outlined,
-                color: AppColors.deepGreen,
-              ),
-              title: Text(l10n.giveChooseFromGallery),
-              onTap: () => Navigator.of(sheetContext).pop(ImageSource.gallery),
-            ),
-            const SizedBox(height: 8),
-          ],
-        ),
-      ),
-    );
-    if (source == null) return;
+    final source = await showPhotoSourceSheet(context);
+    if (source == null || !mounted) return;
 
-    // A profile photo is shown small, so 800px keeps uploads light.
-    final file = await ImagePicker().pickImage(
-      source: source,
-      maxWidth: 800,
-      maxHeight: 800,
-      imageQuality: 85,
-    );
+    // A profile photo is shown small, so 800px keeps it light.
+    final file = source == ImageSource.camera
+        ? await takePhoto(context, maxWidth: 800, maxHeight: 800)
+        : await ImagePicker().pickImage(
+            source: ImageSource.gallery,
+            maxWidth: 800,
+            maxHeight: 800,
+            imageQuality: 85,
+          );
     if (file == null) return;
     final bytes = await file.readAsBytes();
     if (!mounted) return;

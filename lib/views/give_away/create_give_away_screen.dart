@@ -12,6 +12,8 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/item_request_model.dart';
 import '../../models/photo_upload.dart';
+import '../../widgets/camera_capture.dart';
+import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/post_form_widgets.dart';
 
 /// View: form to publish a new Give Away post (photos, details, category,
@@ -96,47 +98,17 @@ class _GiveFormState extends State<_GiveForm> {
   }
 
   Future<void> _addPhotos() async {
-    final l10n = AppLocalizations.of(context);
-    final source = await showModalBottomSheet<ImageSource>(
-      context: context,
-      showDragHandle: true,
-      backgroundColor: AppColors.white,
-      builder: (sheetContext) => Theme(
-        data: AppTheme.lightTheme,
-        child: SafeArea(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ListTile(
-                leading: const Icon(
-                  Icons.photo_camera_outlined,
-                  color: AppColors.deepGreen,
-                ),
-                title: Text(l10n.giveTakePhoto),
-                onTap: () => Navigator.of(sheetContext).pop(ImageSource.camera),
-              ),
-              ListTile(
-                leading: const Icon(
-                  Icons.photo_library_outlined,
-                  color: AppColors.deepGreen,
-                ),
-                title: Text(l10n.giveChooseFromGallery),
-                onTap: () =>
-                    Navigator.of(sheetContext).pop(ImageSource.gallery),
-              ),
-              const SizedBox(height: 8),
-            ],
-          ),
-        ),
-      ),
-    );
-    if (source == null) return;
+    final source = await showPhotoSourceSheet(context);
+    if (source == null || !mounted) return;
 
     final picker = ImagePicker();
     final remaining = _maxPhotos - _photos.length;
     final List<XFile> picked;
-    // pickMultiImage needs a limit of at least 2.
-    if (source == ImageSource.gallery && remaining > 1) {
+    if (source == ImageSource.camera) {
+      final file = await takePhoto(context, maxWidth: 1600);
+      picked = file == null ? const [] : [file];
+    } else if (remaining > 1) {
+      // pickMultiImage needs a limit of at least 2.
       picked = await picker.pickMultiImage(
         limit: remaining,
         maxWidth: 1600,
@@ -144,7 +116,7 @@ class _GiveFormState extends State<_GiveForm> {
       );
     } else {
       final file = await picker.pickImage(
-        source: source,
+        source: ImageSource.gallery,
         maxWidth: 1600,
         imageQuality: 85,
       );

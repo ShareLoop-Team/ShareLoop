@@ -41,6 +41,10 @@ dependencies:
   provider: ^6.1.2
   # Photo selection for Give Away posts and profile photos.
   image_picker: ^1.1.2
+  # In-app camera for "Take a photo" on web and desktop, where image_picker
+  # can't open a camera (phones use their own camera app instead).
+  camera: ^0.12.2
+  camera_windows: ^0.3.0+1
   # Date formatting and localization helpers.
   intl: ^0.20.3
 
