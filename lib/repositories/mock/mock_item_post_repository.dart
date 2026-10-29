@@ -3,8 +3,8 @@ import '../../models/photo_upload.dart';
 import '../../services/mock_data_service.dart';
 import '../item_post_repository.dart';
 
-/// [ItemPostRepository] over in-memory mock data. Photos stay on the device
-/// (their names are kept as paths) and are not displayed.
+/// [ItemPostRepository] over in-memory mock data. Photos are kept in memory
+/// for the current run only.
 class MockItemPostRepository implements ItemPostRepository {
   final MockDataService _data = MockDataService.instance;
 
@@ -68,6 +68,15 @@ class MockItemPostRepository implements ItemPostRepository {
       district: post.district,
       city: post.city,
       photoPaths: [for (final photo in photos) photo.name],
+      // Kept in memory as data: URLs so they show without a backend, like
+      // profile photos.
+      photoUrls: [
+        for (final photo in photos)
+          Uri.dataFromBytes(
+            photo.bytes,
+            mimeType: photo.mimeType ?? 'image/jpeg',
+          ).toString(),
+      ],
       createdAt: post.createdAt,
     );
     _data.itemPosts.add(stored);
