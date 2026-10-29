@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shareloop/controllers/language_controller.dart';
 import 'package:shareloop/core/constants/app_colors.dart';
 import 'package:shareloop/main.dart';
+import 'package:shareloop/views/onboarding/intro_screen.dart';
 import 'package:shareloop/views/onboarding/onboarding_screen.dart';
 import 'package:shareloop/views/splash/splash_screen.dart';
 
@@ -20,43 +21,52 @@ Future<void> _openOnboarding(
   await tester.pump(const Duration(milliseconds: 50));
   expect(find.byType(SplashScreen), findsOneWidget);
 
-  // Splash holds for its minimum duration, then replaces itself.
+  // Splash holds for its minimum duration, then replaces itself with the
+  // intro pages; Skip continues to the welcome screen.
   await tester.pump(const Duration(seconds: 3));
+  await tester.pumpAndSettle();
+  expect(find.byType(IntroScreen), findsOneWidget);
+  await tester.tap(find.text('Skip'));
   await tester.pumpAndSettle();
 }
 
+Future<void> _openLogin(
+  WidgetTester tester, {
+  Size size = const Size(390, 844),
+}) async {
+  await _openOnboarding(tester, size: size);
+  await tester.ensureVisible(find.text('Get started'));
+  await tester.tap(find.text('Get started'));
+  await tester.pumpAndSettle();
+  expect(find.text('Welcome back!'), findsOneWidget);
+}
+
 void main() {
-  testWidgets('Splash continues to the onboarding screen', (tester) async {
-    await _openOnboarding(tester);
-
-    expect(find.byType(OnboardingScreen), findsOneWidget);
-    expect(find.bySemanticsLabel('ShareLoop'), findsOneWidget);
-    expect(find.text('Log in'), findsOneWidget);
-    expect(find.text('Register'), findsOneWidget);
-  });
-
-  testWidgets('Register opens registration and back returns', (
+  testWidgets('Splash and intro continue to the onboarding screen', (
     tester,
   ) async {
     await _openOnboarding(tester);
 
-    await tester.tap(find.text('Register'));
+    expect(find.byType(OnboardingScreen), findsOneWidget);
+    expect(find.bySemanticsLabel('ShareLoop'), findsOneWidget);
+    expect(find.text('Get started'), findsOneWidget);
+    expect(find.text('Log in'), findsNothing);
+    expect(find.text('Register'), findsNothing);
+  });
+
+  testWidgets('Get started opens the login screen and back returns', (
+    tester,
+  ) async {
+    await _openOnboarding(tester);
+
+    await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
-    expect(find.text('Create account'), findsOneWidget);
+    expect(find.text('Welcome back!'), findsOneWidget);
 
     // The design has no app bar, so go back with the system back action.
     await tester.binding.handlePopRoute();
     await tester.pumpAndSettle();
     expect(find.byType(OnboardingScreen), findsOneWidget);
-  });
-
-  testWidgets('Log in opens the login screen', (tester) async {
-    await _openOnboarding(tester);
-
-    await tester.tap(find.text('Log in'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Welcome back!'), findsOneWidget);
   });
 
   testWidgets('Keeps brand light colors when the device is in dark mode', (
@@ -78,7 +88,7 @@ void main() {
     Provider.of<LanguageController>(context, listen: false).setLanguage('si');
     await tester.pumpAndSettle();
 
-    expect(find.text('ලියාපදිංචි වන්න'), findsOneWidget);
+    expect(find.text('අරඹමු'), findsOneWidget);
   });
 
   for (final size in const [
@@ -97,11 +107,7 @@ void main() {
       WidgetTester tester, {
       Size size = const Size(390, 844),
     }) async {
-      await _openOnboarding(tester, size: size);
-      await tester.ensureVisible(find.text('Log in'));
-      await tester.tap(find.text('Log in'));
-      await tester.pumpAndSettle();
-      expect(find.text('Welcome back!'), findsOneWidget);
+      await _openLogin(tester, size: size);
     }
 
     testWidgets('toggles password visibility', (tester) async {
@@ -146,9 +152,11 @@ void main() {
       WidgetTester tester, {
       Size size = const Size(390, 844),
     }) async {
-      await _openOnboarding(tester, size: size);
-      await tester.ensureVisible(find.text('Register'));
-      await tester.tap(find.text('Register'));
+      // New users reach registration through login's Create Account link.
+      await _openLogin(tester, size: size);
+      await tester.ensureVisible(find.text('Create Account'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Create Account'));
       await tester.pumpAndSettle();
       expect(find.text('Create account'), findsOneWidget);
     }

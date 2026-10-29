@@ -811,12 +811,6 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
-  String get onboardingLogIn => 'உள்நுழைய';
-
-  @override
-  String get onboardingRegister => 'பதிவு செய்ய';
-
-  @override
   String get profileNoDonations =>
       'நீங்கள் இன்னும் எந்தப் பொருளையும் கொடுக்கவில்லை.';
 

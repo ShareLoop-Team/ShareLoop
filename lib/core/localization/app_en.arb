@@ -380,8 +380,6 @@
       }
     }
   },
-  "onboardingLogIn": "Log in",
-  "onboardingRegister": "Register",
   "profileNoDonations": "You haven't given any items yet.",
   "profileNoReviews": "No reviews yet."
 }

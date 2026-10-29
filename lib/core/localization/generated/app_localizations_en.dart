@@ -798,12 +798,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get onboardingLogIn => 'Log in';
-
-  @override
-  String get onboardingRegister => 'Register';
-
-  @override
   String get profileNoDonations => 'You haven\'t given any items yet.';
 
   @override

@@ -236,8 +236,6 @@
   "myReviewsFirstBody": "மதிப்பீடுகளைத் திறக்க, ஒரு பொருளைக் கொடுத்து அல்லது பெற்று ஒப்படைப்பை முடிக்கவும்.",
   "myReviewsAction": "பொருட்களைப் பாருங்கள்",
   "myReviewsCount": "{count, plural, =1{1 மதிப்புரை} other{{count} மதிப்புரைகள்}}",
-  "onboardingLogIn": "உள்நுழைய",
-  "onboardingRegister": "பதிவு செய்ய",
   "profileNoDonations": "நீங்கள் இன்னும் எந்தப் பொருளையும் கொடுக்கவில்லை.",
   "profileNoReviews": "இன்னும் மதிப்புரைகள் இல்லை."
 }

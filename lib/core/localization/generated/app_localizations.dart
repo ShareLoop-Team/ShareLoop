@@ -1520,18 +1520,6 @@ abstract class AppLocalizations {
   /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
   String myReviewsCount(int count);
 
-  /// No description provided for @onboardingLogIn.
-  ///
-  /// In en, this message translates to:
-  /// **'Log in'**
-  String get onboardingLogIn;
-
-  /// No description provided for @onboardingRegister.
-  ///
-  /// In en, this message translates to:
-  /// **'Register'**
-  String get onboardingRegister;
-
   /// No description provided for @profileNoDonations.
   ///
   /// In en, this message translates to:

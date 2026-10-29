@@ -801,12 +801,6 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
-  String get onboardingLogIn => 'ඇතුල් වන්න';
-
-  @override
-  String get onboardingRegister => 'ලියාපදිංචි වන්න';
-
-  @override
   String get profileNoDonations => 'ඔබ තවම කිසිදු අයිතමයක් දී නැත.';
 
   @override

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:shareloop/controllers/auth_controller.dart';
@@ -6,7 +6,7 @@ import 'package:shareloop/controllers/splash_controller.dart';
 import 'package:shareloop/core/constants/app_colors.dart';
 import 'package:shareloop/core/routes/app_routes.dart';
 import 'package:shareloop/main.dart';
-import 'package:shareloop/views/onboarding/onboarding_screen.dart';
+import 'package:shareloop/views/onboarding/intro_screen.dart';
 import 'package:shareloop/views/splash/splash_screen.dart';
 
 /// [AuthController] whose session restoration takes [initDuration] and can
@@ -41,7 +41,7 @@ void main() {
     // minimum-display timer has started, so nothing can navigate away.
     await tester.pump(const Duration(milliseconds: 2500));
     expect(find.byType(SplashScreen), findsOneWidget);
-    expect(find.byType(OnboardingScreen), findsNothing);
+    expect(find.byType(IntroScreen), findsNothing);
     expect(tester.widget<Opacity>(find.byType(Opacity)).opacity, 0);
 
     await tester.pump(firstFrameCeiling - const Duration(milliseconds: 2500));
@@ -52,7 +52,7 @@ void main() {
 
     await tester.pump(const Duration(milliseconds: 300));
     await tester.pumpAndSettle();
-    expect(find.byType(OnboardingScreen), findsOneWidget);
+    expect(find.byType(IntroScreen), findsOneWidget);
   });
   group('SplashController minimum duration', () {
     testWidgets('waits the full minimum when initialization is instant', (
@@ -67,7 +67,7 @@ void main() {
       expect(route, isNull);
 
       await tester.pump(const Duration(milliseconds: 100));
-      expect(route, AppRoutes.onboarding);
+      expect(route, AppRoutes.intro);
     });
 
     testWidgets('does not add the minimum on top of slow initialization', (
@@ -86,10 +86,10 @@ void main() {
       // Init ends at 1800 ms; a second delay stacked after it would still be
       // pending here.
       await tester.pump(const Duration(milliseconds: 100));
-      expect(route, AppRoutes.onboarding);
+      expect(route, AppRoutes.intro);
     });
 
-    testWidgets('still routes to onboarding, and reports, if init fails', (
+    testWidgets('still routes to the intro, and reports, if init fails', (
       tester,
     ) async {
       String? route;
@@ -99,7 +99,7 @@ void main() {
 
       await tester.pump(const Duration(seconds: 1));
 
-      expect(route, AppRoutes.onboarding);
+      expect(route, AppRoutes.intro);
       expect(tester.takeException(), isA<StateError>());
     });
   });
@@ -153,7 +153,7 @@ void main() {
       });
     }
 
-    testWidgets('navigates to onboarding about one second after the clock '
+    testWidgets('navigates to the intro about one second after the clock '
         'starts', (tester) async {
       await openSplash(tester);
 
@@ -164,7 +164,7 @@ void main() {
 
       await tester.pump(const Duration(milliseconds: 500));
       await tester.pumpAndSettle();
-      expect(find.byType(OnboardingScreen), findsOneWidget);
+      expect(find.byType(IntroScreen), findsOneWidget);
     });
   });
 }

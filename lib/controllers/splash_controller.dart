@@ -12,8 +12,8 @@ class SplashController {
   static const Duration minimumDisplayDuration = Duration(seconds: 1);
 
   /// A restored session goes straight to home; otherwise the splash hands
-  /// off to the onboarding/welcome screen, which offers Get started
-  /// (register) and Sign in (login).
+  /// off to the intro pages, which lead on to the welcome screen (Log in /
+  /// Register).
   ///
   /// Resolves after both session restoration has finished and
   /// [minimumDisplayDuration] has elapsed, whichever is later.
@@ -34,6 +34,6 @@ class SplashController {
       );
     }
     await minimumDisplay;
-    return auth.currentUser != null ? AppRoutes.home : AppRoutes.onboarding;
+    return auth.currentUser != null ? AppRoutes.home : AppRoutes.intro;
   }
 }
