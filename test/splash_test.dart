@@ -146,7 +146,7 @@ void main() {
 
         final scaffold = tester.widget<Scaffold>(find.byType(Scaffold));
         expect(scaffold.backgroundColor, AppColors.canvas);
-        expect(AppColors.canvas, const Color(0xFFF7FAF6));
+        expect(AppColors.canvas, const Color(0xFFF0F6EC));
 
         await tester.pump(const Duration(seconds: 3));
         await tester.pumpAndSettle();

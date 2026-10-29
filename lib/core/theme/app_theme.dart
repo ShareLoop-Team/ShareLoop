@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../constants/app_colors.dart';
+import 'app_typography.dart';
 
 /// App-wide Material 3 theme definitions. Pure presentation configuration —
 /// no business logic belongs here.
@@ -14,7 +15,9 @@ class AppTheme {
       primary: AppColors.deepGreen,
       secondary: AppColors.brightGreen,
       tertiary: AppColors.softMint,
-      surface: AppColors.canvas,
+      // Sheets, menus and pickers stay white; only the page behind them
+      // (scaffoldBackgroundColor) is green-tinted.
+      surface: AppColors.white,
       error: AppColors.error,
       onPrimary: AppColors.white,
       onSurface: AppColors.ink,
@@ -24,10 +27,9 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.canvas,
-      textTheme: ThemeData.light().textTheme.apply(
-            bodyColor: AppColors.ink,
-            displayColor: AppColors.ink,
-          ),
+      fontFamily: AppTypography.fontFamily,
+      fontFamilyFallback: AppTypography.fontFamilyFallback,
+      textTheme: AppTypography.textTheme(AppColors.ink),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.deepGreen,
         foregroundColor: AppColors.white,
@@ -49,7 +51,8 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
         ),
         filled: true,
-        fillColor: AppColors.softMint.withValues(alpha: 0.3),
+        // White, so fields stand out from the green-tinted background.
+        fillColor: AppColors.white,
       ),
       cardTheme: CardThemeData(
         elevation: 1,
@@ -81,6 +84,9 @@ class AppTheme {
       useMaterial3: true,
       colorScheme: colorScheme,
       scaffoldBackgroundColor: AppColors.ink,
+      fontFamily: AppTypography.fontFamily,
+      fontFamilyFallback: AppTypography.fontFamilyFallback,
+      textTheme: AppTypography.textTheme(colorScheme.onSurface),
       appBarTheme: AppBarTheme(
         backgroundColor: AppColors.ink,
         foregroundColor: AppColors.white,

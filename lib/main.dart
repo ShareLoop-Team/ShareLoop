@@ -13,6 +13,7 @@ import 'controllers/request_controller.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/app_typography.dart';
 import 'models/item_request_model.dart';
 import 'services/auth_service.dart';
 import 'views/admin/manage_categories_screen.dart';
@@ -41,6 +42,7 @@ import 'views/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppTypography.registerLicenses();
   // Firebase Authentication for sign-in; app data is in-memory sample data.
   await AuthService.initialize();
   runApp(const ShareLoopApp());
