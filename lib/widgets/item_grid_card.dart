@@ -4,6 +4,8 @@ import '../core/constants/app_colors.dart';
 import '../core/localization/generated/app_localizations.dart';
 import '../core/utils/time_ago.dart';
 import '../models/item_post_model.dart';
+import 'donor_badge_dot.dart';
+import 'item_photo.dart';
 
 /// Reusable photo-first card for Give Away posts in two-column grids:
 /// condition tag over the image, then title, category · district, and the
@@ -29,21 +31,6 @@ class ItemGridCard extends StatelessWidget {
   final VoidCallback onTap;
   final VoidCallback? onDelete;
   final String? deleteTooltip;
-
-  static Color _badgeColor(String? badge) {
-    switch (badge) {
-      case 'Bronze':
-        return AppColors.bronze;
-      case 'Silver':
-        return AppColors.silver;
-      case 'Gold':
-        return AppColors.amber;
-      case 'Platinum':
-        return AppColors.ink;
-      default:
-        return AppColors.softMint;
-    }
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -76,10 +63,9 @@ class ItemGridCard extends StatelessWidget {
                       color: AppColors.paleMint,
                       child: post.photoUrls.isEmpty
                           ? placeholder
-                          : Image.network(
-                              post.photoUrls.first,
-                              fit: BoxFit.cover,
-                              errorBuilder: (_, _, _) => placeholder,
+                          : ItemPhoto(
+                              url: post.photoUrls.first,
+                              placeholder: placeholder,
                             ),
                     ),
                   ),
@@ -146,14 +132,7 @@ class ItemGridCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: _badgeColor(donorBadge),
-                          shape: BoxShape.circle,
-                        ),
-                      ),
+                      DonorBadgeDot(badge: donorBadge),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(

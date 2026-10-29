@@ -111,12 +111,13 @@ void main() {
       300,
       scrollable: find.byType(Scrollable).first,
     );
-    await tester.ensureVisible(find.text('Old desk lamp'));
-    await tester.pumpAndSettle();
     final deleteButton = find.descendant(
       of: _cardFor('Old desk lamp'),
       matching: find.byTooltip('Delete post'),
     );
+    // The button sits on the photo above the title, so scroll to it.
+    await tester.ensureVisible(deleteButton);
+    await tester.pumpAndSettle();
     await tester.tap(deleteButton);
     await tester.pumpAndSettle();
     await tester.tap(find.text('Cancel'));

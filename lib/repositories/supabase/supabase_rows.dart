@@ -16,7 +16,8 @@ class SupabaseRows {
   static const String profileSelect = '*, contacts:profile_contacts(email, phone)';
 
   static const String itemSelect = '*, '
-      'donor:profiles!items_donor_id_fkey(display_name, donation_count), '
+      'donor:profiles!items_donor_id_fkey(display_name, donation_count, '
+      'rating_avg), '
       'selected_request:item_requests!items_selected_request_id_fkey(requester_id)';
 
   static const String requestSelect =
@@ -31,7 +32,7 @@ class SupabaseRows {
     return null;
   }
 
-  static UserModel user(Map<String, dynamic> row) {
+  static UserModel user(Map<String, dynamic> row, {String? avatarUrl}) {
     final contacts = _embedded(row['contacts']);
     return UserModel(
       id: row['id'] as String,
@@ -40,6 +41,7 @@ class SupabaseRows {
       phone: contacts?['phone'] as String? ?? '',
       district: row['district'] as String,
       city: row['city'] as String? ?? '',
+      avatarUrl: avatarUrl,
       donationCount: row['donation_count'] as int? ?? 0,
       averageRating: (row['rating_avg'] as num? ?? 0).toDouble(),
       ratingCount: row['rating_count'] as int? ?? 0,
@@ -66,6 +68,7 @@ class SupabaseRows {
       donorId: row['donor_id'] as String,
       donorName: donor?['display_name'] as String? ?? '',
       donorDonationCount: donor?['donation_count'] as int? ?? 0,
+      donorRating: (donor?['rating_avg'] as num? ?? 0).toDouble(),
       title: row['title'] as String,
       description: row['description'] as String,
       condition: row['condition'] as String,
@@ -80,30 +83,49 @@ class SupabaseRows {
     );
   }
 
+  /// Signed URLs for storage [paths] in one call. Photos are optional on
+  /// every page, so a failure just leaves them out.
+  static Future<Map<String, String>> signPhotos(Iterable<String> paths) async {
+    final unique = paths.toSet().toList();
+    final signedUrls = <String, String>{};
+    if (unique.isEmpty) return signedUrls;
+    try {
+      final results = await BackendService.client.storage
+          .from(BackendConfig.itemImagesBucket)
+          .createSignedUrlsResult(
+            unique,
+            BackendConfig.signedUrlLifetime.inSeconds,
+          );
+      for (final result in results.whereType<SignedUrlSuccess>()) {
+        signedUrls[result.path] = result.signedUrl;
+      }
+    } catch (_) {
+      // Show the page without the photos.
+    }
+    return signedUrls;
+  }
+
   /// Maps item rows, fetching signed photo URLs for all of them in one call.
   static Future<List<ItemPostModel>> items(List<dynamic> rows) async {
     final maps = rows.cast<Map<String, dynamic>>();
-    final paths = <String>{
+    final signedUrls = await signPhotos([
       for (final row in maps)
         ...(row['image_paths'] as List? ?? const []).cast<String>(),
-    }.toList();
-    final signedUrls = <String, String>{};
-    if (paths.isNotEmpty) {
-      try {
-        final results = await BackendService.client.storage
-            .from(BackendConfig.itemImagesBucket)
-            .createSignedUrlsResult(
-              paths,
-              BackendConfig.signedUrlLifetime.inSeconds,
-            );
-        for (final result in results.whereType<SignedUrlSuccess>()) {
-          signedUrls[result.path] = result.signedUrl;
-        }
-      } catch (_) {
-        // Photos are optional on the page: show the post without them.
-      }
-    }
+    ]);
     return [for (final row in maps) item(row, signedUrls: signedUrls)];
+  }
+
+  /// Maps profile rows, fetching signed profile-photo URLs in one call.
+  static Future<List<UserModel>> users(List<dynamic> rows) async {
+    final maps = rows.cast<Map<String, dynamic>>();
+    final signedUrls = await signPhotos([
+      for (final row in maps)
+        if (row['avatar_path'] case final String path) path,
+    ]);
+    return [
+      for (final row in maps)
+        user(row, avatarUrl: signedUrls[row['avatar_path']]),
+    ];
   }
 
   static ItemRequestStatus requestStatus(String value) => switch (value) {

@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../core/config/backend_config.dart';
@@ -8,6 +6,7 @@ import '../../models/item_post_model.dart';
 import '../../models/photo_upload.dart';
 import '../../services/backend_service.dart';
 import '../item_post_repository.dart';
+import 'storage_photos.dart';
 import 'supabase_rows.dart';
 
 /// [ItemPostRepository] backed by the Supabase `items` table, with photos
@@ -68,12 +67,14 @@ class SupabaseItemPostRepository implements ItemPostRepository {
   }) {
     return BackendService.guard(() async {
       final uid = BackendService.requireUid();
-      final prepared = [for (final photo in photos) _prepare(photo)];
+      final prepared = [
+        for (final photo in photos) (photo, StoragePhotos.prepare(photo)),
+      ];
 
       final uploaded = <String>[];
       try {
-        for (final (photo, contentType, extension) in prepared) {
-          final path = '$uid/${_randomName()}.$extension';
+        for (final (photo, (contentType, extension)) in prepared) {
+          final path = '$uid/${StoragePhotos.randomName()}.$extension';
           await _bucket.uploadBinary(
             path,
             photo.bytes,
@@ -127,35 +128,4 @@ class SupabaseItemPostRepository implements ItemPostRepository {
       }
     });
   }
-
-  /// Validates a photo against the bucket's limits and picks its content
-  /// type and file extension.
-  static (PhotoUpload, String, String) _prepare(PhotoUpload photo) {
-    if (photo.bytes.length > BackendConfig.maxImageBytes) {
-      throw const AppException('Each photo must be 5 MB or smaller.');
-    }
-    final name = photo.name.toLowerCase();
-    final contentType = photo.mimeType ??
-        (name.endsWith('.png')
-            ? 'image/png'
-            : name.endsWith('.webp')
-                ? 'image/webp'
-                : 'image/jpeg');
-    if (!BackendConfig.allowedImageTypes.contains(contentType)) {
-      throw const AppException('Photos must be JPEG, PNG or WebP.');
-    }
-    final extension = switch (contentType) {
-      'image/png' => 'png',
-      'image/webp' => 'webp',
-      _ => 'jpg',
-    };
-    return (photo, contentType, extension);
-  }
-
-  static final Random _random = Random.secure();
-
-  static String _randomName() => [
-        for (var i = 0; i < 16; i++)
-          _random.nextInt(256).toRadixString(16).padLeft(2, '0'),
-      ].join();
 }
