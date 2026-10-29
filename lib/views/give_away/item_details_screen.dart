@@ -73,11 +73,8 @@ class ItemDetailsScreen extends StatelessWidget {
     final textTheme = Theme.of(context).textTheme;
     final itemController = context.watch<ItemController>();
     final currentUser = context.watch<AuthController>().currentUser;
-    final ItemPostModel? post =
-        itemController.posts.where((p) => p.id == postId).firstOrNull ??
-            itemController.postsByDonor(currentUser?.id ?? '')
-                .where((p) => p.id == postId)
-                .firstOrNull;
+    // Not `posts`: that list is narrowed by the Home search and filters.
+    final ItemPostModel? post = itemController.postById(postId);
 
     if (post == null) {
       return Scaffold(
@@ -616,10 +613,4 @@ class _DonorCard extends StatelessWidget {
       ),
     );
   }
-}
-
-
-
-extension _FirstOrNull<T> on Iterable<T> {
-  T? get firstOrNull => isEmpty ? null : first;
 }

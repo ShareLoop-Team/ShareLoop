@@ -26,7 +26,13 @@ class ItemController extends ChangeNotifier {
 
   String? categoryFilter;
   String? districtFilter;
+
+  /// Only posts in this city; Home sets it to the user's own city.
+  String? cityFilter;
   String searchQuery = '';
+
+  /// The profile city [applyProfileCity] last applied.
+  String? _profileCity;
 
   List<ItemPostModel> get posts {
     return _allPosts.where((p) {
@@ -34,12 +40,37 @@ class ItemController extends ChangeNotifier {
           categoryFilter == null || p.category == categoryFilter;
       final matchesDistrict =
           districtFilter == null || p.district == districtFilter;
+      final matchesCity = cityFilter == null || p.city == cityFilter;
       final matchesSearch = searchQuery.isEmpty ||
           p.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
           p.description.toLowerCase().contains(searchQuery.toLowerCase());
-      return matchesCategory && matchesDistrict && matchesSearch;
+      return matchesCategory && matchesDistrict && matchesCity && matchesSearch;
     }).toList();
   }
+
+  /// Whether a search, category, district or city is narrowing [posts].
+  bool get hasActiveFilters =>
+      categoryFilter != null ||
+      districtFilter != null ||
+      cityFilter != null ||
+      searchQuery.trim().isNotEmpty;
+
+  /// Whether [city] (the user's profile city) is already applied, so a
+  /// null [cityFilter] means they chose to see all areas.
+  bool hasAppliedProfileCity(String? city) => _profileCity == city;
+
+  /// Filters to the user's city when it is new or has changed, leaving any
+  /// "all areas" choice alone otherwise.
+  void applyProfileCity(String? city) {
+    if (_profileCity == city) return;
+    _profileCity = city;
+    cityFilter = city;
+    notifyListeners();
+  }
+
+  /// Any loaded post by id, regardless of the Home filters.
+  ItemPostModel? postById(String id) =>
+      _allPosts.where((p) => p.id == id).firstOrNull;
 
   Future<void> loadPosts() async {
     isLoading = true;
@@ -76,6 +107,11 @@ class ItemController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCityFilter(String? city) {
+    cityFilter = city;
+    notifyListeners();
+  }
+
   void setSearchQuery(String query) {
     searchQuery = query;
     notifyListeners();
@@ -84,6 +120,7 @@ class ItemController extends ChangeNotifier {
   void clearFilters() {
     categoryFilter = null;
     districtFilter = null;
+    cityFilter = null;
     searchQuery = '';
     notifyListeners();
   }

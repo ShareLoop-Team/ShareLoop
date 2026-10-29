@@ -682,6 +682,12 @@ abstract class AppLocalizations {
   /// **'All'**
   String get homeAllCategories;
 
+  /// No description provided for @homeCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get homeCategories;
+
   /// No description provided for @homeAvailableNearYou.
   ///
   /// In en, this message translates to:
@@ -705,6 +711,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Choose a district'**
   String get homeChooseDistrict;
+
+  /// No description provided for @homeChooseCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your city'**
+  String get homeChooseCity;
+
+  /// No description provided for @homeSelectCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Select city'**
+  String get homeSelectCity;
+
+  /// No description provided for @homeAllAreas.
+  ///
+  /// In en, this message translates to:
+  /// **'All areas'**
+  String get homeAllAreas;
+
+  /// No description provided for @homeChangeDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get homeChangeDistrict;
+
+  /// No description provided for @homeCityDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'District: {district}'**
+  String homeCityDistrict(String district);
 
   /// No description provided for @locationCityHint.
   ///
@@ -994,6 +1030,12 @@ abstract class AppLocalizations {
   /// **'Delete request'**
   String get requestsDelete;
 
+  /// No description provided for @requestsEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit request'**
+  String get requestsEdit;
+
   /// No description provided for @requestsDeleteConfirm.
   ///
   /// In en, this message translates to:
@@ -1156,6 +1198,24 @@ abstract class AppLocalizations {
   /// **'Your request has been submitted.'**
   String get requestSubmitted;
 
+  /// No description provided for @requestUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request has been updated.'**
+  String get requestUpdated;
+
+  /// No description provided for @requestEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Request'**
+  String get requestEditTitle;
+
+  /// No description provided for @requestEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update what donors see about your request'**
+  String get requestEditSubtitle;
+
   /// No description provided for @profileTitle.
   ///
   /// In en, this message translates to:
@@ -1281,6 +1341,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get notifOpenSettings;
+
+  /// No description provided for @stateLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load this. Check your connection and try again.'**
+  String get stateLoadFailed;
+
+  /// No description provided for @stateRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get stateRetry;
+
+  /// No description provided for @stateNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches your search or filters.'**
+  String get stateNoMatches;
+
+  /// No description provided for @stateClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get stateClearFilters;
+
+  /// No description provided for @searchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get searchClear;
+
+  /// No description provided for @discardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardTitle;
+
+  /// No description provided for @discardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve entered will be lost.'**
+  String get discardMessage;
+
+  /// No description provided for @discardAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discardAction;
 
   /// No description provided for @profileAdmin.
   ///

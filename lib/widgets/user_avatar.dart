@@ -7,6 +7,7 @@ import 'item_photo.dart';
 
 /// Round profile photo with a mint ring, or a person icon when there is no
 /// photo. [previewBytes] shows a just-picked photo before it is saved.
+/// With [borderRadius] it is a rounded square instead of a circle.
 class UserAvatar extends StatelessWidget {
   const UserAvatar({
     super.key,
@@ -14,12 +15,14 @@ class UserAvatar extends StatelessWidget {
     this.previewBytes,
     this.size = 96,
     this.ringWidth = 3,
+    this.borderRadius,
   });
 
   final String? url;
   final Uint8List? previewBytes;
   final double size;
   final double ringWidth;
+  final BorderRadius? borderRadius;
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +45,8 @@ class UserAvatar extends StatelessWidget {
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
         color: AppColors.paleMint,
-        shape: BoxShape.circle,
+        shape: borderRadius == null ? BoxShape.circle : BoxShape.rectangle,
+        borderRadius: borderRadius,
         border: Border.all(color: AppColors.softMint, width: ringWidth),
       ),
       child: ExcludeSemantics(child: content),

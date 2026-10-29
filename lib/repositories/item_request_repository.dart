@@ -17,5 +17,8 @@ abstract class ItemRequestRepository {
 
   Future<ItemRequestModel> createRequest(ItemRequestModel request);
 
+  /// Replaces the stored request with the same id.
+  Future<ItemRequestModel> updateRequest(ItemRequestModel request);
+
   Future<void> deleteRequest(String id);
 }

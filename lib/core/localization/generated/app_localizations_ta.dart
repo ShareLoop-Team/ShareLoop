@@ -323,6 +323,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get homeAllCategories => 'அனைத்தும்';
 
   @override
+  String get homeCategories => 'வகைகள்';
+
+  @override
   String get homeAvailableNearYou => 'உங்கள் அருகில் கிடைப்பவை';
 
   @override
@@ -333,6 +336,23 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get homeChooseDistrict => 'மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get homeChooseCity => 'உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get homeSelectCity => 'நகரத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get homeAllAreas => 'அனைத்து பகுதிகளும்';
+
+  @override
+  String get homeChangeDistrict => 'மாற்று';
+
+  @override
+  String homeCityDistrict(String district) {
+    return 'மாவட்டம்: $district';
+  }
 
   @override
   String get locationCityHint => 'உங்கள் நகரம் அல்லது ஊரைத் தேர்ந்தெடுங்கள்';
@@ -489,6 +509,9 @@ class AppLocalizationsTa extends AppLocalizations {
   String get requestsDelete => 'கோரிக்கையை நீக்கு';
 
   @override
+  String get requestsEdit => 'கோரிக்கையைத் திருத்து';
+
+  @override
   String get requestsDeleteConfirm => 'இந்தக் கோரிக்கையை நீக்கவா?';
 
   @override
@@ -578,6 +601,16 @@ class AppLocalizationsTa extends AppLocalizations {
   String get requestSubmitted => 'உங்கள் கோரிக்கை சமர்ப்பிக்கப்பட்டது.';
 
   @override
+  String get requestUpdated => 'உங்கள் கோரிக்கை புதுப்பிக்கப்பட்டது.';
+
+  @override
+  String get requestEditTitle => 'கோரிக்கையைத் திருத்து';
+
+  @override
+  String get requestEditSubtitle =>
+      'நன்கொடையாளர்கள் காணும் உங்கள் கோரிக்கை விவரங்களைப் புதுப்பிக்கவும்';
+
+  @override
   String get profileTitle => 'எனது சுயவிவரம்';
 
   @override
@@ -650,6 +683,32 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'அமைப்புகளைத் திற';
+
+  @override
+  String get stateLoadFailed =>
+      'இதை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get stateRetry => 'மீண்டும் முயற்சி';
+
+  @override
+  String get stateNoMatches =>
+      'உங்கள் தேடல் அல்லது வடிகட்டிகளுக்குப் பொருந்துவது எதுவும் இல்லை.';
+
+  @override
+  String get stateClearFilters => 'வடிகட்டிகளை அழி';
+
+  @override
+  String get searchClear => 'தேடலை அழி';
+
+  @override
+  String get discardTitle => 'மாற்றங்களை நிராகரிக்கவா?';
+
+  @override
+  String get discardMessage => 'நீங்கள் உள்ளிட்டவை இழக்கப்படும்.';
+
+  @override
+  String get discardAction => 'நிராகரி';
 
   @override
   String get profileAdmin => 'நிர்வாகம்';

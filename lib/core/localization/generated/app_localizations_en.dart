@@ -317,6 +317,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeAllCategories => 'All';
 
   @override
+  String get homeCategories => 'Categories';
+
+  @override
   String get homeAvailableNearYou => 'Available near you';
 
   @override
@@ -327,6 +330,23 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeChooseDistrict => 'Choose a district';
+
+  @override
+  String get homeChooseCity => 'Choose your city';
+
+  @override
+  String get homeSelectCity => 'Select city';
+
+  @override
+  String get homeAllAreas => 'All areas';
+
+  @override
+  String get homeChangeDistrict => 'Change';
+
+  @override
+  String homeCityDistrict(String district) {
+    return 'District: $district';
+  }
 
   @override
   String get locationCityHint => 'Select your city or town';
@@ -480,6 +500,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestsDelete => 'Delete request';
 
   @override
+  String get requestsEdit => 'Edit request';
+
+  @override
   String get requestsDeleteConfirm => 'Delete this request?';
 
   @override
@@ -565,6 +588,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestSubmitted => 'Your request has been submitted.';
 
   @override
+  String get requestUpdated => 'Your request has been updated.';
+
+  @override
+  String get requestEditTitle => 'Edit Request';
+
+  @override
+  String get requestEditSubtitle => 'Update what donors see about your request';
+
+  @override
   String get profileTitle => 'My Profile';
 
   @override
@@ -635,6 +667,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'Open settings';
+
+  @override
+  String get stateLoadFailed =>
+      'Couldn\'t load this. Check your connection and try again.';
+
+  @override
+  String get stateRetry => 'Try again';
+
+  @override
+  String get stateNoMatches => 'Nothing matches your search or filters.';
+
+  @override
+  String get stateClearFilters => 'Clear filters';
+
+  @override
+  String get searchClear => 'Clear search';
+
+  @override
+  String get discardTitle => 'Discard changes?';
+
+  @override
+  String get discardMessage => 'What you\'ve entered will be lost.';
+
+  @override
+  String get discardAction => 'Discard';
 
   @override
   String get profileAdmin => 'Admin';

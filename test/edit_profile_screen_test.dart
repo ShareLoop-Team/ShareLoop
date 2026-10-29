@@ -10,6 +10,7 @@ import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/models/photo_upload.dart';
 import 'package:shareloop/views/profile/edit_profile_screen.dart';
+import 'package:shareloop/widgets/city_dropdown_field.dart';
 import 'package:shareloop/widgets/user_avatar.dart';
 
 /// Signs in mock user u4 (Priya) and opens Edit Profile on top of a
@@ -116,6 +117,78 @@ void main() {
     expect(auth.currentUser?.name, 'Priya R.');
     expect(find.byType(EditProfileScreen), findsNothing);
     expect(find.text('Profile updated.'), findsOneWidget);
+  });
+
+  testWidgets('city list follows the district; Negombo saves under Gampaha', (
+    tester,
+  ) async {
+    final (:auth, :profile) = await _openEditProfile(tester);
+    expect(find.text('Kandy'), findsOneWidget);
+    expect(find.text('Peradeniya'), findsOneWidget);
+
+    // Kandy's towns only.
+    await tester.tap(find.text('Peradeniya'));
+    await tester.pumpAndSettle();
+    expect(find.text('Gampola'), findsWidgets);
+    expect(find.text('Negombo'), findsNothing);
+    await tester.tap(find.text('Peradeniya').last);
+    await tester.pumpAndSettle();
+
+    // A new district drops Peradeniya and offers Gampaha's towns.
+    await tester.tap(find.text('Kandy'));
+    await tester.pumpAndSettle();
+    // The menu opens at Kandy; Gampaha is further up.
+    await tester.drag(find.text('Kandy').last, const Offset(0, 300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Gampaha').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Peradeniya'), findsNothing);
+    expect(find.text('Select your city or town'), findsOneWidget);
+
+    // Saving without a city is refused.
+    await tester.tap(find.text('Save Changes'));
+    await tester.pumpAndSettle();
+    expect(find.text('City / town is required'), findsOneWidget);
+
+    await tester.tap(find.byType(CityDropdownField));
+    await tester.pumpAndSettle();
+    expect(find.text('Ja-Ela'), findsWidgets);
+    await tester.drag(find.text('Ja-Ela').last, const Offset(0, -300));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Negombo').last);
+    await tester.pumpAndSettle();
+    expect(find.text('Negombo'), findsOneWidget);
+
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Save Changes'));
+      await Future<void>.delayed(const Duration(milliseconds: 400));
+    });
+    await tester.pumpAndSettle();
+
+    expect(profile.user?.district, 'Gampaha');
+    expect(profile.user?.city, 'Negombo');
+    expect(auth.currentUser?.city, 'Negombo');
+    expect(find.byType(EditProfileScreen), findsNothing);
+  });
+
+  testWidgets('a city is disabled until a district is chosen', (
+    tester,
+  ) async {
+    final (:auth, :profile) = await _openEditProfile(tester);
+    await tester.tap(find.byTooltip('Back'));
+    await tester.pumpAndSettle();
+    // A profile from before districts were required: no district or city.
+    profile.user = profile.user!.copyWith(district: '', city: 'Somewhere');
+    auth.updateCurrentUser(profile.user!);
+    await tester.tap(find.text('open'));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Somewhere'), findsNothing);
+    expect(find.text('Select a district first'), findsOneWidget);
+    final city = tester.widget<DropdownButton<String>>(
+      find.byType(DropdownButton<String>).last,
+    );
+    expect(city.onChanged, isNull);
   });
 
   testWidgets('a new photo is saved as the profile photo', (tester) async {

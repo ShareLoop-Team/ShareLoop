@@ -15,7 +15,11 @@ import '../../widgets/loading_indicator.dart';
 /// View: two-column grid of Give Away posts matching the Home filters.
 /// Built as a sliver so it scrolls together with the Home header.
 class GiveAwayTab extends StatelessWidget {
-  const GiveAwayTab({super.key});
+  const GiveAwayTab({super.key, this.onClearFilters});
+
+  /// Offered when the filters leave nothing to show; also clears the
+  /// search box the parent owns.
+  final VoidCallback? onClearFilters;
 
   Future<void> _confirmDelete(BuildContext context, ItemPostModel post) async {
     final l10n = AppLocalizations.of(context);
@@ -47,10 +51,26 @@ class GiveAwayTab extends StatelessWidget {
     }
     final posts = itemController.posts;
     if (posts.isEmpty) {
-      return SliverFillRemaining(
-        hasScrollBody: false,
-        child: EmptyState(message: l10n.noItemsAvailable),
-      );
+      final EmptyState state;
+      if (itemController.errorMessage case final error?) {
+        // A failed load is not "no items": say so and offer a retry.
+        state = EmptyState(
+          icon: Icons.cloud_off_outlined,
+          message: error,
+          actionLabel: l10n.stateRetry,
+          onAction: itemController.loadPosts,
+        );
+      } else if (itemController.hasActiveFilters) {
+        state = EmptyState(
+          icon: Icons.search_off,
+          message: l10n.stateNoMatches,
+          actionLabel: l10n.stateClearFilters,
+          onAction: onClearFilters ?? itemController.clearFilters,
+        );
+      } else {
+        state = EmptyState(message: l10n.noItemsAvailable);
+      }
+      return SliverFillRemaining(hasScrollBody: false, child: state);
     }
     final tileHeight = ItemGridCard.imageHeight +
         26 +

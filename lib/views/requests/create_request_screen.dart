@@ -9,31 +9,41 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/item_post_model.dart';
+import '../../models/item_request_model.dart';
 import '../../widgets/post_form_widgets.dart';
+import '../../widgets/unsaved_changes_guard.dart';
 
 /// View: create an item request. If [postId] is supplied, this request
 /// targets that specific Give Away post ("Request this item") and only
 /// asks why it's needed; otherwise it is a standalone need post.
 ///
+/// With [editRequest], edits the user's own request instead, starting from
+/// its current details.
+///
 /// Always uses the light brand theme, like the home shell it opens from.
 class CreateRequestScreen extends StatelessWidget {
-  const CreateRequestScreen({super.key, this.postId});
+  const CreateRequestScreen({super.key, this.postId, this.editRequest});
 
   final String? postId;
+  final ItemRequestModel? editRequest;
 
   @override
   Widget build(BuildContext context) {
     return Theme(
       data: AppTheme.lightTheme,
-      child: _RequestForm(postId: postId),
+      child: _RequestForm(
+        postId: editRequest?.itemPostId ?? postId,
+        editRequest: editRequest,
+      ),
     );
   }
 }
 
 class _RequestForm extends StatefulWidget {
-  const _RequestForm({this.postId});
+  const _RequestForm({this.postId, this.editRequest});
 
   final String? postId;
+  final ItemRequestModel? editRequest;
 
   @override
   State<_RequestForm> createState() => _RequestFormState();
@@ -61,24 +71,72 @@ class _RequestFormState extends State<_RequestForm> {
   /// The Give Away post being requested, when opened from its details.
   ItemPostModel? _post;
 
+  /// Changes that leaving would throw away.
+  bool _hasInput = false;
+
+  /// The text fields as the form opened: empty, or the edited request's.
+  late final List<String> _initialText;
+  String? _initialCategory;
+  String? _initialDistrict;
+
+  List<TextEditingController> get _textControllers => [
+        _itemNameController,
+        _descriptionController,
+        _reasonController,
+        _cityController,
+        _notesController,
+      ];
+
+  void _updateHasInput() {
+    final controllers = _textControllers;
+    final hasInput = _category != _initialCategory ||
+        _district != _initialDistrict ||
+        [
+          for (var i = 0; i < controllers.length; i++)
+            controllers[i].text.trim() != _initialText[i].trim(),
+        ].any((changed) => changed);
+    if (hasInput != _hasInput) setState(() => _hasInput = hasInput);
+  }
+
   @override
   void initState() {
     super.initState();
     final postId = widget.postId;
     if (postId != null) {
-      _post = context
-          .read<ItemController>()
-          .posts
-          .where((p) => p.id == postId)
-          .firstOrNull;
+      // Not `posts`: that list is narrowed by the Home search and filters.
+      _post = context.read<ItemController>().postById(postId);
     }
-    // Most people ask from where they live, so start from their profile.
-    final user = context.read<AuthController>().currentUser;
-    if (user != null) {
-      if (AppConstants.sriLankanDistricts.contains(user.district)) {
-        _district = user.district;
+    if (widget.editRequest case final request?) {
+      // Older requests have no item name; their cards show the description
+      // as the title, so start from that.
+      _itemNameController.text = request.itemName.isEmpty
+          ? request.description
+          : request.itemName;
+      _descriptionController.text = request.description;
+      _reasonController.text = request.reason;
+      _notesController.text = request.notes;
+      _cityController.text = request.city;
+      if (AppConstants.itemCategories.contains(request.category)) {
+        _category = request.category;
       }
-      _cityController.text = user.city;
+      if (AppConstants.sriLankanDistricts.contains(request.district)) {
+        _district = request.district;
+      }
+    } else {
+      // Most people ask from where they live, so start from their profile.
+      final user = context.read<AuthController>().currentUser;
+      if (user != null) {
+        if (AppConstants.sriLankanDistricts.contains(user.district)) {
+          _district = user.district;
+        }
+        _cityController.text = user.city;
+      }
+    }
+    _initialText = [for (final c in _textControllers) c.text];
+    _initialCategory = _category;
+    _initialDistrict = _district;
+    for (final controller in _textControllers) {
+      controller.addListener(_updateHasInput);
     }
   }
 
@@ -100,24 +158,54 @@ class _RequestFormState extends State<_RequestForm> {
     final l10n = AppLocalizations.of(context);
     final messenger = ScaffoldMessenger.of(context);
     final post = _post;
+    final editing = widget.editRequest;
+    final requests = context.read<RequestController>();
 
     setState(() => _submitting = true);
-    final error = await context.read<RequestController>().createRequest(
-          requesterId: user.id,
-          requesterName: user.name,
-          itemPostId: widget.postId,
-          itemName: post?.title ?? _itemNameController.text,
-          description: post?.title ?? _descriptionController.text,
-          reason: _reasonController.text,
-          notes: _notesController.text,
-          category: post?.category ?? _category!,
-          district: post?.district ?? _district!,
-          city: post?.city ?? _cityController.text,
-        );
+    final String? error;
+    if (editing != null) {
+      // A request for a post only says why; the item comes from the post.
+      error = await requests.updateRequest(
+        editing.itemPostId != null
+            ? editing.copyWith(
+                reason: _reasonController.text,
+                notes: _notesController.text,
+              )
+            : editing.copyWith(
+                itemName: _itemNameController.text,
+                description: _descriptionController.text,
+                reason: _reasonController.text,
+                notes: _notesController.text,
+                category: _category,
+                district: _district,
+                city: _cityController.text,
+              ),
+      );
+    } else {
+      error = await requests.createRequest(
+        requesterId: user.id,
+        requesterName: user.name,
+        requesterAvatarUrl: user.avatarUrl,
+        itemPostId: widget.postId,
+        itemName: post?.title ?? _itemNameController.text,
+        description: post?.title ?? _descriptionController.text,
+        reason: _reasonController.text,
+        notes: _notesController.text,
+        category: post?.category ?? _category!,
+        district: post?.district ?? _district!,
+        city: post?.city ?? _cityController.text,
+      );
+    }
     if (!mounted) return;
     setState(() => _submitting = false);
     if (error == null) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.requestSubmitted)));
+      messenger.showSnackBar(
+        SnackBar(
+          content: Text(
+            editing != null ? l10n.requestUpdated : l10n.requestSubmitted,
+          ),
+        ),
+      );
       Navigator.of(context).pop();
     } else {
       messenger.showSnackBar(SnackBar(content: Text(error)));
@@ -128,12 +216,14 @@ class _RequestFormState extends State<_RequestForm> {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final post = _post;
+    final editing = widget.editRequest;
     // Opened for a post that no longer exists: fall back to the full form.
-    final isTargeted = post != null;
+    // An edited request for a post keeps its item, loaded or not.
+    final isTargeted = post != null || editing?.itemPostId != null;
     String? required(String? value, String message) =>
         (value == null || value.trim().isEmpty) ? message : null;
 
-    return Scaffold(
+    final page = Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
         bottom: false,
@@ -149,8 +239,11 @@ class _RequestFormState extends State<_RequestForm> {
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 PostFormHeader(
-                  title: l10n.requestTitle,
-                  subtitle: l10n.requestSubtitle,
+                  title:
+                      editing != null ? l10n.requestEditTitle : l10n.requestTitle,
+                  subtitle: editing != null
+                      ? l10n.requestEditSubtitle
+                      : l10n.requestSubtitle,
                 ),
                 const SizedBox(height: 16),
                 _InfoBanner(
@@ -160,7 +253,20 @@ class _RequestFormState extends State<_RequestForm> {
                 const SizedBox(height: 20),
                 if (isTargeted) ...[
                   PostFieldLabel(l10n.requestYouAreRequesting),
-                  _RequestedItemCard(post: post),
+                  if (post != null)
+                    _RequestedItemCard(
+                      title: post.title,
+                      details:
+                          '${post.category} · ${post.city}, ${post.district}',
+                    )
+                  else
+                    _RequestedItemCard(
+                      title: editing!.itemName.isEmpty
+                          ? editing.description
+                          : editing.itemName,
+                      details: '${editing.category} · '
+                          '${editing.city}, ${editing.district}',
+                    ),
                 ] else ...[
                   PostFieldLabel(l10n.requestItemName),
                   TextFormField(
@@ -193,7 +299,10 @@ class _RequestFormState extends State<_RequestForm> {
                     value: _category,
                     hint: l10n.giveCategoryHint,
                     options: AppConstants.itemCategories,
-                    onChanged: (value) => setState(() => _category = value),
+                    onChanged: (value) {
+                      setState(() => _category = value);
+                      _updateHasInput();
+                    },
                     validator: (v) => required(v, l10n.giveCategoryRequired),
                   ),
                 ],
@@ -226,8 +335,10 @@ class _RequestFormState extends State<_RequestForm> {
                               hint: l10n.giveDistrictHint,
                               options: AppConstants.sriLankanDistricts,
                               menuMaxHeight: 320,
-                              onChanged: (value) =>
-                                  setState(() => _district = value),
+                              onChanged: (value) {
+                                setState(() => _district = value);
+                                _updateHasInput();
+                              },
                               validator: (v) =>
                                   required(v, l10n.giveDistrictRequired),
                             ),
@@ -274,12 +385,13 @@ class _RequestFormState extends State<_RequestForm> {
         ),
       ),
       bottomNavigationBar: PostSubmitBar(
-        label: l10n.submitRequest,
-        icon: Icons.near_me_outlined,
+        label: editing != null ? l10n.editProfileSave : l10n.submitRequest,
+        icon: editing != null ? Icons.check : Icons.near_me_outlined,
         isLoading: _submitting,
         onPressed: _submit,
       ),
     );
+    return UnsavedChangesGuard(hasChanges: _hasInput, child: page);
   }
 }
 
@@ -340,9 +452,12 @@ class _InfoBanner extends StatelessWidget {
 
 /// Summary of the Give Away post a targeted request is for.
 class _RequestedItemCard extends StatelessWidget {
-  const _RequestedItemCard({required this.post});
+  const _RequestedItemCard({required this.title, required this.details});
 
-  final ItemPostModel post;
+  final String title;
+
+  /// Category and place, e.g. "Shoes · Negombo, Gampaha".
+  final String details;
 
   @override
   Widget build(BuildContext context) {
@@ -374,7 +489,7 @@ class _RequestedItemCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  post.title,
+                  title,
                   style: textTheme.titleSmall?.copyWith(
                     fontWeight: FontWeight.w700,
                     color: AppColors.ink,
@@ -382,7 +497,7 @@ class _RequestedItemCard extends StatelessWidget {
                 ),
                 const SizedBox(height: 2),
                 Text(
-                  '${post.category} · ${post.city}, ${post.district}',
+                  details,
                   style: textTheme.bodySmall?.copyWith(
                     color: AppColors.textSecondary,
                   ),

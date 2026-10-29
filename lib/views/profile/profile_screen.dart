@@ -13,6 +13,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/badge_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_icon.dart';
+import '../../widgets/empty_state.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/notification_prompt.dart';
 import '../../widgets/user_avatar.dart';
@@ -141,6 +142,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
     // Also covers a profile still cached from a previous account.
     if (user == null || user.id != authUserId) {
+      // A failed load would otherwise spin forever.
+      if (profile.errorMessage case final error? when !profile.isLoading) {
+        return SafeArea(
+          child: EmptyState(
+            icon: Icons.cloud_off_outlined,
+            message: error,
+            actionLabel: l10n.stateRetry,
+            onAction: _load,
+          ),
+        );
+      }
       return const LoadingIndicator();
     }
 

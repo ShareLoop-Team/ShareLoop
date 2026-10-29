@@ -319,6 +319,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeAllCategories => 'සියල්ල';
 
   @override
+  String get homeCategories => 'කාණ්ඩ';
+
+  @override
   String get homeAvailableNearYou => 'ඔබ අසල ලබාගත හැකි';
 
   @override
@@ -329,6 +332,23 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeChooseDistrict => 'දිස්ත්‍රික්කයක් තෝරන්න';
+
+  @override
+  String get homeChooseCity => 'ඔබේ නගරය තෝරන්න';
+
+  @override
+  String get homeSelectCity => 'නගරය තෝරන්න';
+
+  @override
+  String get homeAllAreas => 'සියලු ප්‍රදේශ';
+
+  @override
+  String get homeChangeDistrict => 'වෙනස් කරන්න';
+
+  @override
+  String homeCityDistrict(String district) {
+    return 'දිස්ත්‍රික්කය: $district';
+  }
 
   @override
   String get locationCityHint => 'ඔබේ නගරය හෝ ප්‍රදේශය තෝරන්න';
@@ -484,6 +504,9 @@ class AppLocalizationsSi extends AppLocalizations {
   String get requestsDelete => 'ඉල්ලීම මකන්න';
 
   @override
+  String get requestsEdit => 'ඉල්ලීම සංස්කරණය කරන්න';
+
+  @override
   String get requestsDeleteConfirm => 'මෙම ඉල්ලීම මකන්නද?';
 
   @override
@@ -571,6 +594,16 @@ class AppLocalizationsSi extends AppLocalizations {
   String get requestSubmitted => 'ඔබේ ඉල්ලීම ඉදිරිපත් කර ඇත.';
 
   @override
+  String get requestUpdated => 'ඔබේ ඉල්ලීම යාවත්කාලීන කළා.';
+
+  @override
+  String get requestEditTitle => 'ඉල්ලීම සංස්කරණය';
+
+  @override
+  String get requestEditSubtitle =>
+      'පරිත්‍යාගශීලීන්ට පෙනෙන ඔබේ ඉල්ලීමේ විස්තර යාවත්කාලීන කරන්න';
+
+  @override
   String get profileTitle => 'මගේ පැතිකඩ';
 
   @override
@@ -641,6 +674,31 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'සැකසීම් විවෘත කරන්න';
+
+  @override
+  String get stateLoadFailed =>
+      'මෙය පූරණය කළ නොහැකි විය. ඔබගේ සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get stateRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get stateNoMatches => 'ඔබගේ සෙවුමට හෝ පෙරහන්වලට ගැළපෙන කිසිවක් නැත.';
+
+  @override
+  String get stateClearFilters => 'පෙරහන් ඉවත් කරන්න';
+
+  @override
+  String get searchClear => 'සෙවුම මකන්න';
+
+  @override
+  String get discardTitle => 'වෙනස්කම් ඉවත දමන්නද?';
+
+  @override
+  String get discardMessage => 'ඔබ ඇතුළත් කළ දේ නැති වේ.';
+
+  @override
+  String get discardAction => 'ඉවත දමන්න';
 
   @override
   String get profileAdmin => 'පරිපාලක';

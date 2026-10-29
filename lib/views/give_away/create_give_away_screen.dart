@@ -15,6 +15,7 @@ import '../../models/photo_upload.dart';
 import '../../widgets/camera_capture.dart';
 import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/post_form_widgets.dart';
+import '../../widgets/unsaved_changes_guard.dart';
 
 /// View: form to publish a new Give Away post (photos, details, category,
 /// condition, location). Shown as the home shell's Give tab, or pushed as
@@ -23,7 +24,12 @@ import '../../widgets/post_form_widgets.dart';
 ///
 /// Always uses the light brand theme, like the home shell it opens from.
 class CreateGiveAwayScreen extends StatelessWidget {
-  const CreateGiveAwayScreen({super.key, this.forRequest, this.onClose});
+  const CreateGiveAwayScreen({
+    super.key,
+    this.forRequest,
+    this.onClose,
+    this.hasUnsavedInput,
+  });
 
   final ItemRequestModel? forRequest;
 
@@ -31,20 +37,29 @@ class CreateGiveAwayScreen extends StatelessWidget {
   /// for when the form is a tab rather than a pushed page.
   final VoidCallback? onClose;
 
+  /// As a tab, tells the parent whether leaving would lose typed input, so
+  /// it can ask first. (A pushed page guards its own back navigation.)
+  final ValueNotifier<bool>? hasUnsavedInput;
+
   @override
   Widget build(BuildContext context) {
     return Theme(
       data: AppTheme.lightTheme,
-      child: _GiveForm(forRequest: forRequest, onClose: onClose),
+      child: _GiveForm(
+        forRequest: forRequest,
+        onClose: onClose,
+        hasUnsavedInput: hasUnsavedInput,
+      ),
     );
   }
 }
 
 class _GiveForm extends StatefulWidget {
-  const _GiveForm({this.forRequest, this.onClose});
+  const _GiveForm({this.forRequest, this.onClose, this.hasUnsavedInput});
 
   final ItemRequestModel? forRequest;
   final VoidCallback? onClose;
+  final ValueNotifier<bool>? hasUnsavedInput;
 
   @override
   State<_GiveForm> createState() => _GiveFormState();
@@ -68,6 +83,21 @@ class _GiveFormState extends State<_GiveForm> {
   /// Errors only show live once the user has tried to publish.
   bool _attemptedSubmit = false;
 
+  /// The title prefilled from a request, so it alone doesn't count as input.
+  String _initialTitle = '';
+  bool _hasInput = false;
+
+  /// Typed text or picked photos that leaving would throw away.
+  void _updateHasInput() {
+    final hasInput = _photos.isNotEmpty ||
+        _descriptionController.text.trim().isNotEmpty ||
+        _titleController.text.trim() != _initialTitle;
+    widget.hasUnsavedInput?.value = hasInput;
+    if (hasInput != _hasInput && mounted) {
+      setState(() => _hasInput = hasInput);
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -75,10 +105,14 @@ class _GiveFormState extends State<_GiveForm> {
     if (request != null) {
       _titleController.text =
           request.itemName.isEmpty ? request.description : request.itemName;
+      _initialTitle = _titleController.text.trim();
       if (AppConstants.itemCategories.contains(request.category)) {
         _category = request.category;
       }
     }
+    _titleController.addListener(_updateHasInput);
+    _descriptionController.addListener(_updateHasInput);
+    widget.hasUnsavedInput?.value = false;
     // Most people give from where they live, so start from their profile.
     final user = context.read<AuthController>().currentUser;
     if (user != null) {
@@ -128,6 +162,7 @@ class _GiveFormState extends State<_GiveForm> {
     ];
     if (!mounted || photos.isEmpty) return;
     setState(() => _photos.addAll(photos));
+    _updateHasInput();
   }
 
   Future<void> _submit() async {
@@ -159,6 +194,8 @@ class _GiveFormState extends State<_GiveForm> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (error == null) {
+      // Published, so leaving now loses nothing.
+      widget.hasUnsavedInput?.value = false;
       messenger.showSnackBar(SnackBar(content: Text(l10n.givePublished)));
       if (widget.onClose case final onClose?) {
         onClose();
@@ -176,7 +213,7 @@ class _GiveFormState extends State<_GiveForm> {
     String? required(String? value, String message) =>
         (value == null || value.trim().isEmpty) ? message : null;
 
-    return Scaffold(
+    final page = Scaffold(
       backgroundColor: AppColors.canvas,
       body: SafeArea(
         bottom: false,
@@ -205,8 +242,10 @@ class _GiveFormState extends State<_GiveForm> {
                   photos: _photos,
                   maxPhotos: _maxPhotos,
                   onAdd: _addPhotos,
-                  onRemove: (index) =>
-                      setState(() => _photos.removeAt(index)),
+                  onRemove: (index) {
+                    setState(() => _photos.removeAt(index));
+                    _updateHasInput();
+                  },
                 ),
                 const SizedBox(height: 20),
                 PostFieldLabel(l10n.giveItemTitle),
@@ -301,6 +340,9 @@ class _GiveFormState extends State<_GiveForm> {
         onPressed: _submit,
       ),
     );
+    // As a tab the parent asks before leaving (see hasUnsavedInput).
+    if (widget.onClose != null) return page;
+    return UnsavedChangesGuard(hasChanges: _hasInput, child: page);
   }
 }
 

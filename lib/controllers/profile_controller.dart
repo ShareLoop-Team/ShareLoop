@@ -69,6 +69,28 @@ class ProfileController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Saves just [current]'s district and city (e.g. picked on Home, where
+  /// the full profile may not be loaded). Returns the saved user, or null
+  /// with [errorMessage] set.
+  Future<UserModel?> updateLocation(
+    UserModel current, {
+    required String district,
+    required String city,
+  }) async {
+    errorMessage = null;
+    final updated = current.copyWith(district: district, city: city);
+    try {
+      await _userRepository.updateUser(updated);
+    } on AppException catch (e) {
+      errorMessage = e.message;
+      notifyListeners();
+      return null;
+    }
+    if (user?.id == updated.id) user = updated;
+    notifyListeners();
+    return updated;
+  }
+
   /// Saves the edited details, and [photo] as the new profile photo when
   /// one was picked. On failure [errorMessage] says why.
   Future<bool> updateProfile({

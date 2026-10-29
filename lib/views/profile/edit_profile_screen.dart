@@ -8,14 +8,19 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/constants/sri_lanka_locations.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/photo_upload.dart';
+import '../../models/user_model.dart';
+import '../../widgets/avatar_crop_screen.dart';
 import '../../widgets/camera_capture.dart';
+import '../../widgets/city_dropdown_field.dart';
 import '../../widgets/info_note.dart';
 import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/subpage_header.dart';
+import '../../widgets/unsaved_changes_guard.dart';
 import '../../widgets/user_avatar.dart';
 
 /// View: edit the signed-in user's photo, name, phone and location. Email
@@ -34,21 +39,41 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
   late final TextEditingController _phoneController;
-  late final TextEditingController _cityController;
   String? _district;
+
+  /// Always one of [_district]'s cities, or null.
+  String? _city;
   bool _initialized = false;
   bool _submitting = false;
 
-  /// A newly picked photo, uploaded only when the user saves.
-  XFile? _photo;
-  Uint8List? _photoBytes;
+  /// A newly picked and cropped photo, uploaded only when the user saves.
+  PhotoUpload? _photo;
+
+  String? _initialDistrict;
+  String? _initialCity;
+  bool _textEdited = false;
+
+  /// Whether leaving now would lose edits to the saved [user].
+  bool _hasChanges(UserModel user) =>
+      _photo != null ||
+      _district != _initialDistrict ||
+      _city != _initialCity ||
+      _nameController.text.trim() != user.name.trim() ||
+      _phoneController.text.trim() != user.phone.trim();
+
+  /// Rebuilds only when typing flips "has edits", for the back guard.
+  void _onTextEdited() {
+    final user = context.read<ProfileController>().user;
+    if (user == null) return;
+    final edited = _hasChanges(user);
+    if (edited != _textEdited) setState(() => _textEdited = edited);
+  }
 
   @override
   void dispose() {
     if (_initialized) {
       _nameController.dispose();
       _phoneController.dispose();
-      _cityController.dispose();
     }
     super.dispose();
   }
@@ -66,13 +91,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
             maxHeight: 800,
             imageQuality: 85,
           );
-    if (file == null) return;
+    if (file == null || !mounted) return;
     final bytes = await file.readAsBytes();
     if (!mounted) return;
-    setState(() {
-      _photo = file;
-      _photoBytes = bytes;
-    });
+    final cropped = await cropAvatar(context, bytes);
+    if (cropped == null || !mounted) return;
+    setState(() => _photo = PhotoUpload(
+          bytes: cropped,
+          mimeType: 'image/png',
+          name: 'avatar.png',
+        ));
   }
 
   Future<void> _submit() async {
@@ -83,19 +111,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _submitting = true);
-    final photo = _photo;
     final success = await profile.updateProfile(
       name: _nameController.text,
       phone: _phoneController.text,
       district: _district ?? '',
-      city: _cityController.text,
-      photo: photo == null
-          ? null
-          : PhotoUpload(
-              bytes: _photoBytes!,
-              mimeType: photo.mimeType,
-              name: photo.name,
-            ),
+      city: _city ?? '',
+      photo: _photo,
     );
     if (!mounted) return;
     setState(() => _submitting = false);
@@ -119,10 +140,14 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_initialized && user != null) {
       _nameController = TextEditingController(text: user.name);
       _phoneController = TextEditingController(text: user.phone);
-      _cityController = TextEditingController(text: user.city);
-      _district = AppConstants.sriLankanDistricts.contains(user.district)
-          ? user.district
-          : null;
+      _district = SriLankaLocations.validDistrict(user.district);
+      // An old free-text city that isn't on the list must be picked again.
+      _city = SriLankaLocations.validCity(_district, user.city);
+      _initialDistrict = _district;
+      _initialCity = _city;
+      for (final controller in [_nameController, _phoneController]) {
+        controller.addListener(_onTextEdited);
+      }
       _initialized = true;
     }
     if (!_initialized || user == null) {
@@ -132,7 +157,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
 
-    return Theme(
+    final page = Theme(
       data: AppTheme.lightTheme,
       child: Scaffold(
         backgroundColor: AppColors.canvas,
@@ -169,7 +194,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                       const SizedBox(height: 24),
                       _PhotoPicker(
                         url: user.avatarUrl,
-                        previewBytes: _photoBytes,
+                        previewBytes: _photo?.bytes,
                         label: l10n.editProfileChangePhoto,
                         onTap: _submitting ? null : _pickPhoto,
                       ),
@@ -242,8 +267,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                       ),
                                     ),
                                 ],
-                                onChanged: (value) =>
-                                    setState(() => _district = value),
+                                onChanged: (value) => setState(() {
+                                  _district = value;
+                                  // A city from the old district no longer
+                                  // applies.
+                                  _city =
+                                      SriLankaLocations.validCity(value, _city);
+                                }),
                                 validator: (value) => value == null
                                     ? l10n.registerDistrictRequired
                                     : null,
@@ -254,15 +284,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Expanded(
                             child: _Field(
                               label: l10n.registerCityLabel,
-                              child: TextFormField(
-                                controller: _cityController,
+                              child: CityDropdownField(
+                                district: _district,
+                                value: _city,
                                 decoration: _decoration(),
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.done,
-                                autofillHints: const [
-                                  AutofillHints.addressCity,
-                                ],
-                                validator: _required(l10n.registerCityRequired),
+                                iconColor: AppColors.ink,
+                                onChanged: (value) =>
+                                    setState(() => _city = value),
                               ),
                             ),
                           ),
@@ -288,6 +316,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
         ),
       ),
     );
+    return UnsavedChangesGuard(hasChanges: _hasChanges(user), child: page);
   }
 
   /// White rounded field with a light border; [locked] is the grey,
