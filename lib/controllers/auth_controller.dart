@@ -90,6 +90,14 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Replaces the signed-in user after their profile was saved elsewhere
+  /// (e.g. a new name or photo), so every screen showing them updates.
+  void updateCurrentUser(UserModel user) {
+    if (currentUser?.id != user.id) return;
+    currentUser = user;
+    notifyListeners();
+  }
+
   bool get supportsPasswordReset => _userRepository.supportsPasswordReset;
 
   /// Emails a password reset link. Returns an error message, or null once

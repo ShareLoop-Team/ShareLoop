@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
@@ -78,6 +79,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!_formKey.currentState!.validate()) return;
     final l10n = AppLocalizations.of(context);
     final profile = context.read<ProfileController>();
+    final auth = context.read<AuthController>();
     final navigator = Navigator.of(context);
     final messenger = ScaffoldMessenger.of(context);
     setState(() => _submitting = true);
@@ -98,6 +100,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (!mounted) return;
     setState(() => _submitting = false);
     if (success) {
+      auth.updateCurrentUser(profile.user!);
       messenger.showSnackBar(SnackBar(content: Text(l10n.editProfileSaved)));
       navigator.pop();
     } else {

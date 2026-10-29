@@ -10,6 +10,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../widgets/category_chip.dart';
 import '../../widgets/segmented_toggle.dart';
+import '../../widgets/user_avatar.dart';
 import 'give_away_tab.dart';
 import 'requests_tab.dart';
 
@@ -128,6 +129,7 @@ class _HomeFeedState extends State<HomeFeed> {
                     greeting: firstName.isEmpty
                         ? l10n.homeGreetingGuest
                         : l10n.homeGreeting(firstName),
+                    avatarUrl: user?.avatarUrl,
                     onProfileTap: widget.onOpenProfile,
                   ),
                   const SizedBox(height: 16),
@@ -224,9 +226,16 @@ class _HomeFeedState extends State<HomeFeed> {
 }
 
 class _Header extends StatelessWidget {
-  const _Header({required this.greeting, required this.onProfileTap});
+  const _Header({
+    required this.greeting,
+    required this.avatarUrl,
+    required this.onProfileTap,
+  });
 
   final String greeting;
+
+  /// The signed-in user's photo; a person icon is shown without one.
+  final String? avatarUrl;
   final VoidCallback onProfileTap;
 
   @override
@@ -285,17 +294,33 @@ class _Header extends StatelessWidget {
           ),
         ),
         const SizedBox(width: 12),
-        Material(
-          color: AppColors.white,
-          shape: const CircleBorder(
-            side: BorderSide(color: AppColors.softMint),
+        if (avatarUrl case final url? when url.isNotEmpty)
+          Tooltip(
+            message: AppLocalizations.of(context).profile,
+            child: Semantics(
+              button: true,
+              child: InkWell(
+                onTap: onProfileTap,
+                customBorder: const CircleBorder(),
+                child: UserAvatar(url: url, size: 48, ringWidth: 2),
+              ),
+            ),
+          )
+        else
+          Material(
+            color: AppColors.white,
+            shape: const CircleBorder(
+              side: BorderSide(color: AppColors.softMint),
+            ),
+            child: IconButton(
+              icon: const Icon(
+                Icons.person_outline,
+                color: AppColors.deepGreen,
+              ),
+              tooltip: AppLocalizations.of(context).profile,
+              onPressed: onProfileTap,
+            ),
           ),
-          child: IconButton(
-            icon: const Icon(Icons.person_outline, color: AppColors.deepGreen),
-            tooltip: AppLocalizations.of(context).profile,
-            onPressed: onProfileTap,
-          ),
-        ),
       ],
     );
   }

@@ -5,15 +5,16 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
+import 'package:shareloop/controllers/auth_controller.dart';
 import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/models/photo_upload.dart';
 import 'package:shareloop/views/profile/edit_profile_screen.dart';
 import 'package:shareloop/widgets/user_avatar.dart';
 
-/// Opens Edit Profile for mock user u4 (Priya) on top of a stand-in page,
-/// so saving can pop back to it.
-Future<ProfileController> _openEditProfile(
+/// Signs in mock user u4 (Priya) and opens Edit Profile on top of a
+/// stand-in page, so saving can pop back to it.
+Future<({AuthController auth, ProfileController profile})> _openEditProfile(
   WidgetTester tester, {
   Size size = const Size(390, 844),
   Locale locale = const Locale('en'),
@@ -22,12 +23,19 @@ Future<ProfileController> _openEditProfile(
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
 
+  final auth = AuthController();
   final profile = ProfileController();
-  await tester.runAsync(() => profile.loadProfile('u4'));
+  await tester.runAsync(() async {
+    await auth.login('priya@example.com', 'x');
+    await profile.loadProfile(auth.currentUser!.id);
+  });
 
   await tester.pumpWidget(
-    ChangeNotifierProvider.value(
-      value: profile,
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider.value(value: auth),
+        ChangeNotifierProvider.value(value: profile),
+      ],
       child: MaterialApp(
         locale: locale,
         localizationsDelegates: const [
@@ -52,7 +60,7 @@ Future<ProfileController> _openEditProfile(
   );
   await tester.tap(find.text('open'));
   await tester.pumpAndSettle();
-  return profile;
+  return (auth: auth, profile: profile);
 }
 
 Finder _fieldWithText(String text) =>
@@ -94,7 +102,7 @@ void main() {
   });
 
   testWidgets('saving updates the profile and goes back', (tester) async {
-    final profile = await _openEditProfile(tester);
+    final (:auth, :profile) = await _openEditProfile(tester);
 
     await tester.enterText(_fieldWithText('Priya Rajan'), 'Priya R.');
     await tester.runAsync(() async {
@@ -104,6 +112,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(profile.user?.name, 'Priya R.');
+    // The signed-in user changes too, so e.g. the home greeting updates.
+    expect(auth.currentUser?.name, 'Priya R.');
     expect(find.byType(EditProfileScreen), findsNothing);
     expect(find.text('Profile updated.'), findsOneWidget);
   });
