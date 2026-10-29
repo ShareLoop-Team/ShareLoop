@@ -25,6 +25,7 @@ Route::prefix('auth')->middleware('throttle:auth')->group(function () {
     Route::post('/login-with-code', [AuthController::class, 'loginWithCode']);
     Route::post('/reset-password', [AuthController::class, 'resetPassword']);
     Route::post('/google', [AuthController::class, 'google']);
+    Route::post('/facebook', [AuthController::class, 'facebook']);
 });
 
 Route::get('/categories', [CategoryController::class, 'index']);

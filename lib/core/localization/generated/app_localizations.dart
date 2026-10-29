@@ -1359,6 +1359,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Finish Sign-up'**
   String get googleCompleteButton;
+
+  /// No description provided for @facebookCompleteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signing up with Facebook as {email}. Add your phone number and district to finish.'**
+  String facebookCompleteSubtitle(String email);
 }
 
 class _AppLocalizationsDelegate

@@ -9,6 +9,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/email_code.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/facebook/facebook_sign_in_button.dart';
 import '../../widgets/google/google_sign_in_button.dart';
 
 /// View: login form. Validation of empty fields happens in the form; the
@@ -257,10 +258,9 @@ class _LoginViewState extends State<_LoginView> {
                                 onUnavailable: () => _socialSignIn(l10n),
                               ),
                               const SizedBox(height: 14),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.facebookLogo,
+                              FacebookSignInButton(
                                 label: l10n.loginWithFacebook,
-                                onPressed: () => _socialSignIn(l10n),
+                                onUnavailable: () => _socialSignIn(l10n),
                               ),
                               const Spacer(),
                               const SizedBox(height: 24),

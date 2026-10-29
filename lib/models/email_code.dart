@@ -50,16 +50,22 @@ class VerifyCodeArgs {
   const VerifyCodeArgs({required this.ticket, this.registration});
 }
 
-/// Result of "Sign in with Google": either signed in, or a new person who
-/// still has to give a phone number and district.
+/// Which provider a social sign-in came from.
+enum SocialProvider { google, facebook }
+
+/// Result of "Sign in with Google" / "Continue with Facebook": either signed
+/// in, or a new person who still has to give a phone number and district.
 class GoogleSignUpNeeded {
+  /// The provider's token (a Google ID token or a Facebook access token).
   final String idToken;
   final String email;
   final String name;
+  final SocialProvider provider;
 
   const GoogleSignUpNeeded({
     required this.idToken,
     required this.email,
     required this.name,
+    this.provider = SocialProvider.google,
   });
 }

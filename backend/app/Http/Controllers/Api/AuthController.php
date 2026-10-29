@@ -7,6 +7,7 @@ use App\Http\Resources\UserResource;
 use App\Models\EmailOtp;
 use App\Models\User;
 use App\Services\EmailOtpService;
+use App\Services\FacebookTokenVerifier;
 use App\Services\GoogleIdTokenVerifier;
 use App\Support\Rules;
 use Illuminate\Http\JsonResponse;
@@ -25,6 +26,7 @@ class AuthController extends Controller
     public function __construct(
         private readonly EmailOtpService $otps,
         private readonly GoogleIdTokenVerifier $google,
+        private readonly FacebookTokenVerifier $facebook,
     ) {}
 
     /** Emails a one-time code for register / login / reset. */
@@ -175,26 +177,55 @@ class AuthController extends Controller
      */
     public function google(Request $request): JsonResponse
     {
-        $data = $request->validate([
-            'id_token' => ['required', 'string', 'max:4096'],
+        $data = $this->validateSocial($request, 'id_token');
+        $google = $this->google->verify($data['id_token']);
+
+        return $this->socialSignIn($request, $data, 'google_id', [
+            'id' => $google['sub'], 'email' => $google['email'], 'name' => $google['name'],
+        ]);
+    }
+
+    /**
+     * "Continue with Facebook" with the user access token the app got from
+     * Facebook. Same flow as [google]: sign in, link by email, or ask a new
+     * person for their phone/district first.
+     */
+    public function facebook(Request $request): JsonResponse
+    {
+        $data = $this->validateSocial($request, 'access_token');
+        $facebook = $this->facebook->verify($data['access_token']);
+
+        return $this->socialSignIn($request, $data, 'facebook_id', $facebook);
+    }
+
+    private function validateSocial(Request $request, string $tokenField): array
+    {
+        return $request->validate([
+            $tokenField => ['required', 'string', 'max:4096'],
             'name' => ['sometimes', ...Rules::displayName()],
             'phone' => ['sometimes', ...Rules::phone()],
             'district' => ['sometimes', ...Rules::district()],
             'city' => ['sometimes', ...Rules::city()],
             'device_name' => ['nullable', 'string', 'max:100'],
         ], Rules::messages());
-        $google = $this->google->verify($data['id_token']);
+    }
 
-        $user = User::query()->where('google_id', $google['sub'])->first()
-            ?? User::query()->where('email', $google['email'])->first();
+    /**
+     * @param  'google_id'|'facebook_id'  $column
+     * @param  array{id: string, email: string, name: string}  $profile  verified by the provider
+     */
+    private function socialSignIn(Request $request, array $data, string $column, array $profile): JsonResponse
+    {
+        $user = User::query()->where($column, $profile['id'])->first()
+            ?? User::query()->where('email', $profile['email'])->first();
 
         if ($user !== null) {
             if (! $user->isActive()) {
                 abort(403, 'This account has been suspended.');
             }
-            if ($user->google_id === null) {
-                // Google has verified the email, so it's safe to link.
-                $user->forceFill(['google_id' => $google['sub']]);
+            if ($user->{$column} === null) {
+                // The provider has verified the email, so it's safe to link.
+                $user->forceFill([$column => $profile['id']]);
             }
             $user->email_verified_at ??= now();
             $user->save();
@@ -205,21 +236,21 @@ class AuthController extends Controller
         if (! isset($data['phone'], $data['district'])) {
             return response()->json([
                 'needs_profile' => true,
-                'email' => $google['email'],
-                'name' => $google['name'],
+                'email' => $profile['email'],
+                'name' => $profile['name'],
             ]);
         }
 
         $user = User::create([
-            'display_name' => trim($data['name'] ?? '') ?: ($google['name'] ?: strstr($google['email'], '@', true)),
-            'email' => $google['email'],
+            'display_name' => trim($data['name'] ?? '') ?: ($profile['name'] ?: strstr($profile['email'], '@', true)),
+            'email' => $profile['email'],
             // No password yet; "Forgot password?" can set one later.
             'password' => Str::random(64),
             'phone' => trim($data['phone']),
             'district' => $data['district'],
             'city' => trim($data['city'] ?? ''),
         ]);
-        $user->forceFill(['google_id' => $google['sub'], 'email_verified_at' => now()])->save();
+        $user->forceFill([$column => $profile['id'], 'email_verified_at' => now()])->save();
 
         return $this->tokenResponse($request, $user, 201);
     }

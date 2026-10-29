@@ -24,6 +24,14 @@ class BackendConfig {
   static bool get isGoogleConfigured =>
       isConfigured && googleClientId.isNotEmpty;
 
+  /// The Meta (Facebook) App ID for "Continue with Facebook". Not a secret;
+  /// the App Secret lives only in backend/.env (FACEBOOK_APP_SECRET).
+  static const String facebookAppId =
+      String.fromEnvironment('FACEBOOK_APP_ID');
+
+  static bool get isFacebookConfigured =>
+      isConfigured && facebookAppId.isNotEmpty;
+
   /// Matches the backend's per-photo limit (config/shareloop.php).
   static const int maxImageBytes = 5 * 1024 * 1024;
 

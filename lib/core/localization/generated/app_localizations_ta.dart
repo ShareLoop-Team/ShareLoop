@@ -696,4 +696,9 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get googleCompleteButton => 'பதிவை முடிக்கவும்';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'நீங்கள் $email ஆக Facebook மூலம் பதிவு செய்கிறீர்கள். முடிக்க உங்கள் தொலைபேசி எண்ணையும் மாவட்டத்தையும் சேர்க்கவும்.';
+  }
 }

@@ -686,4 +686,9 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get googleCompleteButton => 'ලියාපදිංචිය අවසන් කරන්න';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'ඔබ $email ලෙස Facebook සමඟ ලියාපදිංචි වෙමින් සිටී. අවසන් කිරීමට ඔබේ දුරකථන අංකය සහ දිස්ත්‍රික්කය එක් කරන්න.';
+  }
 }

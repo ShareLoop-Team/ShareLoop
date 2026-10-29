@@ -130,6 +130,33 @@ class ApiUserRepository implements UserRepository {
   }
 
   @override
+  Future<Object> signInWithFacebook(
+    String accessToken, {
+    String? name,
+    String? phone,
+    String? district,
+    String? city,
+  }) async {
+    final body = await _api.post('/auth/facebook', {
+      'access_token': accessToken,
+      'name': ?name,
+      'phone': ?phone,
+      'district': ?district,
+      'city': ?city,
+      'device_name': 'shareloop-app',
+    }) as Map<String, dynamic>;
+    if (body['needs_profile'] == true) {
+      return GoogleSignUpNeeded(
+        idToken: accessToken,
+        email: body['email'] as String? ?? '',
+        name: body['name'] as String? ?? '',
+        provider: SocialProvider.facebook,
+      );
+    }
+    return _signedIn(body);
+  }
+
+  @override
   Future<UserModel?> getCurrentUser() async {
     if (!_api.hasToken) return null;
     try {

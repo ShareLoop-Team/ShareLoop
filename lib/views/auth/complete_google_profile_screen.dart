@@ -113,7 +113,11 @@ class _CompleteProfileViewState extends State<_CompleteProfileView> {
                           AuthAccentTitle(text: l10n.googleCompleteTitle),
                           const SizedBox(height: 8),
                           Text(
-                            l10n.googleCompleteSubtitle(widget.pending.email),
+                            widget.pending.provider == SocialProvider.facebook
+                                ? l10n.facebookCompleteSubtitle(
+                                    widget.pending.email)
+                                : l10n.googleCompleteSubtitle(
+                                    widget.pending.email),
                             textAlign: TextAlign.center,
                             style: textTheme.bodyMedium?.copyWith(
                               color: AppColors.textSecondary,

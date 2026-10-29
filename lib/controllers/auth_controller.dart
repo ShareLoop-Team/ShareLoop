@@ -144,7 +144,20 @@ class AuthController extends ChangeNotifier {
     return result;
   }
 
-  /// Creates the account for a new Google user with their phone/district.
+  /// Signs in with a Facebook access token. Same results as
+  /// [signInWithGoogle].
+  Future<Object?> signInWithFacebook(String accessToken) async {
+    final result =
+        await _run(() => _userRepository.signInWithFacebook(accessToken));
+    if (result is UserModel) {
+      currentUser = result;
+      notifyListeners();
+    }
+    return result;
+  }
+
+  /// Creates the account for a new Google/Facebook user with their
+  /// phone/district.
   Future<bool> completeGoogleSignUp(
     GoogleSignUpNeeded pending, {
     required String name,
@@ -152,7 +165,10 @@ class AuthController extends ChangeNotifier {
     required String district,
     required String city,
   }) async {
-    final result = await _run(() => _userRepository.signInWithGoogle(
+    final signIn = pending.provider == SocialProvider.facebook
+        ? _userRepository.signInWithFacebook
+        : _userRepository.signInWithGoogle;
+    final result = await _run(() => signIn(
           pending.idToken,
           name: name.trim(),
           phone: phone.trim(),

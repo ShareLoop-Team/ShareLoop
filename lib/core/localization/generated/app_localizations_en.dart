@@ -681,4 +681,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get googleCompleteButton => 'Finish Sign-up';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'You\'re signing up with Facebook as $email. Add your phone number and district to finish.';
+  }
 }

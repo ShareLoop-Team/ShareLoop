@@ -26,7 +26,7 @@ class User extends Authenticatable implements CanResetPassword
         'display_name', 'email', 'password', 'phone', 'district', 'city',
     ];
 
-    protected $hidden = ['password', 'remember_token', 'google_id'];
+    protected $hidden = ['password', 'remember_token', 'google_id', 'facebook_id'];
 
     protected $attributes = [
         'city' => '',

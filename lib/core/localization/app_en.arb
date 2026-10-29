@@ -314,6 +314,14 @@
   "googleCompleteTitle": "Almost there",
   "googleCompleteSubtitle": "You're signing up with Google as {email}. Add your phone number and district to finish.",
   "googleCompleteButton": "Finish Sign-up",
+  "facebookCompleteSubtitle": "You're signing up with Facebook as {email}. Add your phone number and district to finish.",
+  "@facebookCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "@googleCompleteSubtitle": {
     "placeholders": {
       "email": {

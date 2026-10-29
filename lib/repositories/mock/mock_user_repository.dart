@@ -107,21 +107,49 @@ class MockUserRepository implements UserRepository {
     String? phone,
     String? district,
     String? city,
+  }) =>
+      _socialSignIn(idToken, SocialProvider.google,
+          name: name, phone: phone, district: district, city: city);
+
+  /// Mock data has no Facebook; treats [accessToken] as the email address.
+  @override
+  Future<Object> signInWithFacebook(
+    String accessToken, {
+    String? name,
+    String? phone,
+    String? district,
+    String? city,
+  }) =>
+      _socialSignIn(accessToken, SocialProvider.facebook,
+          name: name, phone: phone, district: district, city: city);
+
+  Future<Object> _socialSignIn(
+    String email,
+    SocialProvider provider, {
+    String? name,
+    String? phone,
+    String? district,
+    String? city,
   }) async {
     await Future.delayed(const Duration(milliseconds: 200));
     for (final user in _data.users) {
-      if (user.email == idToken) {
+      if (user.email == email) {
         _data.currentUserId = user.id;
         return user;
       }
     }
     if (phone == null || district == null) {
-      return GoogleSignUpNeeded(idToken: idToken, email: idToken, name: '');
+      return GoogleSignUpNeeded(
+        idToken: email,
+        email: email,
+        name: '',
+        provider: provider,
+      );
     }
     final user = UserModel(
       id: 'u${_data.users.length + 1}',
-      name: name ?? idToken,
-      email: idToken,
+      name: name ?? email,
+      email: email,
       phone: phone,
       district: district,
       city: city ?? '',

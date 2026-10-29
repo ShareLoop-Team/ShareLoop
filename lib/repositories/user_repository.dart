@@ -55,6 +55,16 @@ abstract class UserRepository {
     String? city,
   });
 
+  /// Signs in with a Facebook user access token. Same contract as
+  /// [signInWithGoogle] (the pending result has provider facebook).
+  Future<Object> signInWithFacebook(
+    String accessToken, {
+    String? name,
+    String? phone,
+    String? district,
+    String? city,
+  });
+
   Future<UserModel?> getCurrentUser();
 
   /// Phone and email are only filled in when the caller may see them

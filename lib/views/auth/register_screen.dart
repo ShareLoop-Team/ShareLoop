@@ -9,6 +9,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/facebook/facebook_sign_in_button.dart';
 import '../../widgets/google/google_sign_in_button.dart';
 
 /// View: single-account registration form (a user may act as both donor
@@ -281,10 +282,9 @@ class _RegisterViewState extends State<_RegisterView> {
                                 onUnavailable: () => _socialSignUp(l10n),
                               ),
                               const SizedBox(height: 14),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.facebookLogo,
+                              FacebookSignInButton(
                                 label: l10n.registerWithFacebook,
-                                onPressed: () => _socialSignUp(l10n),
+                                onUnavailable: () => _socialSignUp(l10n),
                               ),
                               const Spacer(),
                               const SizedBox(height: 24),

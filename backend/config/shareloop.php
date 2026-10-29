@@ -60,6 +60,14 @@ return [
         'certs_url' => 'https://www.googleapis.com/oauth2/v3/certs',
     ],
 
+    // "Continue with Facebook": the Meta app whose user access tokens we
+    // accept. The secret stays on the server (used for debug_token).
+    'facebook' => [
+        'app_id' => trim((string) env('FACEBOOK_APP_ID', '')),
+        'app_secret' => trim((string) env('FACEBOOK_APP_SECRET', '')),
+        'graph_url' => 'https://graph.facebook.com/v21.0',
+    ],
+
     // Days an API token stays valid.
     'token_lifetime_days' => (int) env('SHARELOOP_TOKEN_DAYS', 30),
 ];

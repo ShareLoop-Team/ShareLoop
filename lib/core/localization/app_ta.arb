@@ -209,5 +209,6 @@
   "verifyResent": "புதிய குறியீடு அனுப்பப்படுகிறது.",
   "googleCompleteTitle": "கிட்டத்தட்ட முடிந்தது",
   "googleCompleteSubtitle": "நீங்கள் {email} ஆக Google மூலம் பதிவு செய்கிறீர்கள். முடிக்க உங்கள் தொலைபேசி எண்ணையும் மாவட்டத்தையும் சேர்க்கவும்.",
-  "googleCompleteButton": "பதிவை முடிக்கவும்"
+  "googleCompleteButton": "பதிவை முடிக்கவும்",
+  "facebookCompleteSubtitle": "நீங்கள் {email} ஆக Facebook மூலம் பதிவு செய்கிறீர்கள். முடிக்க உங்கள் தொலைபேசி எண்ணையும் மாவட்டத்தையும் சேர்க்கவும்."
 }
