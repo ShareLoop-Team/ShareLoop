@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 
+import '../core/constants/sri_lanka_locations.dart';
 import '../core/routes/app_routes.dart';
 import 'auth_controller.dart';
 
@@ -11,6 +12,9 @@ class RegisterController extends ChangeNotifier {
 
   bool obscurePassword = true;
   String? district;
+
+  /// Always one of [district]'s cities, or null.
+  String? city;
   bool agreedToTerms = false;
 
   void togglePasswordVisibility() {
@@ -23,8 +27,15 @@ class RegisterController extends ChangeNotifier {
     notifyListeners();
   }
 
+  /// Picking another district drops a city that isn't in it.
   void selectDistrict(String? value) {
     district = value;
+    city = SriLankaLocations.validCity(value, city);
+    notifyListeners();
+  }
+
+  void selectCity(String? value) {
+    city = SriLankaLocations.validCity(district, value);
     notifyListeners();
   }
 
@@ -37,7 +48,6 @@ class RegisterController extends ChangeNotifier {
     required String email,
     required String password,
     required String phone,
-    required String city,
   }) async {
     final success = await auth.register(
       name: name,
@@ -45,7 +55,7 @@ class RegisterController extends ChangeNotifier {
       password: password,
       phone: phone,
       district: district ?? '',
-      city: city,
+      city: city ?? '',
     );
     if (success && navigator.mounted) {
       navigator.pushReplacementNamed(AppRoutes.home);

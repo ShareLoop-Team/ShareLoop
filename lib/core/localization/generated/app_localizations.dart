@@ -706,6 +706,18 @@ abstract class AppLocalizations {
   /// **'Choose a district'**
   String get homeChooseDistrict;
 
+  /// No description provided for @locationCityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your city or town'**
+  String get locationCityHint;
+
+  /// No description provided for @locationCityNeedsDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a district first'**
+  String get locationCityNeedsDistrict;
+
   /// No description provided for @homeGive.
   ///
   /// In en, this message translates to:

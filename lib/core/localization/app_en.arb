@@ -142,6 +142,8 @@
   "homeOpenRequests": "Open requests",
   "homeAllDistricts": "All districts",
   "homeChooseDistrict": "Choose a district",
+  "locationCityHint": "Select your city or town",
+  "locationCityNeedsDistrict": "Select a district first",
   "homeGive": "Give",
   "homeDonorBadge": "{badge} donor",
   "@homeDonorBadge": {

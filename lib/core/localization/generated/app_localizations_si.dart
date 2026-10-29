@@ -331,6 +331,12 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeChooseDistrict => 'දිස්ත්‍රික්කයක් තෝරන්න';
 
   @override
+  String get locationCityHint => 'ඔබේ නගරය හෝ ප්‍රදේශය තෝරන්න';
+
+  @override
+  String get locationCityNeedsDistrict => 'මුලින්ම දිස්ත්‍රික්කයක් තෝරන්න';
+
+  @override
   String get homeGive => 'දෙන්න';
 
   @override

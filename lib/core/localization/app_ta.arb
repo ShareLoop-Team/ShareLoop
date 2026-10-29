@@ -101,6 +101,8 @@
   "homeOpenRequests": "திறந்த கோரிக்கைகள்",
   "homeAllDistricts": "அனைத்து மாவட்டங்கள்",
   "homeChooseDistrict": "மாவட்டத்தைத் தேர்ந்தெடுங்கள்",
+  "locationCityHint": "உங்கள் நகரம் அல்லது ஊரைத் தேர்ந்தெடுங்கள்",
+  "locationCityNeedsDistrict": "முதலில் மாவட்டத்தைத் தேர்ந்தெடுங்கள்",
   "homeGive": "கொடு",
   "homeDonorBadge": "{badge} நன்கொடையாளர்",
   "homeNewDonor": "புதிய நன்கொடையாளர்",

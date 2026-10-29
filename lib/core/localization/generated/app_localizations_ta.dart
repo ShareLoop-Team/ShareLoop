@@ -335,6 +335,13 @@ class AppLocalizationsTa extends AppLocalizations {
   String get homeChooseDistrict => 'மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
 
   @override
+  String get locationCityHint => 'உங்கள் நகரம் அல்லது ஊரைத் தேர்ந்தெடுங்கள்';
+
+  @override
+  String get locationCityNeedsDistrict =>
+      'முதலில் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
+
+  @override
   String get homeGive => 'கொடு';
 
   @override

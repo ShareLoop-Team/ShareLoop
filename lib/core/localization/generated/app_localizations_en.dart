@@ -329,6 +329,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeChooseDistrict => 'Choose a district';
 
   @override
+  String get locationCityHint => 'Select your city or town';
+
+  @override
+  String get locationCityNeedsDistrict => 'Select a district first';
+
+  @override
   String get homeGive => 'Give';
 
   @override

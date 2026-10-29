@@ -101,6 +101,8 @@
   "homeOpenRequests": "විවෘත ඉල්ලීම්",
   "homeAllDistricts": "සියලු දිස්ත්‍රික්ක",
   "homeChooseDistrict": "දිස්ත්‍රික්කයක් තෝරන්න",
+  "locationCityHint": "ඔබේ නගරය හෝ ප්‍රදේශය තෝරන්න",
+  "locationCityNeedsDistrict": "මුලින්ම දිස්ත්‍රික්කයක් තෝරන්න",
   "homeGive": "දෙන්න",
   "homeDonorBadge": "{badge} පරිත්‍යාගශීලී",
   "homeNewDonor": "නව පරිත්‍යාගශීලී",

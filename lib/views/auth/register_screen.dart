@@ -9,6 +9,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/city_dropdown_field.dart';
 
 /// View: single-account registration form (a user may act as both donor
 /// and requester, so there is no role selector). Field checks happen in the
@@ -39,7 +40,6 @@ class _RegisterViewState extends State<_RegisterView> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _phoneController = TextEditingController();
-  final _cityController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
   final _controller = RegisterController();
@@ -49,7 +49,6 @@ class _RegisterViewState extends State<_RegisterView> {
     _nameController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
-    _cityController.dispose();
     _passwordController.dispose();
     _confirmPasswordController.dispose();
     _controller.dispose();
@@ -65,7 +64,6 @@ class _RegisterViewState extends State<_RegisterView> {
       email: _emailController.text,
       password: _passwordController.text,
       phone: _phoneController.text,
-      city: _cityController.text,
     );
   }
 
@@ -236,20 +234,11 @@ class _RegisterViewState extends State<_RegisterView> {
                               ),
                               const SizedBox(height: _fieldGap),
                               AuthFieldLabel(l10n.registerCityLabel),
-                              TextFormField(
-                                controller: _cityController,
-                                decoration: authInputDecoration(
-                                  l10n.registerCityHint,
-                                ),
-                                textCapitalization: TextCapitalization.words,
-                                textInputAction: TextInputAction.done,
-                                autofillHints: const [
-                                  AutofillHints.addressCity,
-                                ],
-                                onFieldSubmitted: (_) => _submit(auth),
-                                validator: _required(
-                                  l10n.registerCityRequired,
-                                ),
+                              CityDropdownField(
+                                district: _controller.district,
+                                value: _controller.city,
+                                decoration: authInputDecoration(''),
+                                onChanged: _controller.selectCity,
                               ),
                               const SizedBox(height: 20),
                               _TermsAgreement(
