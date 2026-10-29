@@ -1,31 +1,30 @@
-/// Public client configuration for the real backend, passed at build time:
+/// Client configuration for the ShareLoop Laravel API, passed at build time:
 ///
 ///   flutter run --dart-define-from-file=.env
 ///
-/// (see `.env.example`). Both values are safe to ship in the app — access is
-/// enforced by Row Level Security, never by keeping them secret. Server-only
-/// credentials (service-role key, database password) must never appear here.
-///
-/// When they are absent (tests, offline UI work) the app runs entirely on
-/// [MockDataService] instead.
+/// (see `.env.example`). When API_BASE_URL is absent (tests, offline UI work)
+/// the app runs entirely on [MockDataService] instead.
 library;
 
 class BackendConfig {
   BackendConfig._();
 
-  static const String supabaseUrl = String.fromEnvironment('SUPABASE_URL');
+  /// Root of the Laravel API, e.g. http://localhost:8000/api (web/desktop)
+  /// or http://10.0.2.2:8000/api (Android emulator).
+  static const String apiBaseUrl = String.fromEnvironment('API_BASE_URL');
 
-  /// The project's publishable (or legacy anon) key.
-  static const String supabasePublishableKey =
-      String.fromEnvironment('SUPABASE_PUBLISHABLE_KEY');
+  static bool get isConfigured => apiBaseUrl.isNotEmpty;
 
-  static bool get isConfigured =>
-      supabaseUrl.isNotEmpty && supabasePublishableKey.isNotEmpty;
+  /// The Google OAuth **Web** client ID ("Sign in with Google"). On Android
+  /// it is used as the server client ID so the ID token is issued for the
+  /// same audience the backend checks (GOOGLE_CLIENT_IDS in backend/.env).
+  static const String googleClientId =
+      String.fromEnvironment('GOOGLE_CLIENT_ID');
 
-  /// Supabase Storage bucket for item photos (see the storage migration).
-  static const String itemImagesBucket = 'item-images';
+  static bool get isGoogleConfigured =>
+      isConfigured && googleClientId.isNotEmpty;
 
-  /// Matches the bucket's file_size_limit.
+  /// Matches the backend's per-photo limit (config/shareloop.php).
   static const int maxImageBytes = 5 * 1024 * 1024;
 
   static const List<String> allowedImageTypes = [
@@ -34,9 +33,9 @@ class BackendConfig {
     'image/webp',
   ];
 
-  /// How long signed photo URLs stay valid.
-  static const Duration signedUrlLifetime = Duration(hours: 1);
-
   /// Rows fetched per feed page.
   static const int pageSize = 50;
+
+  /// How long to wait for the API before giving up on a request.
+  static const Duration requestTimeout = Duration(seconds: 20);
 }

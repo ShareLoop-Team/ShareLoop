@@ -3,13 +3,13 @@ import '../models/category_model.dart';
 import '../models/item_post_model.dart';
 import '../models/user_model.dart';
 import 'mock/mock_admin_repository.dart';
-import 'supabase/supabase_admin_repository.dart';
+import 'api/api_admin_repository.dart';
 
 /// Repository: admin moderation (users, posts, categories). The backend
 /// only allows these for admin accounts.
 abstract class AdminRepository {
   factory AdminRepository() => BackendConfig.isConfigured
-      ? SupabaseAdminRepository()
+      ? ApiAdminRepository()
       : MockAdminRepository();
 
   /// Active (not suspended) users.

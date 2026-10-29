@@ -1,13 +1,13 @@
 import '../core/config/backend_config.dart';
 import '../models/exchange_model.dart';
 import 'mock/mock_exchange_repository.dart';
-import 'supabase/supabase_exchange_repository.dart';
+import 'api/api_exchange_repository.dart';
 
 /// Repository: the handover workflow between a donor and the requester they
 /// select. Every step is checked by the backend, not just the app.
 abstract class ExchangeRepository {
   factory ExchangeRepository() => BackendConfig.isConfigured
-      ? SupabaseExchangeRepository()
+      ? ApiExchangeRepository()
       : MockExchangeRepository();
 
   /// The donor picks [requestId]; the post becomes pending handover and the

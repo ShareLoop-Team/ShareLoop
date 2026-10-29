@@ -7,7 +7,9 @@ import '../../controllers/login_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../models/email_code.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/google/google_sign_in_button.dart';
 
 /// View: login form. Validation of empty fields happens in the form; the
 /// login action and navigation are delegated to [LoginController].
@@ -54,27 +56,30 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  /// Emails a reset link to the address typed in the email field.
-  Future<void> _forgotPassword(
+  /// Emails a sign-in or reset code to the address typed in the email
+  /// field and opens the code screen.
+  void _requestCode(
     AppLocalizations l10n,
     AuthController auth,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
-    void show(String message) =>
-        messenger.showSnackBar(SnackBar(content: Text(message)));
-
-    if (!auth.supportsPasswordReset) {
-      show(l10n.loginForgotPasswordUnavailable);
-      return;
-    }
+    EmailCodePurpose purpose,
+  ) {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      show(l10n.loginResetEnterEmail);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(SnackBar(
+          content: Text(purpose == EmailCodePurpose.reset
+              ? l10n.loginResetEnterEmail
+              : l10n.loginCodeEnterEmail),
+        ));
       return;
     }
-    final error = await auth.sendPasswordReset(email);
-    if (!mounted) return;
-    show(error ?? l10n.loginResetSent(email));
+    _controller.requestCode(
+      auth: auth,
+      navigator: Navigator.of(context),
+      email: email,
+      purpose: purpose,
+    );
   }
 
   /// Social sign-in isn't wired to a provider yet.
@@ -190,8 +195,11 @@ class _LoginViewState extends State<_LoginView> {
                                       alignment:
                                           AlignmentDirectional.centerEnd,
                                       child: TextButton(
-                                        onPressed: () =>
-                                            _forgotPassword(l10n, auth),
+                                        onPressed: () => _requestCode(
+                                          l10n,
+                                          auth,
+                                          EmailCodePurpose.reset,
+                                        ),
                                         style: TextButton.styleFrom(
                                           foregroundColor: AppColors.deepGreen,
                                           padding: const EdgeInsets.symmetric(
@@ -227,13 +235,26 @@ class _LoginViewState extends State<_LoginView> {
                                 isLoading: auth.isLoading,
                                 onPressed: () => _submit(auth),
                               ),
-                              const SizedBox(height: 16),
+                              const SizedBox(height: 4),
+                              TextButton(
+                                onPressed: auth.isLoading
+                                    ? null
+                                    : () => _requestCode(
+                                          l10n,
+                                          auth,
+                                          EmailCodePurpose.login,
+                                        ),
+                                style: TextButton.styleFrom(
+                                  foregroundColor: AppColors.deepGreen,
+                                ),
+                                child: Text(l10n.loginWithEmailCode),
+                              ),
+                              const SizedBox(height: 8),
                               AuthOrDivider(label: l10n.loginOrContinueWith),
                               const SizedBox(height: 16),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.googleLogo,
+                              GoogleSignInButton(
                                 label: l10n.loginWithGoogle,
-                                onPressed: () => _socialSignIn(l10n),
+                                onUnavailable: () => _socialSignIn(l10n),
                               ),
                               const SizedBox(height: 14),
                               AuthSocialButton(

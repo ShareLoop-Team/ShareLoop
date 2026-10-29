@@ -1,8 +1,5 @@
 plugins {
     id("com.android.application")
-    // START: FlutterFire Configuration
-    id("com.google.gms.google-services")
-    // END: FlutterFire Configuration
     // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
 }
@@ -18,7 +15,6 @@ android {
     }
 
     defaultConfig {
-        // Matches the Android app registered in Firebase project shareloop-c2157.
         // Permanent once published to Google Play.
         applicationId = "com.shareloop.app"
         // You can update the following values to match your application needs.

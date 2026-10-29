@@ -1,6 +1,7 @@
 import 'package:flutter/widgets.dart';
 
 import '../core/routes/app_routes.dart';
+import '../models/email_code.dart';
 import 'auth_controller.dart';
 
 /// Controller: state and navigation for the register screen. Creating the
@@ -28,8 +29,8 @@ class RegisterController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Registers and replaces the register screen with home on success. On
-  /// failure [AuthController.errorMessage] is set for the View to show.
+  /// Emails a confirmation code and opens the code screen, which creates
+  /// the account. On failure [AuthController.errorMessage] is set.
   Future<void> submit({
     required AuthController auth,
     required NavigatorState navigator,
@@ -39,16 +40,24 @@ class RegisterController extends ChangeNotifier {
     required String phone,
     required String city,
   }) async {
-    final success = await auth.register(
-      name: name,
-      email: email,
+    final details = PendingRegistration(
+      name: name.trim(),
+      email: email.trim(),
       password: password,
-      phone: phone,
+      phone: phone.trim(),
       district: district ?? '',
-      city: city,
+      city: city.trim(),
     );
-    if (success && navigator.mounted) {
-      navigator.pushReplacementNamed(AppRoutes.home);
+    final ticket = await auth.requestEmailCode(
+      details.email,
+      EmailCodePurpose.register,
+      registration: details,
+    );
+    if (ticket != null && navigator.mounted) {
+      navigator.pushNamed(
+        AppRoutes.verifyCode,
+        arguments: VerifyCodeArgs(ticket: ticket, registration: details),
+      );
     }
   }
 

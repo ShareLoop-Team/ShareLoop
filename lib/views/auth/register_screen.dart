@@ -9,6 +9,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/google/google_sign_in_button.dart';
 
 /// View: single-account registration form (a user may act as both donor
 /// and requester, so there is no role selector). Field checks happen in the
@@ -275,10 +276,9 @@ class _RegisterViewState extends State<_RegisterView> {
                               const SizedBox(height: 16),
                               AuthOrDivider(label: l10n.registerOrSignUpWith),
                               const SizedBox(height: 16),
-                              AuthSocialButton(
-                                asset: AuthSocialButton.googleLogo,
+                              GoogleSignInButton(
                                 label: l10n.registerWithGoogle,
-                                onPressed: () => _socialSignUp(l10n),
+                                onUnavailable: () => _socialSignUp(l10n),
                               ),
                               const SizedBox(height: 14),
                               AuthSocialButton(

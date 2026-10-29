@@ -6,7 +6,7 @@ import '../../services/mock_data_service.dart';
 import '../exchange_repository.dart';
 
 /// [ExchangeRepository] over in-memory mock data, following the same rules
-/// as the backend's workflow functions (supabase/migrations).
+/// as the backend's ExchangeService (backend/app/Services).
 class MockExchangeRepository implements ExchangeRepository {
   final MockDataService _data = MockDataService.instance;
 

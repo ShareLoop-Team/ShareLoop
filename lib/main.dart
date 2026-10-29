@@ -14,13 +14,16 @@ import 'core/config/backend_config.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'models/email_code.dart';
 import 'models/item_request_model.dart';
-import 'services/backend_service.dart';
+import 'services/api_client.dart';
 import 'views/admin/manage_categories_screen.dart';
 import 'views/admin/manage_users_screen.dart';
 import 'views/admin/moderate_posts_screen.dart';
 import 'views/auth/login_screen.dart';
+import 'views/auth/complete_google_profile_screen.dart';
 import 'views/auth/register_screen.dart';
+import 'views/auth/verify_code_screen.dart';
 import 'views/browse/category_browse_screen.dart';
 import 'views/browse/search_filter_screen.dart';
 import 'views/give_away/create_give_away_screen.dart';
@@ -38,9 +41,9 @@ import 'views/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Without SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY the app runs on mock data.
+  // Without API_BASE_URL the app runs on mock data.
   if (BackendConfig.isConfigured) {
-    await BackendService.initialize();
+    await ApiClient.instance.initialize();
   }
   runApp(const ShareLoopApp());
 }
@@ -95,6 +98,18 @@ class ShareLoopApp extends StatelessWidget {
                 case AppRoutes.register:
                   return MaterialPageRoute(
                     builder: (_) => const RegisterScreen(),
+                  );
+                case AppRoutes.verifyCode:
+                  return MaterialPageRoute(
+                    builder: (_) => VerifyCodeScreen(
+                      args: settings.arguments as VerifyCodeArgs,
+                    ),
+                  );
+                case AppRoutes.completeGoogleProfile:
+                  return MaterialPageRoute(
+                    builder: (_) => CompleteGoogleProfileScreen(
+                      pending: settings.arguments as GoogleSignUpNeeded,
+                    ),
                   );
                 case AppRoutes.home:
                   return MaterialPageRoute(builder: (_) => const HomeScreen());
