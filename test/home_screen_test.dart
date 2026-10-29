@@ -6,13 +6,16 @@ import 'package:provider/provider.dart';
 import 'package:shareloop/controllers/auth_controller.dart';
 import 'package:shareloop/controllers/badge_controller.dart';
 import 'package:shareloop/controllers/item_controller.dart';
+import 'package:shareloop/controllers/language_controller.dart';
 import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/app_icon.dart';
+import 'package:shareloop/widgets/user_avatar.dart';
 
-Future<void> _pumpHome(
+Future<AuthController> _pumpHome(
   WidgetTester tester, {
   Size size = const Size(390, 844),
 }) async {
@@ -31,6 +34,7 @@ Future<void> _pumpHome(
         ChangeNotifierProvider(create: (_) => RequestController()),
         ChangeNotifierProvider(create: (_) => ProfileController()),
         ChangeNotifierProvider(create: (_) => BadgeController()),
+        ChangeNotifierProvider(create: (_) => LanguageController()),
       ],
       child: const MaterialApp(
         localizationsDelegates: [
@@ -45,6 +49,7 @@ Future<void> _pumpHome(
     ),
   );
   await tester.pumpAndSettle();
+  return auth;
 }
 
 void main() {
@@ -65,6 +70,34 @@ void main() {
       scrollable: find.byType(Scrollable).first,
     );
     expect(find.textContaining('Silver donor'), findsWidgets);
+  });
+
+  testWidgets('header follows profile edits: new photo and name', (
+    tester,
+  ) async {
+    final auth = await _pumpHome(tester);
+    expect(find.byType(UserAvatar), findsNothing);
+    expect(find.byIcon(Icons.person_outline), findsOneWidget);
+
+    auth.updateCurrentUser(
+      auth.currentUser!.copyWith(
+        name: 'Kavidu Himansa',
+        avatarUrl: 'assets/images/item_grey_cap.jpg',
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Hello, Kavidu. What are you sharing today?'),
+        findsOneWidget);
+    expect(
+      find.byWidgetPredicate(
+        (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
+      ),
+      findsOneWidget,
+    );
+    await tester.tap(find.byType(UserAvatar));
+    await tester.pumpAndSettle();
+    expect(find.text('My Profile'), findsOneWidget);
   });
 
   testWidgets('sample posts show their bundled photos', (tester) async {
@@ -134,7 +167,11 @@ void main() {
   testWidgets('Give tab shows the form above the nav bar', (tester) async {
     await _pumpHome(tester);
 
-    await tester.tap(find.byIcon(Icons.card_giftcard_outlined).last);
+    await tester.tap(
+      find.byWidgetPredicate(
+        (w) => w is AppIcon && w.glyph == AppGlyph.give,
+      ),
+    );
     await tester.pumpAndSettle();
 
     expect(find.text('Publish Item'), findsOneWidget);

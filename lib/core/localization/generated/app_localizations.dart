@@ -790,6 +790,48 @@ abstract class AppLocalizations {
   /// **'Choose from gallery'**
   String get giveChooseFromGallery;
 
+  /// No description provided for @cameraCapture.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get cameraCapture;
+
+  /// No description provided for @cameraSwitch.
+  ///
+  /// In en, this message translates to:
+  /// **'Switch camera'**
+  String get cameraSwitch;
+
+  /// No description provided for @cameraRetake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get cameraRetake;
+
+  /// No description provided for @cameraUsePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Use photo'**
+  String get cameraUsePhoto;
+
+  /// No description provided for @cameraNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No camera found on this device.'**
+  String get cameraNotFound;
+
+  /// No description provided for @cameraPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access is blocked. Allow it in your browser or system settings, then try again.'**
+  String get cameraPermissionDenied;
+
+  /// No description provided for @cameraFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t start the camera. Please try again.'**
+  String get cameraFailed;
+
   /// No description provided for @giveItemTitle.
   ///
   /// In en, this message translates to:

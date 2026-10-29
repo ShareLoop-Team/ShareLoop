@@ -63,6 +63,3 @@ flutter_*.png
 .env
 .env.*
 !.env.example
-
-# Dependencies of the database check harness (tool/db_check)
-/tool/db_check/node_modules/

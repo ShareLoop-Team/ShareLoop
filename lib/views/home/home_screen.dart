@@ -7,6 +7,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../widgets/category_chip.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/segmented_toggle.dart';
 import '../give_away/create_give_away_screen.dart';
 import '../profile/profile_screen.dart';
@@ -110,19 +111,19 @@ class _HomeShellState extends State<_HomeShell> {
             onDestinationSelected: _onNavTap,
             destinations: [
               NavigationDestination(
-                icon: const Icon(Icons.home_outlined),
+                icon: const AppIcon(AppGlyph.home),
                 label: l10n.home,
               ),
               NavigationDestination(
-                icon: const Icon(Icons.card_giftcard_outlined),
+                icon: const AppIcon(AppGlyph.give),
                 label: l10n.homeGive,
               ),
               NavigationDestination(
-                icon: const Icon(Icons.format_list_bulleted),
+                icon: const AppIcon(AppGlyph.requests),
                 label: l10n.requests,
               ),
               NavigationDestination(
-                icon: const Icon(Icons.person_outline),
+                icon: const AppIcon(AppGlyph.profile),
                 label: l10n.profile,
               ),
             ],

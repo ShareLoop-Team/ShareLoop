@@ -9,6 +9,7 @@ import '../../core/routes/app_routes.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/badge_model.dart';
 import '../../models/item_post_model.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/illustrated_empty_state.dart';
 import '../../widgets/item_photo.dart';
 import '../../widgets/status_chip.dart';
@@ -215,7 +216,7 @@ class _DonationCard extends StatelessWidget {
               ],
             ),
           ),
-          const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+          const RowChevron(),
         ],
       ),
     );

@@ -13,11 +13,13 @@ class UserAvatar extends StatelessWidget {
     required this.url,
     this.previewBytes,
     this.size = 96,
+    this.ringWidth = 3,
   });
 
   final String? url;
   final Uint8List? previewBytes;
   final double size;
+  final double ringWidth;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +43,7 @@ class UserAvatar extends StatelessWidget {
       decoration: BoxDecoration(
         color: AppColors.paleMint,
         shape: BoxShape.circle,
-        border: Border.all(color: AppColors.softMint, width: 3),
+        border: Border.all(color: AppColors.softMint, width: ringWidth),
       ),
       child: ExcludeSemantics(child: content),
     );

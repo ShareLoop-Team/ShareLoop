@@ -8,8 +8,7 @@ import '../item_post_repository.dart';
 class MockItemPostRepository implements ItemPostRepository {
   final MockDataService _data = MockDataService.instance;
 
-  /// Fills in the donor's donation count and rating, as the real backend's
-  /// join does.
+  /// Fills in the donor's donation count and rating from their profile.
   ItemPostModel _withDonor(ItemPostModel post) {
     for (final user in _data.users) {
       if (user.id == post.donorId) {

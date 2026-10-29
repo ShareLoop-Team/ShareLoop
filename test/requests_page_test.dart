@@ -15,6 +15,7 @@ import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/views/give_away/create_give_away_screen.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/category_chip.dart';
+import 'package:shareloop/widgets/app_icon.dart';
 
 /// Pumps the home shell and switches to the Requests tab.
 Future<void> _pumpRequestsPage(
@@ -60,7 +61,11 @@ Future<void> _pumpRequestsPage(
     ),
   );
   await tester.pumpAndSettle();
-  await tester.tap(find.byIcon(Icons.format_list_bulleted));
+  await tester.tap(
+    find.byWidgetPredicate(
+      (w) => w is AppIcon && w.glyph == AppGlyph.requests,
+    ),
+  );
   await tester.pumpAndSettle();
 }
 

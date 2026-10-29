@@ -1,18 +1,17 @@
-import '../core/config/backend_config.dart';
 import '../models/item_post_model.dart';
 import '../models/photo_upload.dart';
 import 'mock/mock_item_post_repository.dart';
-import 'supabase/supabase_item_post_repository.dart';
 
-/// Repository: "Give Away" posts and their photos.
+/// Repository: "Give Away" posts and their photos, held in memory.
 abstract class ItemPostRepository {
-  factory ItemPostRepository() => BackendConfig.isConfigured
-      ? SupabaseItemPostRepository()
-      : MockItemPostRepository();
+  factory ItemPostRepository() => MockItemPostRepository();
+
+  /// Posts fetched per feed page.
+  static const int pageSize = 50;
 
   /// Newest first, one page at a time.
   Future<List<ItemPostModel>> getAllPosts({
-    int limit = BackendConfig.pageSize,
+    int limit = pageSize,
     int offset = 0,
   });
 

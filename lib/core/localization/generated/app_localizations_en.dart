@@ -375,6 +375,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get giveChooseFromGallery => 'Choose from gallery';
 
   @override
+  String get cameraCapture => 'Take photo';
+
+  @override
+  String get cameraSwitch => 'Switch camera';
+
+  @override
+  String get cameraRetake => 'Retake';
+
+  @override
+  String get cameraUsePhoto => 'Use photo';
+
+  @override
+  String get cameraNotFound => 'No camera found on this device.';
+
+  @override
+  String get cameraPermissionDenied =>
+      'Camera access is blocked. Allow it in your browser or system settings, then try again.';
+
+  @override
+  String get cameraFailed => 'Couldn\'t start the camera. Please try again.';
+
+  @override
   String get giveItemTitle => 'Item title';
 
   @override

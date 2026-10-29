@@ -382,6 +382,29 @@ class AppLocalizationsTa extends AppLocalizations {
   String get giveChooseFromGallery => 'கேலரியிலிருந்து தேர்ந்தெடு';
 
   @override
+  String get cameraCapture => 'புகைப்படம் எடு';
+
+  @override
+  String get cameraSwitch => 'கேமராவை மாற்று';
+
+  @override
+  String get cameraRetake => 'மீண்டும் எடு';
+
+  @override
+  String get cameraUsePhoto => 'படத்தைப் பயன்படுத்து';
+
+  @override
+  String get cameraNotFound => 'இந்தச் சாதனத்தில் கேமரா இல்லை.';
+
+  @override
+  String get cameraPermissionDenied =>
+      'கேமரா அணுகல் தடுக்கப்பட்டுள்ளது. உங்கள் உலாவி அல்லது கணினி அமைப்புகளில் அனுமதித்து மீண்டும் முயற்சிக்கவும்.';
+
+  @override
+  String get cameraFailed =>
+      'கேமராவைத் தொடங்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
+
+  @override
   String get giveItemTitle => 'பொருளின் தலைப்பு';
 
   @override

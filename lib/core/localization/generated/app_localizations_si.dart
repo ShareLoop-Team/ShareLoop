@@ -378,6 +378,29 @@ class AppLocalizationsSi extends AppLocalizations {
   String get giveChooseFromGallery => 'ගැලරියෙන් තෝරන්න';
 
   @override
+  String get cameraCapture => 'ඡායාරූපය ගන්න';
+
+  @override
+  String get cameraSwitch => 'කැමරාව මාරු කරන්න';
+
+  @override
+  String get cameraRetake => 'නැවත ගන්න';
+
+  @override
+  String get cameraUsePhoto => 'ඡායාරූපය භාවිත කරන්න';
+
+  @override
+  String get cameraNotFound => 'මෙම උපාංගයේ කැමරාවක් හමු නොවීය.';
+
+  @override
+  String get cameraPermissionDenied =>
+      'කැමරා ප්‍රවේශය අවහිර කර ඇත. ඔබගේ බ්‍රවුසරයේ හෝ පද්ධති සැකසීම්වල එයට ඉඩ දී නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cameraFailed =>
+      'කැමරාව ආරම්භ කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
   String get giveItemTitle => 'අයිතමයේ නම';
 
   @override

@@ -12,6 +12,7 @@ import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/badge_model.dart';
 import '../../models/user_model.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/user_avatar.dart';
 
@@ -210,19 +211,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.profileMyActivity,
               tiles: [
                 _MenuTile(
-                  icon: Icons.card_giftcard_outlined,
+                  icon: const Icon(Icons.card_giftcard_outlined),
                   label: l10n.profileMyDonations,
                   trailing: '${profile.myPosts.length}',
                   onTap: () => _openRoute(AppRoutes.myDonations),
                 ),
                 _MenuTile(
-                  icon: Icons.format_list_bulleted,
+                  icon: const Icon(Icons.format_list_bulleted),
                   label: l10n.myRequests,
                   trailing: '${profile.myRequests.length}',
                   onTap: () => _openRoute(AppRoutes.myRequests),
                 ),
                 _MenuTile(
-                  icon: Icons.star_border,
+                  icon: const Icon(Icons.star_border),
                   label: l10n.profileReviews,
                   trailing: '${profile.myReviews.length}',
                   onTap: () => _openRoute(AppRoutes.myReviews),
@@ -235,17 +236,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 title: l10n.profileAdmin,
                 tiles: [
                   _MenuTile(
-                    icon: Icons.people_outline,
+                    icon: const Icon(Icons.people_outline),
                     label: l10n.profileManageUsers,
                     onTap: () => _openRoute(AppRoutes.adminUsers),
                   ),
                   _MenuTile(
-                    icon: Icons.flag_outlined,
+                    icon: const Icon(Icons.flag_outlined),
                     label: l10n.profileModeratePosts,
                     onTap: () => _openRoute(AppRoutes.adminPosts),
                   ),
                   _MenuTile(
-                    icon: Icons.category_outlined,
+                    icon: const Icon(Icons.category_outlined),
                     label: l10n.profileManageCategories,
                     onTap: () => _openRoute(AppRoutes.adminCategories),
                   ),
@@ -257,13 +258,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
               title: l10n.settings,
               tiles: [
                 _MenuTile(
-                  icon: Icons.language,
+                  icon: const AppIcon(AppGlyph.language),
                   label: l10n.language,
                   trailing: AppConstants.languageNames[languageCode],
                   onTap: () => _showLanguagePicker(l10n),
                 ),
                 _MenuTile(
-                  icon: Icons.notifications_none,
+                  icon: const AppIcon(AppGlyph.notifications),
                   label: l10n.profileNotifications,
                   onTap: () => ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
@@ -702,7 +703,8 @@ class _MenuTile extends StatelessWidget {
     this.trailing,
   });
 
-  final IconData icon;
+  /// An [Icon] or [AppIcon]; sized and coloured by the tile.
+  final Widget icon;
   final String label;
   final VoidCallback onTap;
   final String? trailing;
@@ -716,7 +718,10 @@ class _MenuTile extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
         child: Row(
           children: [
-            Icon(icon, size: 22, color: AppColors.deepGreen),
+            IconTheme(
+              data: const IconThemeData(size: 22, color: AppColors.deepGreen),
+              child: icon,
+            ),
             const SizedBox(width: 14),
             Expanded(
               child: Text(
@@ -729,18 +734,23 @@ class _MenuTile extends StatelessWidget {
             ),
             if (trailing != null) ...[
               const SizedBox(width: 8),
-              Flexible(
+              // Capped rather than Flexible, so the label keeps all the
+              // spare width and the value + arrow sit at the row's end.
+              ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 140),
                 child: Text(
                   trailing!,
+                  maxLines: 1,
                   overflow: TextOverflow.ellipsis,
+                  textAlign: TextAlign.end,
                   style: textTheme.bodyMedium?.copyWith(
                     color: AppColors.textSecondary,
                   ),
                 ),
               ),
             ],
-            const SizedBox(width: 4),
-            const Icon(Icons.chevron_right, color: AppColors.textSecondary),
+            const SizedBox(width: 6),
+            const RowChevron(),
           ],
         ),
       ),

@@ -10,12 +10,11 @@ import 'controllers/language_controller.dart';
 import 'controllers/profile_controller.dart';
 import 'controllers/rating_controller.dart';
 import 'controllers/request_controller.dart';
-import 'core/config/backend_config.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
 import 'models/item_request_model.dart';
-import 'services/backend_service.dart';
+import 'services/auth_service.dart';
 import 'views/admin/manage_categories_screen.dart';
 import 'views/admin/manage_users_screen.dart';
 import 'views/admin/moderate_posts_screen.dart';
@@ -42,10 +41,8 @@ import 'views/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  // Without SUPABASE_URL/SUPABASE_PUBLISHABLE_KEY the app runs on mock data.
-  if (BackendConfig.isConfigured) {
-    await BackendService.initialize();
-  }
+  // Firebase Authentication for sign-in; app data is in-memory sample data.
+  await AuthService.initialize();
   runApp(const ShareLoopApp());
 }
 

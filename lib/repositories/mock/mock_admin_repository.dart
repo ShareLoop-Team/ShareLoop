@@ -4,8 +4,7 @@ import '../../models/user_model.dart';
 import '../../services/mock_data_service.dart';
 import '../admin_repository.dart';
 
-/// [AdminRepository] over in-memory mock data. Removal is permanent here;
-/// the real backend suspends users and hides posts instead.
+/// [AdminRepository] over in-memory mock data. Removal is permanent.
 class MockAdminRepository implements AdminRepository {
   final MockDataService _data = MockDataService.instance;
 

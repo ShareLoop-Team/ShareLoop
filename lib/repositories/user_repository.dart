@@ -1,15 +1,16 @@
-import '../core/config/backend_config.dart';
 import '../models/photo_upload.dart';
 import '../models/user_model.dart';
+import '../services/auth_service.dart';
+import 'firebase/firebase_user_repository.dart';
 import 'mock/mock_user_repository.dart';
-import 'supabase/supabase_user_repository.dart';
 
-/// Repository: accounts and profiles. Backed by Firebase Authentication +
-/// Supabase when [BackendConfig.isConfigured], otherwise by in-memory mock
-/// data. Failures the user can act on are thrown as AppException.
+/// Repository: accounts and profiles. Signs in with Firebase Authentication
+/// when [AuthService.isAvailable], otherwise with in-memory mock accounts
+/// (tests, platforms without Firebase). Failures the user can act on are
+/// thrown as AppException.
 abstract class UserRepository {
-  factory UserRepository() => BackendConfig.isConfigured
-      ? SupabaseUserRepository()
+  factory UserRepository() => AuthService.isAvailable
+      ? FirebaseUserRepository()
       : MockUserRepository();
 
   /// Signs in and returns the profile, or null when no account matches.
