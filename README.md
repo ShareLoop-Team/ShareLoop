@@ -1,9 +1,10 @@
 # ShareLoop
 
 A Flutter app for **ShareLoop** — a recycling & item-sharing platform for
-Sri Lanka ("Give What You Don't Need. Get What You Do."), backed by Firebase
-Authentication and Supabase (see [Backend](#backend)), with an in-memory
-mock mode for tests and offline UI work.
+Sri Lanka ("Give What You Don't Need. Get What You Do."). It is a
+frontend-focused project: Firebase Authentication handles sign-in (see
+[Authentication](#authentication)), and all app data is in-memory sample
+data.
 
 ## Architecture
 
@@ -13,9 +14,9 @@ Repository/Service layer, as described in `doc/MVC_Architecture_in_Mobile_Applic
 ```
 View (Flutter widgets)
   -> Controller (ChangeNotifier, via Provider)
-    -> Repository (interface; Supabase or mock implementation)
-      -> Service (BackendService: Firebase + Supabase,
-                  or MockDataService: in-memory data)
+    -> Repository (interface; mock implementation, Firebase for accounts)
+      -> Service (AuthService: Firebase Authentication,
+                  MockDataService: in-memory data)
 ```
 
 - **Models** (`lib/models/`): plain data classes (`UserModel`, `ItemPostModel`,
@@ -32,7 +33,8 @@ View (Flutter widgets)
   same shape a real REST client would have (`Future<...>`, nullable
   results). Swapping `MockDataService` for an HTTP client later requires no
   changes above this layer.
-- **Services** (`lib/services/`): `MockDataService` (single in-memory seed
+- **Services** (`lib/services/`): `AuthService` (starts Firebase
+  Authentication), `MockDataService` (single in-memory seed
   data store shared by all repositories) and `LocationService` (stub for a
   future geolocation API).
 - **core/**: theme, app-wide constants (categories, Sri Lankan districts,
@@ -98,16 +100,18 @@ flutter analyze
 flutter test
 ```
 
-## Backend
+## Authentication
 
-Firebase Authentication (sign-in) + Supabase (Postgres, Storage). See
-[doc/BACKEND.md](doc/BACKEND.md) for the architecture, schema, security
-model and setup steps.
+Firebase Authentication (project `shareloop-c2157`, configured for Android
+and web in `lib/firebase_options.dart`) handles email/password registration,
+login, session restoration, password reset and logout
+(`lib/repositories/firebase/firebase_user_repository.dart`). Google sign-in
+is not implemented yet; its buttons show a "not available" message.
 
-```bash
-cp .env.example .env    # fill in the Supabase URL and publishable key
-flutter run --dart-define-from-file=.env
-```
+There is no database. Profile details Firebase doesn't store (phone,
+district, city, photo), as well as items, requests, exchanges and ratings,
+come from `MockDataService` and last for the current run only.
 
-Without those values the app runs on the in-memory mock data, which is
-also what the tests use.
+On platforms without a Firebase configuration (e.g. Windows desktop) and in
+tests, sign-in falls back to the in-memory sample accounts, where any
+password is accepted.

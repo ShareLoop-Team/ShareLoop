@@ -7,8 +7,8 @@ import '../models/rating_review_model.dart';
 import '../models/user_model.dart';
 
 /// Service: single in-memory source of hard-coded ("mock") data, shared by
-/// the mock repositories. Used when no backend is configured (tests and
-/// offline UI work); see BackendConfig.
+/// the mock repositories. The app has no data backend, so everything here
+/// lasts for the current run only.
 class MockDataService {
   MockDataService._internal() {
     _seed();

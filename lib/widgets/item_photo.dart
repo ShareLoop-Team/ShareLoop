@@ -3,8 +3,8 @@ import 'dart:ui' show ImageFilter;
 
 import 'package:flutter/material.dart';
 
-/// Shows one item photo. Supabase posts carry signed network URLs; the mock
-/// data uses bundled `assets/` paths so the feed has real pictures offline.
+/// Shows one item photo: a bundled `assets/` path (the sample feed), an
+/// in-memory `data:` URL (photos picked in the app) or a network URL.
 class ItemPhoto extends StatelessWidget {
   const ItemPhoto({
     super.key,
