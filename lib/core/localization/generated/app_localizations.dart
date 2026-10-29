@@ -832,6 +832,24 @@ abstract class AppLocalizations {
   /// **'Couldn\'t start the camera. Please try again.'**
   String get cameraFailed;
 
+  /// No description provided for @cropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust photo'**
+  String get cropTitle;
+
+  /// No description provided for @cropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move. Pinch, scroll or use the slider to zoom.'**
+  String get cropHint;
+
+  /// No description provided for @cropZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get cropZoom;
+
   /// No description provided for @giveItemTitle.
   ///
   /// In en, this message translates to:

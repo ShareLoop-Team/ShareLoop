@@ -397,6 +397,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get cameraFailed => 'Couldn\'t start the camera. Please try again.';
 
   @override
+  String get cropTitle => 'Adjust photo';
+
+  @override
+  String get cropHint =>
+      'Drag to move. Pinch, scroll or use the slider to zoom.';
+
+  @override
+  String get cropZoom => 'Zoom';
+
+  @override
   String get giveItemTitle => 'Item title';
 
   @override

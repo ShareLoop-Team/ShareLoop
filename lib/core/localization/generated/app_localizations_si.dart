@@ -401,6 +401,16 @@ class AppLocalizationsSi extends AppLocalizations {
       'කැමරාව ආරම්භ කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
 
   @override
+  String get cropTitle => 'ඡායාරූපය සකසන්න';
+
+  @override
+  String get cropHint =>
+      'ගෙන යාමට අදින්න. විශාලනය කිරීමට ඇඟිලි දෙකෙන් අදින්න, scroll කරන්න හෝ slider එක භාවිත කරන්න.';
+
+  @override
+  String get cropZoom => 'විශාලනය';
+
+  @override
   String get giveItemTitle => 'අයිතමයේ නම';
 
   @override

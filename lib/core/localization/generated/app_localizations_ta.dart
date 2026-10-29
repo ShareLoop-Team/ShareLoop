@@ -405,6 +405,16 @@ class AppLocalizationsTa extends AppLocalizations {
       'கேமராவைத் தொடங்க முடியவில்லை. மீண்டும் முயற்சிக்கவும்.';
 
   @override
+  String get cropTitle => 'புகைப்படத்தைச் சரிசெய்';
+
+  @override
+  String get cropHint =>
+      'நகர்த்த இழுக்கவும். பெரிதாக்க இரு விரல்களால் இழுக்கவும், scroll செய்யவும் அல்லது slider-ஐப் பயன்படுத்தவும்.';
+
+  @override
+  String get cropZoom => 'பெரிதாக்கு';
+
+  @override
   String get giveItemTitle => 'பொருளின் தலைப்பு';
 
   @override
