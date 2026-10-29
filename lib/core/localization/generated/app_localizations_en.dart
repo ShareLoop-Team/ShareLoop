@@ -386,6 +386,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get giveAddPhotosHint => 'Clear photos help others decide faster';
 
   @override
+  String get givePhotosItemOnly =>
+      'Photograph the item only, with no people, hands or faces';
+
+  @override
+  String get photoChecking => 'Checking photo…';
+
+  @override
+  String get photoHasPerson =>
+      'This photo contains a person or a visible body part. Please upload a photo of the item only.';
+
+  @override
+  String get photoCheckFailed =>
+      'We couldn\'t check this photo, so it wasn\'t added. Please try again or choose another photo.';
+
+  @override
+  String get photoCheckUnsupported =>
+      'Photos can\'t be checked on this device, so they can\'t be added here. Please use the phone app or a web browser.';
+
+  @override
   String get giveAddPhoto => 'Add photo';
 
   @override

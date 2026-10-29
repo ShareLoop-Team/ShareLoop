@@ -389,6 +389,25 @@ class AppLocalizationsSi extends AppLocalizations {
       'පැහැදිලි ඡායාරූප අනෙක් අයට ඉක්මනින් තීරණය කිරීමට උදව් වේ';
 
   @override
+  String get givePhotosItemOnly =>
+      'පුද්ගලයන්, අත් හෝ මුහුණු නොමැතිව අයිතමය පමණක් ඡායාරූප ගන්න';
+
+  @override
+  String get photoChecking => 'ඡායාරූපය පරීක්ෂා කරමින්…';
+
+  @override
+  String get photoHasPerson =>
+      'මෙම ඡායාරූපයේ පුද්ගලයෙක් හෝ පෙනෙන ශරීර කොටසක් ඇත. කරුණාකර අයිතමයේ ඡායාරූපයක් පමණක් උඩුගත කරන්න.';
+
+  @override
+  String get photoCheckFailed =>
+      'මෙම ඡායාරූපය පරීක්ෂා කිරීමට නොහැකි වූ නිසා එය එක් කළේ නැත. කරුණාකර නැවත උත්සාහ කරන්න හෝ වෙනත් ඡායාරූපයක් තෝරන්න.';
+
+  @override
+  String get photoCheckUnsupported =>
+      'මෙම උපාංගයේ ඡායාරූප පරීක්ෂා කළ නොහැකි නිසා මෙහි ඡායාරූප එක් කළ නොහැක. කරුණාකර දුරකථන යෙදුම හෝ වෙබ් බ්‍රව්සරයක් භාවිත කරන්න.';
+
+  @override
   String get giveAddPhoto => 'ඡායාරූපයක් එක් කරන්න';
 
   @override

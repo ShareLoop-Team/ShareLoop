@@ -808,6 +808,36 @@ abstract class AppLocalizations {
   /// **'Clear photos help others decide faster'**
   String get giveAddPhotosHint;
 
+  /// No description provided for @givePhotosItemOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'Photograph the item only, with no people, hands or faces'**
+  String get givePhotosItemOnly;
+
+  /// No description provided for @photoChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking photo…'**
+  String get photoChecking;
+
+  /// No description provided for @photoHasPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo contains a person or a visible body part. Please upload a photo of the item only.'**
+  String get photoHasPerson;
+
+  /// No description provided for @photoCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t check this photo, so it wasn\'t added. Please try again or choose another photo.'**
+  String get photoCheckFailed;
+
+  /// No description provided for @photoCheckUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos can\'t be checked on this device, so they can\'t be added here. Please use the phone app or a web browser.'**
+  String get photoCheckUnsupported;
+
   /// No description provided for @giveAddPhoto.
   ///
   /// In en, this message translates to:

@@ -58,6 +58,11 @@ dependencies:
   # the answer on the device so the prompt isn't repeated.
   permission_handler: ^13.0.2
   shared_preferences: ^2.5.6
+  # On-device check that donation photos show no people or body parts
+  # (Android/iOS; the web uses MediaPipe from web/photo_check.js).
+  google_mlkit_image_labeling: ^0.16.1
+  google_mlkit_pose_detection: ^0.16.1
+  google_mlkit_face_detection: ^0.15.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -70,6 +75,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  # Lets tests stand in a fake photo picker.
+  image_picker_platform_interface: ^2.11.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec

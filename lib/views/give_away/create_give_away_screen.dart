@@ -12,6 +12,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/item_request_model.dart';
 import '../../models/photo_upload.dart';
+import '../../services/photo_check/photo_content_checker.dart';
 import '../../widgets/camera_capture.dart';
 import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/post_form_widgets.dart';
@@ -74,7 +75,10 @@ class _GiveFormState extends State<_GiveForm> {
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
   final _cityController = TextEditingController();
+
+  /// Only photos the people/body-part check has cleared.
   final List<_PickedPhoto> _photos = [];
+  bool _checkingPhotos = false;
   String _condition = AppConstants.itemConditions[1];
   String? _category;
   String? _district;
@@ -156,16 +160,62 @@ class _GiveFormState extends State<_GiveForm> {
       );
       picked = file == null ? const [] : [file];
     }
-    final photos = [
+    final candidates = [
       for (final file in picked.take(remaining))
         _PickedPhoto(file, await file.readAsBytes()),
     ];
-    if (!mounted || photos.isEmpty) return;
-    setState(() => _photos.addAll(photos));
+    if (!mounted || candidates.isEmpty) return;
+    await _checkAndAdd(candidates);
+  }
+
+  /// Adds only photos the on-device check clears of people and body parts.
+  /// Refused or uncheckable photos are dropped, with a message saying why.
+  Future<void> _checkAndAdd(List<_PickedPhoto> candidates) async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    final checker =
+        context.read<PhotoContentChecker?>() ?? PhotoContentChecker.platform;
+    setState(() => _checkingPhotos = true);
+    final outcomes = await checkPhotos(checker, [
+      for (final c in candidates) (bytes: c.bytes, mimeType: c.file.mimeType),
+    ]);
+    if (!mounted) return;
+    setState(() {
+      _checkingPhotos = false;
+      for (var i = 0; i < candidates.length; i++) {
+        if (outcomes[i] == PhotoCheckOutcome.clear &&
+            _photos.length < _maxPhotos) {
+          _photos.add(candidates[i]);
+        }
+      }
+    });
     _updateHasInput();
+
+    final String? message;
+    if (outcomes.contains(PhotoCheckOutcome.containsPerson)) {
+      message = l10n.photoHasPerson;
+    } else if (outcomes.contains(PhotoCheckOutcome.unsupported)) {
+      message = l10n.photoCheckUnsupported;
+    } else if (outcomes.contains(PhotoCheckOutcome.failed)) {
+      message = l10n.photoCheckFailed;
+    } else {
+      message = null;
+    }
+    if (message != null) {
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            duration: const Duration(seconds: 6),
+          ),
+        );
+    }
   }
 
   Future<void> _submit() async {
+    // Photos still being checked aren't in the post yet.
+    if (_checkingPhotos) return;
     setState(() => _attemptedSubmit = true);
     if (!_formKey.currentState!.validate()) return;
     final user = context.read<AuthController>().currentUser;
@@ -241,6 +291,7 @@ class _GiveFormState extends State<_GiveForm> {
                 _PhotoPicker(
                   photos: _photos,
                   maxPhotos: _maxPhotos,
+                  checking: _checkingPhotos,
                   onAdd: _addPhotos,
                   onRemove: (index) {
                     setState(() => _photos.removeAt(index));
@@ -361,12 +412,16 @@ class _PhotoPicker extends StatelessWidget {
   const _PhotoPicker({
     required this.photos,
     required this.maxPhotos,
+    required this.checking,
     required this.onAdd,
     required this.onRemove,
   });
 
   final List<_PickedPhoto> photos;
   final int maxPhotos;
+
+  /// New photos are being checked; adding more waits until it's done.
+  final bool checking;
   final VoidCallback onAdd;
   final ValueChanged<int> onRemove;
 
@@ -375,9 +430,10 @@ class _PhotoPicker extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     if (photos.isEmpty) {
       return _EmptyPhotoZone(
-        title: l10n.giveAddPhotos,
-        hint: l10n.giveAddPhotosHint,
-        onTap: onAdd,
+        title: checking ? l10n.photoChecking : l10n.giveAddPhotos,
+        hint: l10n.givePhotosItemOnly,
+        checking: checking,
+        onTap: checking ? null : onAdd,
       );
     }
     return Row(
@@ -394,7 +450,11 @@ class _PhotoPicker extends StatelessWidget {
                       removeTooltip: l10n.giveRemovePhoto,
                       onRemove: () => onRemove(i),
                     )
-                  : _AddPhotoTile(tooltip: l10n.giveAddPhoto, onTap: onAdd),
+                  : _AddPhotoTile(
+                      tooltip: checking ? l10n.photoChecking : l10n.giveAddPhoto,
+                      checking: checking && i == photos.length,
+                      onTap: checking ? null : onAdd,
+                    ),
             ),
           ),
         ],
@@ -407,12 +467,14 @@ class _EmptyPhotoZone extends StatelessWidget {
   const _EmptyPhotoZone({
     required this.title,
     required this.hint,
+    required this.checking,
     required this.onTap,
   });
 
   final String title;
   final String hint;
-  final VoidCallback onTap;
+  final bool checking;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -436,10 +498,18 @@ class _EmptyPhotoZone extends StatelessWidget {
                     color: AppColors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(
-                    Icons.photo_camera_outlined,
-                    color: AppColors.deepGreen,
-                  ),
+                  child: checking
+                      ? const Padding(
+                          padding: EdgeInsets.all(14),
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2.5,
+                            color: AppColors.deepGreen,
+                          ),
+                        )
+                      : const Icon(
+                          Icons.photo_camera_outlined,
+                          color: AppColors.deepGreen,
+                        ),
                 ),
                 const SizedBox(height: 12),
                 Text(
@@ -535,10 +605,17 @@ class _PhotoTile extends StatelessWidget {
 }
 
 class _AddPhotoTile extends StatelessWidget {
-  const _AddPhotoTile({required this.tooltip, required this.onTap});
+  const _AddPhotoTile({
+    required this.tooltip,
+    required this.checking,
+    required this.onTap,
+  });
 
   final String tooltip;
-  final VoidCallback onTap;
+
+  /// Shows a spinner in place of the plus while new photos are checked.
+  final bool checking;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -552,8 +629,16 @@ class _AddPhotoTile extends StatelessWidget {
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
-            child: const Center(
-              child: Icon(Icons.add, size: 28, color: AppColors.deepGreen),
+            child: Center(
+              child: checking
+                  ? const SizedBox.square(
+                      dimension: 24,
+                      child: CircularProgressIndicator(
+                        strokeWidth: 2.5,
+                        color: AppColors.deepGreen,
+                      ),
+                    )
+                  : const Icon(Icons.add, size: 28, color: AppColors.deepGreen),
             ),
           ),
         ),
