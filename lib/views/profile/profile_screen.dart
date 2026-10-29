@@ -14,6 +14,7 @@ import '../../models/badge_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/loading_indicator.dart';
+import '../../widgets/notification_prompt.dart';
 import '../../widgets/user_avatar.dart';
 
 /// View: the Profile tab — identity card, giving stats, badge progress,
@@ -266,11 +267,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _MenuTile(
                   icon: const AppIcon(AppGlyph.notifications),
                   label: l10n.profileNotifications,
-                  onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(l10n.profileNotificationsUnavailable),
-                    ),
-                  ),
+                  onTap: () => manageNotifications(context),
                 ),
               ],
             ),

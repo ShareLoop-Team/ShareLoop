@@ -1198,6 +1198,60 @@ abstract class AppLocalizations {
   /// **'Notifications aren\'t available yet.'**
   String get profileNotificationsUnavailable;
 
+  /// No description provided for @notifPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow ShareLoop to send you notifications?'**
+  String get notifPromptTitle;
+
+  /// No description provided for @notifPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated on item requests, responses, and exchange updates.'**
+  String get notifPromptBody;
+
+  /// No description provided for @notifPromptAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Notifications'**
+  String get notifPromptAllow;
+
+  /// No description provided for @notifPromptLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get notifPromptLater;
+
+  /// No description provided for @notifEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are on.'**
+  String get notifEnabled;
+
+  /// No description provided for @notifDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off. You can turn them on any time from Profile → Notifications.'**
+  String get notifDenied;
+
+  /// No description provided for @notifBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked for ShareLoop. Turn them on in your phone\'s settings.'**
+  String get notifBlocked;
+
+  /// No description provided for @notifBlockedBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked for ShareLoop in this browser. Allow them from the site settings next to the address bar.'**
+  String get notifBlockedBrowser;
+
+  /// No description provided for @notifOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notifOpenSettings;
+
   /// No description provided for @profileAdmin.
   ///
   /// In en, this message translates to:

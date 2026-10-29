@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../controllers/request_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
+import '../../services/notification_permission_service.dart';
 import '../../widgets/category_chip.dart';
+import '../../widgets/notification_prompt.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/segmented_toggle.dart';
 import '../give_away/create_give_away_screen.dart';
@@ -43,6 +46,23 @@ class _HomeShellState extends State<_HomeShell> {
   static const int _profileIndex = 3;
 
   int _navIndex = _homeIndex;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterSignIn());
+  }
+
+  /// Right after sign-in (not a restored session), once Home is on screen,
+  /// offer notifications unless this device already answered.
+  Future<void> _afterSignIn() async {
+    if (!mounted) return;
+    final service = context.read<NotificationPermissionService?>();
+    final justSignedIn = context.read<AuthController>().takeJustSignedIn();
+    if (service == null || !justSignedIn) return;
+    if (!await service.shouldPrompt() || !mounted) return;
+    await showNotificationPrompt(context, service);
+  }
 
   void _onNavTap(int index) => setState(() => _navIndex = index);
 

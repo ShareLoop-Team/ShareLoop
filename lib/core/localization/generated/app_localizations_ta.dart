@@ -603,6 +603,38 @@ class AppLocalizationsTa extends AppLocalizations {
       'அறிவிப்புகள் இன்னும் கிடைக்கவில்லை.';
 
   @override
+  String get notifPromptTitle =>
+      'ShareLoop உங்களுக்கு அறிவிப்புகளை அனுப்ப அனுமதிக்கவா?';
+
+  @override
+  String get notifPromptBody =>
+      'பொருள் கோரிக்கைகள், பதில்கள் மற்றும் பரிமாற்றப் புதுப்பிப்புகள் குறித்துத் தெரிந்துகொள்ளுங்கள்.';
+
+  @override
+  String get notifPromptAllow => 'அறிவிப்புகளை அனுமதி';
+
+  @override
+  String get notifPromptLater => 'பிறகு பார்க்கலாம்';
+
+  @override
+  String get notifEnabled => 'அறிவிப்புகள் இயக்கத்தில் உள்ளன.';
+
+  @override
+  String get notifDenied =>
+      'அறிவிப்புகள் முடக்கப்பட்டுள்ளன. எப்போது வேண்டுமானாலும் சுயவிவரம் → அறிவிப்புகள் என்பதில் இயக்கலாம்.';
+
+  @override
+  String get notifBlocked =>
+      'ShareLoop-க்கான அறிவிப்புகள் தடுக்கப்பட்டுள்ளன. உங்கள் தொலைபேசி அமைப்புகளில் அவற்றை இயக்கவும்.';
+
+  @override
+  String get notifBlockedBrowser =>
+      'இந்த உலாவியில் ShareLoop-க்கான அறிவிப்புகள் தடுக்கப்பட்டுள்ளன. முகவரிப் பட்டிக்கு அருகிலுள்ள தள அமைப்புகளில் அவற்றை அனுமதிக்கவும்.';
+
+  @override
+  String get notifOpenSettings => 'அமைப்புகளைத் திற';
+
+  @override
   String get profileAdmin => 'நிர்வாகம்';
 
   @override

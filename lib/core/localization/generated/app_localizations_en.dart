@@ -590,6 +590,37 @@ class AppLocalizationsEn extends AppLocalizations {
       'Notifications aren\'t available yet.';
 
   @override
+  String get notifPromptTitle => 'Allow ShareLoop to send you notifications?';
+
+  @override
+  String get notifPromptBody =>
+      'Stay updated on item requests, responses, and exchange updates.';
+
+  @override
+  String get notifPromptAllow => 'Allow Notifications';
+
+  @override
+  String get notifPromptLater => 'Maybe Later';
+
+  @override
+  String get notifEnabled => 'Notifications are on.';
+
+  @override
+  String get notifDenied =>
+      'Notifications are off. You can turn them on any time from Profile → Notifications.';
+
+  @override
+  String get notifBlocked =>
+      'Notifications are blocked for ShareLoop. Turn them on in your phone\'s settings.';
+
+  @override
+  String get notifBlockedBrowser =>
+      'Notifications are blocked for ShareLoop in this browser. Allow them from the site settings next to the address bar.';
+
+  @override
+  String get notifOpenSettings => 'Open settings';
+
+  @override
   String get profileAdmin => 'Admin';
 
   @override

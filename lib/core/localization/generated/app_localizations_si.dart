@@ -595,6 +595,38 @@ class AppLocalizationsSi extends AppLocalizations {
   String get profileNotificationsUnavailable => 'දැනුම්දීම් තවම ලබා ගත නොහැක.';
 
   @override
+  String get notifPromptTitle =>
+      'ShareLoop වෙතින් ඔබට දැනුම්දීම් එවීමට ඉඩ දෙන්නද?';
+
+  @override
+  String get notifPromptBody =>
+      'අයිතම ඉල්ලීම්, ප්‍රතිචාර සහ හුවමාරු යාවත්කාලීන ගැන දැනුවත්ව සිටින්න.';
+
+  @override
+  String get notifPromptAllow => 'දැනුම්දීම්වලට ඉඩ දෙන්න';
+
+  @override
+  String get notifPromptLater => 'පසුව බලමු';
+
+  @override
+  String get notifEnabled => 'දැනුම්දීම් ක්‍රියාත්මකයි.';
+
+  @override
+  String get notifDenied =>
+      'දැනුම්දීම් අක්‍රියයි. ඕනෑම වේලාවක පැතිකඩ → දැනුම්දීම් වෙතින් ඒවා ක්‍රියාත්මක කළ හැක.';
+
+  @override
+  String get notifBlocked =>
+      'ShareLoop සඳහා දැනුම්දීම් අවහිර කර ඇත. ඔබගේ දුරකථනයේ සැකසීම්වලින් ඒවා ක්‍රියාත්මක කරන්න.';
+
+  @override
+  String get notifBlockedBrowser =>
+      'මෙම බ්‍රවුසරයේ ShareLoop සඳහා දැනුම්දීම් අවහිර කර ඇත. ලිපින තීරුව අසල ඇති අඩවි සැකසීම්වලින් ඒවාට ඉඩ දෙන්න.';
+
+  @override
+  String get notifOpenSettings => 'සැකසීම් විවෘත කරන්න';
+
+  @override
   String get profileAdmin => 'පරිපාලක';
 
   @override
