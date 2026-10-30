@@ -905,19 +905,20 @@ class AppLocalizationsSi extends AppLocalizations {
   String get itemDetailsClosed => 'මෙම භාණ්ඩය සඳහා තවදුරටත් ඉල්ලීම් කළ නොහැක.';
 
   @override
-  String get itemDetailsShare => 'බෙදාගන්න';
+  String get itemDetailsEdit => 'භාණ්ඩය සංස්කරණය කරන්න';
 
   @override
   String get itemDetailsViewPhoto => 'ඡායාරූපය සම්පූර්ණ තිරයෙන් බලන්න';
 
   @override
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  ) {
-    return '$title ShareLoop හි නොමිලේ ලබා ගත හැක ($district). $description';
-  }
+  String get giveEditTitle => 'ඔබේ භාණ්ඩය සංස්කරණය කරන්න';
+
+  @override
+  String get giveEditSubtitle =>
+      'මෙම භාණ්ඩය ගැන අන් අය දකින දේ යාවත්කාලීන කරන්න';
+
+  @override
+  String get postUpdated => 'භාණ්ඩය යාවත්කාලීන කළා.';
 
   @override
   String get editProfileChangePhoto => 'ඡායාරූපය වෙනස් කරන්න';

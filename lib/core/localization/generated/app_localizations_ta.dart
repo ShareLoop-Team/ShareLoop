@@ -917,19 +917,20 @@ class AppLocalizationsTa extends AppLocalizations {
       'இந்தப் பொருளுக்கு இனி கோரிக்கைகள் ஏற்கப்படாது.';
 
   @override
-  String get itemDetailsShare => 'பகிர்';
+  String get itemDetailsEdit => 'பொருளைத் திருத்து';
 
   @override
   String get itemDetailsViewPhoto => 'புகைப்படத்தை முழுத் திரையில் பார்';
 
   @override
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  ) {
-    return '$title ShareLoop இல் இலவசமாகக் கிடைக்கிறது ($district). $description';
-  }
+  String get giveEditTitle => 'உங்கள் பொருளைத் திருத்துங்கள்';
+
+  @override
+  String get giveEditSubtitle =>
+      'இந்தப் பொருள் பற்றி மற்றவர்கள் பார்ப்பதைப் புதுப்பியுங்கள்';
+
+  @override
+  String get postUpdated => 'பொருள் புதுப்பிக்கப்பட்டது.';
 
   @override
   String get editProfileChangePhoto => 'புகைப்படத்தை மாற்று';

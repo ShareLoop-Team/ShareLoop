@@ -411,22 +411,11 @@
   "itemDetailsArrangeHandover": "Arrange handover",
   "itemDetailsUnavailable": "This item is no longer available.",
   "itemDetailsClosed": "This item is no longer available for requests.",
-  "itemDetailsShare": "Share",
+  "itemDetailsEdit": "Edit item",
   "itemDetailsViewPhoto": "View photo full screen",
-  "itemDetailsShareText": "{title} is free to a good home on ShareLoop ({district}). {description}",
-  "@itemDetailsShareText": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      },
-      "district": {
-        "type": "String"
-      },
-      "description": {
-        "type": "String"
-      }
-    }
-  },
+  "giveEditTitle": "Edit your item",
+  "giveEditSubtitle": "Update what people see about this item",
+  "postUpdated": "Item updated.",
   "editProfileChangePhoto": "Change photo",
   "editProfileEmailLocked": "Your email cannot be changed",
   "editProfilePhoneNote": "Your phone number is shared only with the person you are matched with, after the donor selects a requester.",

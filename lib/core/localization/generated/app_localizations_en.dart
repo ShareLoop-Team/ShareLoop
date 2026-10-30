@@ -899,19 +899,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'This item is no longer available for requests.';
 
   @override
-  String get itemDetailsShare => 'Share';
+  String get itemDetailsEdit => 'Edit item';
 
   @override
   String get itemDetailsViewPhoto => 'View photo full screen';
 
   @override
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  ) {
-    return '$title is free to a good home on ShareLoop ($district). $description';
-  }
+  String get giveEditTitle => 'Edit your item';
+
+  @override
+  String get giveEditSubtitle => 'Update what people see about this item';
+
+  @override
+  String get postUpdated => 'Item updated.';
 
   @override
   String get editProfileChangePhoto => 'Change photo';

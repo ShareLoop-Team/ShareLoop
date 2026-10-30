@@ -13,8 +13,8 @@ class ItemController extends ChangeNotifier {
   ItemController({
     ItemPostRepository? repository,
     ExchangeRepository? exchangeRepository,
-  })  : _repository = repository ?? ItemPostRepository(),
-        _exchangeRepository = exchangeRepository ?? ExchangeRepository();
+  }) : _repository = repository ?? ItemPostRepository(),
+       _exchangeRepository = exchangeRepository ?? ExchangeRepository();
 
   final ItemPostRepository _repository;
   final ExchangeRepository _exchangeRepository;
@@ -41,7 +41,8 @@ class ItemController extends ChangeNotifier {
       final matchesDistrict =
           districtFilter == null || p.district == districtFilter;
       final matchesCity = cityFilter == null || p.city == cityFilter;
-      final matchesSearch = searchQuery.isEmpty ||
+      final matchesSearch =
+          searchQuery.isEmpty ||
           p.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
           p.description.toLowerCase().contains(searchQuery.toLowerCase());
       return matchesCategory && matchesDistrict && matchesCity && matchesSearch;
@@ -163,6 +164,54 @@ class ItemController extends ChangeNotifier {
     return null;
   }
 
+  /// Whether the donor may still edit the post: only while it is available,
+  /// not once a requester is chosen or the item has been given away.
+  bool canEditPost(ItemPostModel post) => post.status == ItemPostStatus.active;
+
+  /// Saves the donor's edits. [keptPhotoUrls] are the existing photos left
+  /// in place (in order); [newPhotos] are added after them. Returns an
+  /// error message, or null once saved.
+  Future<String?> updatePost(
+    ItemPostModel post, {
+    required String title,
+    required String description,
+    required String condition,
+    required String category,
+    required String district,
+    required String city,
+    required List<String> keptPhotoUrls,
+    List<PhotoUpload> newPhotos = const [],
+  }) async {
+    if (!canEditPost(post)) return 'This item can no longer be edited.';
+    if (title.trim().isEmpty || description.trim().isEmpty) {
+      return 'Title and description are required.';
+    }
+    final kept = [
+      for (var i = 0; i < post.photoUrls.length; i++)
+        if (keptPhotoUrls.contains(post.photoUrls[i])) i,
+    ];
+    final edited = post.copyWith(
+      title: title.trim(),
+      description: description.trim(),
+      condition: condition,
+      category: category,
+      district: district,
+      city: city.trim(),
+      photoUrls: [for (final i in kept) post.photoUrls[i]],
+      photoPaths: [
+        for (final i in kept)
+          if (i < post.photoPaths.length) post.photoPaths[i],
+      ],
+    );
+    try {
+      await _repository.updatePost(edited, newPhotos: newPhotos);
+    } on AppException catch (e) {
+      return e.message;
+    }
+    await loadPosts();
+    return null;
+  }
+
   /// Whether the donor may still delete the post: not once a requester has
   /// been chosen and the handover is underway.
   bool canDeletePost(ItemPostModel post) =>
@@ -214,11 +263,15 @@ class ItemController extends ChangeNotifier {
 
   /// The signed-in party confirms the handover; the post completes once
   /// both parties have. Returns an error message, or null on success.
-  Future<String?> confirmHandover(String postId) =>
-      _runExchangeStep(postId, () => _exchangeRepository.confirmHandover(postId));
+  Future<String?> confirmHandover(String postId) => _runExchangeStep(
+    postId,
+    () => _exchangeRepository.confirmHandover(postId),
+  );
 
-  Future<String?> cancelExchange(String postId) =>
-      _runExchangeStep(postId, () => _exchangeRepository.cancelExchange(postId));
+  Future<String?> cancelExchange(String postId) => _runExchangeStep(
+    postId,
+    () => _exchangeRepository.cancelExchange(postId),
+  );
 
   Future<String?> _runExchangeStep(
     String postId,

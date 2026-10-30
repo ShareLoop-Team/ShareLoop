@@ -53,7 +53,6 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_auth: ^6.7.0
   flutter_svg: ^2.3.0
-  share_plus: ^13.3.1
   # Asks for the OS notification permission after sign-in, and remembers
   # the answer on the device so the prompt isn't repeated.
   permission_handler: ^13.0.2

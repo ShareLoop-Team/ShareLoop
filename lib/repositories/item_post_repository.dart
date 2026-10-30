@@ -26,6 +26,13 @@ abstract class ItemPostRepository {
     List<PhotoUpload> photos = const [],
   });
 
+  /// Saves the donor's edits to [post]. Its photo lists are the photos
+  /// kept; [newPhotos] are uploaded and added after them.
+  Future<ItemPostModel> updatePost(
+    ItemPostModel post, {
+    List<PhotoUpload> newPhotos = const [],
+  });
+
   /// Also drops requests made for this post, so requesters aren't left
   /// waiting on an item that's gone.
   Future<void> deletePost(String id);

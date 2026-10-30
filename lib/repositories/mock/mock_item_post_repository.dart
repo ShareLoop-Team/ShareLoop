@@ -1,3 +1,4 @@
+import '../../core/errors/app_exception.dart';
 import '../../models/item_post_model.dart';
 import '../../models/photo_upload.dart';
 import '../../services/mock_data_service.dart';
@@ -8,11 +9,14 @@ import '../item_post_repository.dart';
 class MockItemPostRepository implements ItemPostRepository {
   final MockDataService _data = MockDataService.instance;
 
-  /// Fills in the donor's donation count and rating from their profile.
+  /// Fills in the donor's current name, photo, donation count and rating
+  /// from their profile, so a new profile photo shows on every post.
   ItemPostModel _withDonor(ItemPostModel post) {
     for (final user in _data.users) {
       if (user.id == post.donorId) {
         return post.copyWith(
+          donorName: user.name,
+          donorAvatarUrl: user.avatarUrl,
           donorDonationCount: user.donationCount,
           donorRating: user.averageRating,
         );
@@ -80,6 +84,34 @@ class MockItemPostRepository implements ItemPostRepository {
       createdAt: post.createdAt,
     );
     _data.itemPosts.add(stored);
+    return _withDonor(stored);
+  }
+
+  @override
+  Future<ItemPostModel> updatePost(
+    ItemPostModel post, {
+    List<PhotoUpload> newPhotos = const [],
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final index = _data.itemPosts.indexWhere((p) => p.id == post.id);
+    if (index == -1) {
+      throw const AppException('This item is no longer available.');
+    }
+    final stored = post.copyWith(
+      photoPaths: [
+        ...post.photoPaths,
+        for (final photo in newPhotos) photo.name,
+      ],
+      photoUrls: [
+        ...post.photoUrls,
+        for (final photo in newPhotos)
+          Uri.dataFromBytes(
+            photo.bytes,
+            mimeType: photo.mimeType ?? 'image/jpeg',
+          ).toString(),
+      ],
+    );
+    _data.itemPosts[index] = stored;
     return _withDonor(stored);
   }
 

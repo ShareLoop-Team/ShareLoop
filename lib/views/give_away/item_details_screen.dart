@@ -2,7 +2,6 @@ import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:share_plus/share_plus.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/badge_controller.dart';
@@ -12,12 +11,15 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/item_post_model.dart';
+import '../../widgets/app_icon.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/donor_badge_dot.dart';
 import '../../widgets/info_note.dart';
 import '../../widgets/item_photo.dart';
 import '../../widgets/photo_viewer.dart';
 import '../../widgets/pill_button.dart';
+import '../../widgets/user_avatar.dart';
+import 'create_give_away_screen.dart';
 
 /// View: full details of a Give Away post: photo gallery, tags, location,
 /// description and donor card, with "Request this item" pinned at the
@@ -48,21 +50,10 @@ class ItemDetailsScreen extends StatelessWidget {
     messenger.showSnackBar(SnackBar(content: Text(l10n.postDeleted)));
   }
 
-  Future<void> _share(BuildContext context, ItemPostModel post) {
-    final l10n = AppLocalizations.of(context);
-    // iPads anchor the share sheet to the button that opened it.
-    final box = context.findRenderObject() as RenderBox?;
-    return SharePlus.instance.share(
-      ShareParams(
-        subject: post.title,
-        text: l10n.itemDetailsShareText(
-          post.title,
-          post.district,
-          post.description,
-        ),
-        sharePositionOrigin: box == null
-            ? null
-            : box.localToGlobal(Offset.zero) & box.size,
+  void _edit(BuildContext context, ItemPostModel post) {
+    Navigator.of(context).push(
+      MaterialPageRoute<void>(
+        builder: (_) => CreateGiveAwayScreen(editPost: post),
       ),
     );
   }
@@ -139,10 +130,13 @@ class ItemDetailsScreen extends StatelessWidget {
             _Gallery(
               post: post,
               backTooltip: MaterialLocalizations.of(context).backButtonTooltip,
-              shareTooltip: l10n.itemDetailsShare,
+              editTooltip: l10n.itemDetailsEdit,
               viewPhotoLabel: l10n.itemDetailsViewPhoto,
               onBack: () => Navigator.of(context).maybePop(),
-              onShare: (buttonContext) => _share(buttonContext, post),
+              // Only the donor, and only while the item is still available.
+              onEdit: isOwner && itemController.canEditPost(post)
+                  ? () => _edit(context, post)
+                  : null,
             ),
             Center(
               child: ConstrainedBox(
@@ -209,6 +203,10 @@ class ItemDetailsScreen extends StatelessWidget {
                       const SizedBox(height: 20),
                       _DonorCard(
                         name: post.donorName,
+                        // Your own posts always show your current photo.
+                        avatarUrl: isOwner
+                            ? currentUser.avatarUrl
+                            : post.donorAvatarUrl,
                         badgeLabel: badge == null
                             ? l10n.homeNewDonor
                             : l10n.homeDonorBadge(badge),
@@ -246,30 +244,30 @@ class ItemDetailsScreen extends StatelessWidget {
         ),
       ),
       bottomNavigationBar: BottomActionBar(children: actions),
-
     );
   }
 }
 
-/// Full-width photo pager with round back/share buttons and page dots.
+/// Full-width photo pager with a round back button, an edit button for the
+/// donor, and page dots.
 class _Gallery extends StatefulWidget {
   const _Gallery({
     required this.post,
     required this.backTooltip,
-    required this.shareTooltip,
+    required this.editTooltip,
     required this.viewPhotoLabel,
     required this.onBack,
-    required this.onShare,
+    required this.onEdit,
   });
 
   final ItemPostModel post;
   final String backTooltip;
-  final String shareTooltip;
+  final String editTooltip;
   final String viewPhotoLabel;
   final VoidCallback onBack;
 
-  /// Receives the share button's context so the share sheet can anchor to it.
-  final void Function(BuildContext buttonContext) onShare;
+  /// Null hides the edit button (not the donor, or no longer editable).
+  final VoidCallback? onEdit;
 
   @override
   State<_Gallery> createState() => _GalleryState();
@@ -335,22 +333,21 @@ class _GalleryState extends State<_Gallery> {
             top: topInset + 12,
             left: 16,
             child: _RoundButton(
-              icon: Icons.arrow_back_ios_new,
+              icon: const Icon(Icons.arrow_back_ios_new),
               tooltip: widget.backTooltip,
               onPressed: widget.onBack,
             ),
           ),
-          Positioned(
-            top: topInset + 12,
-            right: 16,
-            child: Builder(
-              builder: (buttonContext) => _RoundButton(
-                icon: Icons.share_outlined,
-                tooltip: widget.shareTooltip,
-                onPressed: () => widget.onShare(buttonContext),
+          if (widget.onEdit case final onEdit?)
+            Positioned(
+              top: topInset + 12,
+              right: 16,
+              child: _RoundButton(
+                icon: const AppIcon(AppGlyph.edit),
+                tooltip: widget.editTooltip,
+                onPressed: onEdit,
               ),
             ),
-          ),
           if (photos.length > 1)
             Positioned(
               left: 0,
@@ -391,7 +388,8 @@ class _RoundButton extends StatelessWidget {
     required this.onPressed,
   });
 
-  final IconData icon;
+  /// An [Icon] or [AppIcon]; sized and coloured by the button.
+  final Widget icon;
   final String tooltip;
   final VoidCallback onPressed;
 
@@ -405,7 +403,10 @@ class _RoundButton extends StatelessWidget {
       child: IconButton(
         onPressed: onPressed,
         tooltip: tooltip,
-        icon: Icon(icon, size: 20, color: AppColors.ink),
+        icon: IconTheme(
+          data: const IconThemeData(size: 20, color: AppColors.ink),
+          child: icon,
+        ),
         constraints: const BoxConstraints.tightFor(width: 44, height: 44),
       ),
     );
@@ -443,10 +444,8 @@ class _Tag extends StatelessWidget {
           ],
           Text(
             label,
-            style: Theme.of(context).textTheme.labelLarge?.copyWith(
-              color: foreground,
-              fontWeight: FontWeight.w600,
-            ),
+            style: Theme.of(context).textTheme.labelLarge
+                ?.copyWith(color: foreground, fontWeight: FontWeight.w600),
           ),
         ],
       ),
@@ -465,22 +464,22 @@ class _StatusTag extends StatelessWidget {
     final l10n = AppLocalizations.of(context);
     return switch (status) {
       ItemPostStatus.active => _Tag(
-          label: l10n.itemDetailsAvailable,
-          icon: Icons.check,
-          background: AppColors.paleMint,
-          foreground: AppColors.deepGreen,
-        ),
+        label: l10n.itemDetailsAvailable,
+        icon: Icons.check,
+        background: AppColors.paleMint,
+        foreground: AppColors.deepGreen,
+      ),
       ItemPostStatus.pendingHandover => _Tag(
-          label: l10n.itemDetailsPendingHandover,
-          icon: Icons.schedule,
-          background: AppColors.amber.withValues(alpha: 0.15),
-          foreground: AppColors.ink,
-        ),
+        label: l10n.itemDetailsPendingHandover,
+        icon: Icons.schedule,
+        background: AppColors.amber.withValues(alpha: 0.15),
+        foreground: AppColors.ink,
+      ),
       ItemPostStatus.completed => _Tag(
-          label: l10n.itemDetailsGivenAway,
-          background: AppColors.mutedSurface,
-          foreground: AppColors.textSecondary,
-        ),
+        label: l10n.itemDetailsGivenAway,
+        background: AppColors.mutedSurface,
+        foreground: AppColors.textSecondary,
+      ),
     };
   }
 }
@@ -501,9 +500,8 @@ class _InfoLine extends StatelessWidget {
         Expanded(
           child: Text(
             text,
-            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: Theme.of(context).textTheme.bodyMedium
+                ?.copyWith(color: AppColors.textSecondary),
           ),
         ),
       ],
@@ -515,6 +513,7 @@ class _InfoLine extends StatelessWidget {
 class _DonorCard extends StatelessWidget {
   const _DonorCard({
     required this.name,
+    required this.avatarUrl,
     required this.badgeLabel,
     required this.badge,
     required this.rating,
@@ -522,6 +521,7 @@ class _DonorCard extends StatelessWidget {
   });
 
   final String name;
+  final String? avatarUrl;
   final String badgeLabel;
   final String? badge;
   final double rating;
@@ -548,17 +548,20 @@ class _DonorCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          CircleAvatar(
-            radius: 24,
-            backgroundColor: AppColors.softMint,
-            child: Text(
-              name.isEmpty ? '?' : name.characters.first.toUpperCase(),
-              style: textTheme.titleLarge?.copyWith(
-                color: AppColors.deepGreen,
-                fontWeight: FontWeight.w700,
+          if (avatarUrl?.isNotEmpty ?? false)
+            UserAvatar(url: avatarUrl, size: 48, ringWidth: 2)
+          else
+            CircleAvatar(
+              radius: 24,
+              backgroundColor: AppColors.softMint,
+              child: Text(
+                name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+                style: textTheme.titleLarge?.copyWith(
+                  color: AppColors.deepGreen,
+                  fontWeight: FontWeight.w700,
+                ),
               ),
             ),
-          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(

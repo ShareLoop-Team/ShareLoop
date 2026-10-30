@@ -1720,11 +1720,11 @@ abstract class AppLocalizations {
   /// **'This item is no longer available for requests.'**
   String get itemDetailsClosed;
 
-  /// No description provided for @itemDetailsShare.
+  /// No description provided for @itemDetailsEdit.
   ///
   /// In en, this message translates to:
-  /// **'Share'**
-  String get itemDetailsShare;
+  /// **'Edit item'**
+  String get itemDetailsEdit;
 
   /// No description provided for @itemDetailsViewPhoto.
   ///
@@ -1732,15 +1732,23 @@ abstract class AppLocalizations {
   /// **'View photo full screen'**
   String get itemDetailsViewPhoto;
 
-  /// No description provided for @itemDetailsShareText.
+  /// No description provided for @giveEditTitle.
   ///
   /// In en, this message translates to:
-  /// **'{title} is free to a good home on ShareLoop ({district}). {description}'**
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  );
+  /// **'Edit your item'**
+  String get giveEditTitle;
+
+  /// No description provided for @giveEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update what people see about this item'**
+  String get giveEditSubtitle;
+
+  /// No description provided for @postUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Item updated.'**
+  String get postUpdated;
 
   /// No description provided for @editProfileChangePhoto.
   ///

@@ -39,7 +39,8 @@ class GiveAwayTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final itemController = context.watch<ItemController>();
-    final userId = context.watch<AuthController>().currentUser?.id;
+    final currentUser = context.watch<AuthController>().currentUser;
+    final userId = currentUser?.id;
     final badgeController = context.read<BadgeController>();
     final l10n = AppLocalizations.of(context);
 
@@ -72,8 +73,10 @@ class GiveAwayTab extends StatelessWidget {
       }
       return SliverFillRemaining(hasScrollBody: false, child: state);
     }
-    final tileHeight = ItemGridCard.imageHeight +
-        26 +
+    // The donor photo row is a little taller than its text.
+    final tileHeight =
+        ItemGridCard.imageHeight +
+        32 +
         MediaQuery.textScalerOf(context).scale(80);
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -90,15 +93,18 @@ class GiveAwayTab extends StatelessWidget {
           final badge = badgeController.badgeForDonationCount(
             itemController.donorDonationCount(post.donorId),
           );
-          final canDelete = post.donorId == userId &&
-              itemController.canDeletePost(post);
+          final canDelete =
+              post.donorId == userId && itemController.canDeletePost(post);
           return ItemGridCard(
             post: post,
             donorBadge: badge?.name,
-            onTap: () => Navigator.of(context).pushNamed(
-              AppRoutes.itemDetails,
-              arguments: post.id,
-            ),
+            // Your own posts follow a profile photo change at once.
+            donorAvatarUrl: post.donorId == userId
+                ? currentUser?.avatarUrl
+                : null,
+            onTap: () =>
+                Navigator.of(context)
+                    .pushNamed(AppRoutes.itemDetails, arguments: post.id),
             onDelete: canDelete ? () => _confirmDelete(context, post) : null,
             deleteTooltip: l10n.postDelete,
           );

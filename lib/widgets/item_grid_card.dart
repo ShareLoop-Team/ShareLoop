@@ -6,10 +6,11 @@ import '../core/utils/time_ago.dart';
 import '../models/item_post_model.dart';
 import 'donor_badge_dot.dart';
 import 'item_photo.dart';
+import 'user_avatar.dart';
 
 /// Reusable photo-first card for Give Away posts in two-column grids:
 /// condition tag over the image, then title, category · district, and the
-/// donor's badge with how long ago the item was posted. The donor's own
+/// donor's profile photo and badge with how long ago the item was posted. The donor's own
 /// posts get a delete button over the image when [onDelete] is set.
 class ItemGridCard extends StatelessWidget {
   const ItemGridCard({
@@ -17,6 +18,7 @@ class ItemGridCard extends StatelessWidget {
     required this.post,
     required this.donorBadge,
     required this.onTap,
+    this.donorAvatarUrl,
     this.onDelete,
     this.deleteTooltip,
   });
@@ -24,7 +26,14 @@ class ItemGridCard extends StatelessWidget {
   /// Height of the image area; grids use it to size each tile.
   static const double imageHeight = 124;
 
+  /// The donor photo, a little taller than the text line beside it.
+  static const double avatarSize = 22;
+
   final ItemPostModel post;
+
+  /// Overrides the post's donor photo, e.g. with the signed-in user's
+  /// current one on their own posts.
+  final String? donorAvatarUrl;
 
   /// Badge name (Bronze, Silver, Gold, Platinum) or null for new donors.
   final String? donorBadge;
@@ -132,7 +141,11 @@ class ItemGridCard extends StatelessWidget {
                   const SizedBox(height: 4),
                   Row(
                     children: [
-                      DonorBadgeDot(badge: donorBadge),
+                      _DonorAvatar(
+                        url: donorAvatarUrl ?? post.donorAvatarUrl,
+                        name: post.donorName,
+                        badge: donorBadge,
+                      ),
                       const SizedBox(width: 6),
                       Expanded(
                         child: Text(
@@ -149,6 +162,67 @@ class ItemGridCard extends StatelessWidget {
             ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// The donor's profile photo (or their initial), with their badge colour as
+/// a small dot on its corner.
+class _DonorAvatar extends StatelessWidget {
+  const _DonorAvatar({
+    required this.url,
+    required this.name,
+    required this.badge,
+  });
+
+  final String? url;
+  final String name;
+  final String? badge;
+
+  @override
+  Widget build(BuildContext context) {
+    const size = ItemGridCard.avatarSize;
+    final Widget photo;
+    if (url case final url? when url.isNotEmpty) {
+      photo = UserAvatar(url: url, size: size, ringWidth: 1);
+    } else {
+      photo = Container(
+        width: size,
+        height: size,
+        alignment: Alignment.center,
+        decoration: const BoxDecoration(
+          color: AppColors.softMint,
+          shape: BoxShape.circle,
+        ),
+        child: Text(
+          name.isEmpty ? '?' : name.characters.first.toUpperCase(),
+          style: Theme.of(context).textTheme.labelSmall?.copyWith(
+            color: AppColors.deepGreen,
+            fontWeight: FontWeight.w700,
+          ),
+        ),
+      );
+    }
+    return SizedBox.square(
+      dimension: size,
+      child: Stack(
+        clipBehavior: Clip.none,
+        children: [
+          photo,
+          Positioned(
+            right: -2,
+            bottom: -2,
+            child: Container(
+              padding: const EdgeInsets.all(1.5),
+              decoration: const BoxDecoration(
+                color: AppColors.white,
+                shape: BoxShape.circle,
+              ),
+              child: DonorBadgeDot(badge: badge, size: 7),
+            ),
+          ),
+        ],
       ),
     );
   }

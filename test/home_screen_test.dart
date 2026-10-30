@@ -130,15 +130,25 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Hello, Kavidu. What are you sharing today?'),
-        findsOneWidget);
     expect(
-      find.byWidgetPredicate(
-        (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
-      ),
+      find.text('Hello, Kavidu. What are you sharing today?'),
       findsOneWidget,
     );
-    await tester.tap(find.byType(UserAvatar));
+    final newPhoto = find.byWidgetPredicate(
+      (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
+    );
+    // The header photo (the bottom bar's Profile tab shares the tooltip).
+    final headerPhoto = find.descendant(
+      of: find.byWidgetPredicate((w) => w is Tooltip && w.message == 'Profile'),
+      matching: newPhoto,
+    );
+    expect(headerPhoto, findsOneWidget);
+    // Nimal's own posts in the grid show the new photo too.
+    expect(
+      find.descendant(of: find.byType(ItemGridCard), matching: newPhoto),
+      findsWidgets,
+    );
+    await tester.tap(headerPhoto);
     await tester.pumpAndSettle();
     expect(find.text('My Profile'), findsOneWidget);
   });

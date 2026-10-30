@@ -17,7 +17,10 @@ enum AppGlyph {
   notifications,
 
   // "Opens a page" arrow at the end of list rows and cards.
-  chevron;
+  chevron,
+
+  // Edit your own post (item details).
+  edit;
 
   String get asset => 'assets/icons/$name.svg';
 }

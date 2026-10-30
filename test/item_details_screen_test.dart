@@ -7,8 +7,11 @@ import 'package:shareloop/controllers/auth_controller.dart';
 import 'package:shareloop/controllers/badge_controller.dart';
 import 'package:shareloop/controllers/item_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
+import 'package:shareloop/repositories/item_post_repository.dart';
+import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/views/give_away/item_details_screen.dart';
 import 'package:shareloop/widgets/photo_viewer.dart';
+import 'package:shareloop/widgets/user_avatar.dart';
 
 /// Opens the details of mock post p3 (Nimal's white T-shirt), signed in as
 /// [email] (Kamani by default, so not the owner).
@@ -69,8 +72,10 @@ void main() {
     expect(find.text('4.6'), findsOneWidget);
     expect(find.text('12 items given'), findsOneWidget);
     expect(find.textContaining('Contact details stay private'), findsOneWidget);
-    expect(find.byTooltip('Share'), findsOneWidget);
     expect(find.text('Request this item'), findsOneWidget);
+    // No share button; editing is for the donor only.
+    expect(find.byTooltip('Share'), findsNothing);
+    expect(find.byTooltip('Edit item'), findsNothing);
   });
 
   testWidgets('the donor sees their incoming requests instead', (
@@ -80,6 +85,63 @@ void main() {
 
     expect(find.text('View incoming requests'), findsOneWidget);
     expect(find.text('Request this item'), findsNothing);
+    expect(find.byTooltip('Share'), findsNothing);
+  });
+
+  testWidgets('the donor edits the item from the edit button', (tester) async {
+    final posts = MockDataService.instance.itemPosts;
+    final seeded = List.of(posts);
+    addTearDown(
+      () => posts
+        ..clear()
+        ..addAll(seeded),
+    );
+    await _openDetails(tester, email: 'nimal@example.com');
+
+    await tester.tap(find.byTooltip('Edit item'));
+    await tester.pumpAndSettle();
+    expect(find.text('Edit your item'), findsOneWidget);
+    // Starts from the post as it is.
+    expect(find.text('White Cotton T-Shirt'), findsOneWidget);
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'White Cotton T-Shirt'),
+      'White Cotton T-Shirt (Size M)',
+    );
+    await tester.ensureVisible(find.text('Save Changes'));
+    await tester.pumpAndSettle();
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Save Changes'));
+      await Future<void>.delayed(const Duration(milliseconds: 700));
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit your item'), findsNothing);
+    expect(find.text('Item updated.'), findsOneWidget);
+    expect(find.text('White Cotton T-Shirt (Size M)'), findsOneWidget);
+    // Photos and the rest of the post are kept.
+    expect(find.text('Clothes'), findsOneWidget);
+    expect(find.bySemanticsLabel('View photo full screen'), findsWidgets);
+  });
+
+  testWidgets('the donor\'s current profile photo shows on the post', (
+    tester,
+  ) async {
+    const photo = 'assets/images/item_grey_cap.jpg';
+    final users = MockDataService.instance.users;
+    final index = users.indexWhere((u) => u.email == 'nimal@example.com');
+    final original = users[index];
+    users[index] = original.copyWith(avatarUrl: photo);
+    addTearDown(() => users[index] = original);
+
+    final posts = await tester.runAsync(ItemPostRepository().getAllPosts);
+    expect(posts!.firstWhere((p) => p.id == 'p3').donorAvatarUrl, photo);
+
+    await _openDetails(tester);
+    expect(
+      find.byWidgetPredicate((w) => w is UserAvatar && w.url == photo),
+      findsOneWidget,
+    );
   });
 
   testWidgets('tapping the photo opens a zoomable full-screen viewer', (
