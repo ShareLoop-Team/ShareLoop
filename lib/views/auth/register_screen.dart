@@ -11,6 +11,8 @@ import '../../core/theme/sl_tokens.dart';
 import '../../widgets/app_snack_bar.dart';
 import '../../widgets/auth_form_widgets.dart';
 import '../../widgets/city_dropdown_field.dart';
+import '../../widgets/facebook/facebook_sign_in_button.dart';
+import '../../widgets/google/google_sign_in_button.dart';
 import '../../widgets/post_form_widgets.dart';
 import '../../widgets/sl/sl_button.dart';
 import '../../widgets/sl/sl_input.dart';
@@ -20,9 +22,8 @@ import '../../widgets/sl/sl_input.dart';
 /// form; creating the account and navigation go through
 /// [RegisterController].
 ///
-/// Follows the app's light or dark theme. Only email and password sign-up
-/// works: Google and Facebook aren't set up in Firebase Authentication, so
-/// their buttons say they aren't available yet.
+/// Follows the app's light or dark theme and supports email-code, Google,
+/// and Facebook registration.
 class RegisterScreen extends StatelessWidget {
   const RegisterScreen({super.key});
 
@@ -144,9 +145,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                 const SizedBox(height: SLSpace.xs),
                                 Text(
                                   l10n.registerSubtitle,
-                                  style: type.body.copyWith(
-                                    color: sl.inkMuted,
-                                  ),
+                                  style: type.body.copyWith(color: sl.inkMuted),
                                 ),
                                 const SizedBox(height: SLSpace.xl),
                                 SLFieldLabel(l10n.registerNameLabel),
@@ -176,9 +175,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                   keyboardType: TextInputType.emailAddress,
                                   textInputAction: TextInputAction.next,
                                   autofillHints: const [AutofillHints.email],
-                                  validator: _required(
-                                    l10n.loginEmailRequired,
-                                  ),
+                                  validator: _required(l10n.loginEmailRequired),
                                 ),
                                 const SizedBox(height: _fieldGap),
                                 SLFieldLabel(l10n.registerPhoneLabel),
@@ -227,9 +224,7 @@ class _RegisterViewState extends State<_RegisterView> {
                                   },
                                 ),
                                 const SizedBox(height: _fieldGap),
-                                SLFieldLabel(
-                                  l10n.registerConfirmPasswordLabel,
-                                ),
+                                SLFieldLabel(l10n.registerConfirmPasswordLabel),
                                 TextFormField(
                                   controller: _confirmPasswordController,
                                   obscureText: _controller.obscurePassword,
@@ -283,11 +278,18 @@ class _RegisterViewState extends State<_RegisterView> {
                                   onPressed: () => _submit(auth),
                                 ),
                                 const SizedBox(height: SLSpace.xl),
-                                AuthSocialButtons(
-                                  dividerLabel: l10n.registerOrSignUpWith,
-                                  googleLabel: l10n.registerWithGoogle,
-                                  facebookLabel: l10n.registerWithFacebook,
-                                  onPressed: () => _socialUnavailable(l10n),
+                                AuthOrDivider(label: l10n.registerOrSignUpWith),
+                                const SizedBox(height: SLSpace.l),
+                                GoogleSignInButton(
+                                  label: l10n.registerWithGoogle,
+                                  visualLabel: 'Google',
+                                  onUnavailable: () => _socialUnavailable(l10n),
+                                ),
+                                const SizedBox(height: SLSpace.s),
+                                FacebookSignInButton(
+                                  label: l10n.registerWithFacebook,
+                                  visualLabel: 'Facebook',
+                                  onUnavailable: () => _socialUnavailable(l10n),
                                 ),
                                 const Spacer(),
                                 const SizedBox(height: SLSpace.xl),
@@ -345,9 +347,8 @@ class _TermsAgreement extends StatelessWidget {
       buffer.clear();
     }
 
-    for (final char in l10n
-        .registerAgreeTerms(_termsMark, _privacyMark)
-        .split('')) {
+    for (final char
+        in l10n.registerAgreeTerms(_termsMark, _privacyMark).split('')) {
       if (char == _termsMark || char == _privacyMark) {
         flush();
         spans.add(
@@ -405,8 +406,7 @@ class _TermsAgreement extends StatelessWidget {
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(4),
                         ),
-                        materialTapTargetSize:
-                            MaterialTapTargetSize.shrinkWrap,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
                         visualDensity: VisualDensity.compact,
                       ),
                     ),

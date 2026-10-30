@@ -9,6 +9,8 @@ import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/controllers/item_controller.dart';
 import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/models/exchange_model.dart';
+import 'package:shareloop/models/email_code.dart';
+import 'package:shareloop/repositories/mock/mock_user_repository.dart';
 import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/core/theme/app_theme.dart';
@@ -36,12 +38,15 @@ Future<void> _pumpPage(
   await tester.runAsync(() async {
     if (newUser) {
       await auth.register(
-        name: 'Ama Test',
-        email: 'ama${DateTime.now().microsecondsSinceEpoch}@example.com',
-        password: 'secret1',
-        phone: '0771234567',
-        district: 'Colombo',
-        city: 'Dehiwala',
+        PendingRegistration(
+          name: 'Ama Test',
+          email: 'ama${DateTime.now().microsecondsSinceEpoch}@example.com',
+          password: 'secret1',
+          phone: '0771234567',
+          district: 'Colombo',
+          city: 'Dehiwala',
+        ),
+        MockUserRepository.mockCode,
       );
     } else {
       await auth.login('nimal@example.com', 'x');

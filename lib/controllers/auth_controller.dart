@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 
 import '../core/errors/app_exception.dart';
+import '../models/email_code.dart';
 import '../models/user_model.dart';
 import '../repositories/user_repository.dart';
 
@@ -44,42 +45,16 @@ class AuthController extends ChangeNotifier {
     }
   }
 
-  Future<bool> register({
-    required String name,
-    required String email,
-    required String password,
-    required String phone,
-    required String district,
-    required String city,
-  }) async {
-    if (name.trim().isEmpty ||
-        email.trim().isEmpty ||
-        password.isEmpty ||
-        phone.trim().isEmpty ||
-        district.isEmpty) {
-      errorMessage = 'Please fill in all required fields.';
-      notifyListeners();
-      return false;
-    }
+  /// Runs [action] with loading state; failures become [errorMessage].
+  Future<T?> _run<T>(Future<T> Function() action) async {
     isLoading = true;
     errorMessage = null;
     notifyListeners();
-
     try {
-      _completeSignIn(
-        await _userRepository.register(
-          name: name.trim(),
-          email: email.trim(),
-          password: password,
-          phone: phone.trim(),
-          district: district,
-          city: city.trim(),
-        ),
-      );
-      return true;
+      return await action();
     } on AppException catch (e) {
       errorMessage = e.message;
-      return false;
+      return null;
     } finally {
       isLoading = false;
       notifyListeners();
@@ -88,9 +63,9 @@ class AuthController extends ChangeNotifier {
 
   bool _justSignedIn = false;
 
-  /// Every successful sign-in ends here (email login and registration
-  /// today; Google / Facebook sign-in should call it too once they exist),
-  /// so Home knows to run its after-sign-in steps.
+  /// Every successful sign-in ends here (password, email code, Google,
+  /// Facebook and registration), so Home knows to run its after-sign-in
+  /// steps.
   void _completeSignIn(UserModel user) {
     currentUser = user;
     _justSignedIn = true;
@@ -102,6 +77,145 @@ class AuthController extends ChangeNotifier {
     final value = _justSignedIn;
     _justSignedIn = false;
     return value;
+  }
+
+  /// Emails a one-time code. Returns null (and sets [errorMessage]) on failure.
+  Future<EmailCodeTicket?> requestEmailCode(
+    String email,
+    EmailCodePurpose purpose, {
+    PendingRegistration? registration,
+  }) {
+    if (email.trim().isEmpty) {
+      errorMessage = 'Email is required.';
+      notifyListeners();
+      return Future.value();
+    }
+    return _run(() => _userRepository.requestEmailCode(
+          email.trim(),
+          purpose,
+          registration: registration,
+        ));
+  }
+
+  /// Creates the account with the emailed [code] and signs in.
+  Future<bool> register(PendingRegistration details, String code) async {
+    if (details.name.trim().isEmpty ||
+        details.email.trim().isEmpty ||
+        details.password.isEmpty ||
+        details.phone.trim().isEmpty ||
+        details.district.isEmpty) {
+      errorMessage = 'Please fill in all required fields.';
+      notifyListeners();
+      return false;
+    }
+    final user = await _run(() => _userRepository.register(
+          name: details.name.trim(),
+          email: details.email.trim(),
+          password: details.password,
+          phone: details.phone.trim(),
+          district: details.district,
+          city: details.city.trim(),
+          code: code.trim(),
+        ));
+    if (user == null) return false;
+    _completeSignIn(user);
+    notifyListeners();
+    return true;
+  }
+
+  /// Signs in with an emailed code instead of the password.
+  Future<bool> loginWithCode(String email, String code) async {
+    final user = await _run(
+      () => _userRepository.loginWithCode(email.trim(), code.trim()),
+    );
+    if (user == null) return false;
+    _completeSignIn(user);
+    notifyListeners();
+    return true;
+  }
+
+  /// Sets a new password with an emailed code. Returns whether it worked.
+  Future<bool> resetPassword({
+    required String email,
+    required String code,
+    required String newPassword,
+  }) async {
+    final done = await _run(() async {
+      await _userRepository.resetPassword(
+        email: email.trim(),
+        code: code.trim(),
+        newPassword: newPassword,
+      );
+      return true;
+    });
+    return done ?? false;
+  }
+
+  /// Signs in with a Google ID token. Returns the signed-in user, a
+  /// [GoogleSignUpNeeded] for a new person, or null (see [errorMessage]).
+  Future<Object?> signInWithGoogle(String idToken) async {
+    final result = await _run(() => _userRepository.signInWithGoogle(idToken));
+    if (result is UserModel) {
+      _completeSignIn(result);
+      notifyListeners();
+    }
+    return result;
+  }
+
+  /// Signs in with a Facebook access token. Same results as
+  /// [signInWithGoogle].
+  Future<Object?> signInWithFacebook(String accessToken) async {
+    final result =
+        await _run(() => _userRepository.signInWithFacebook(accessToken));
+    if (result is UserModel) {
+      _completeSignIn(result);
+      notifyListeners();
+    }
+    return result;
+  }
+
+  /// Creates the account for a new Google/Facebook user with their
+  /// phone/district.
+  Future<bool> completeGoogleSignUp(
+    GoogleSignUpNeeded pending, {
+    required String name,
+    required String phone,
+    required String district,
+    required String city,
+  }) async {
+    final signIn = pending.provider == SocialProvider.facebook
+        ? _userRepository.signInWithFacebook
+        : _userRepository.signInWithGoogle;
+    final result = await _run(() => signIn(
+          pending.idToken,
+          name: name.trim(),
+          phone: phone.trim(),
+          district: district,
+          city: city.trim(),
+        ));
+    if (result is! UserModel) {
+      if (result is GoogleSignUpNeeded) {
+        errorMessage = 'Please fill in all required fields.';
+        notifyListeners();
+      }
+      return false;
+    }
+    _completeSignIn(result);
+    notifyListeners();
+    return true;
+  }
+
+  /// Shows an error from outside the repositories (e.g. Google's popup).
+  void reportError(String message) {
+    errorMessage = message;
+    notifyListeners();
+  }
+
+  /// Clears an error left by a previous screen.
+  void clearError() {
+    if (errorMessage == null) return;
+    errorMessage = null;
+    notifyListeners();
   }
 
   /// Restores a signed-in session from a previous launch, if any.
@@ -116,19 +230,6 @@ class AuthController extends ChangeNotifier {
     if (currentUser?.id != user.id) return;
     currentUser = user;
     notifyListeners();
-  }
-
-  bool get supportsPasswordReset => _userRepository.supportsPasswordReset;
-
-  /// Emails a password reset link. Returns an error message, or null once
-  /// the request has been sent.
-  Future<String?> sendPasswordReset(String email) async {
-    try {
-      await _userRepository.sendPasswordReset(email.trim());
-      return null;
-    } on AppException catch (e) {
-      return e.message;
-    }
   }
 
   Future<void> logout() async {

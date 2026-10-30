@@ -6,18 +6,20 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/login_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
+import '../../models/email_code.dart';
 import '../../core/theme/sl_tokens.dart';
 import '../../widgets/app_snack_bar.dart';
 import '../../widgets/auth_form_widgets.dart';
+import '../../widgets/facebook/facebook_sign_in_button.dart';
+import '../../widgets/google/google_sign_in_button.dart';
 import '../../widgets/sl/sl_button.dart';
 import '../../widgets/sl/sl_input.dart';
 
 /// View: login form. Validation of empty fields happens in the form; the
 /// login action and navigation are delegated to [LoginController].
 ///
-/// Follows the app's light or dark theme. Only email and password sign-in
-/// works: Google and Facebook aren't set up in Firebase Authentication, so
-/// their buttons say they aren't available yet.
+/// Follows the app's light or dark theme and supports password, email-code,
+/// Google, and Facebook sign-in.
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
@@ -56,31 +58,36 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  /// Emails a reset link to the address typed in the email field.
-  Future<void> _forgotPassword(
+  /// Emails a sign-in or reset code to the address typed in the email field.
+  void _requestCode(
     AppLocalizations l10n,
     AuthController auth,
-  ) async {
-    final messenger = ScaffoldMessenger.of(context)..hideCurrentSnackBar();
-    void show(String message) =>
-        messenger.showSnackBar(SnackBar(content: Text(message)));
-
-    if (!auth.supportsPasswordReset) {
-      show(l10n.loginForgotPasswordUnavailable);
-      return;
-    }
+    EmailCodePurpose purpose,
+  ) {
     final email = _emailController.text.trim();
     if (email.isEmpty) {
-      show(l10n.loginResetEnterEmail);
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              purpose == EmailCodePurpose.reset
+                  ? l10n.loginResetEnterEmail
+                  : l10n.loginCodeEnterEmail,
+            ),
+          ),
+        );
       return;
     }
-    final error = await auth.sendPasswordReset(email);
-    if (!mounted) return;
-    show(error ?? l10n.loginResetSent(email));
+    _controller.requestCode(
+      auth: auth,
+      navigator: Navigator.of(context),
+      email: email,
+      purpose: purpose,
+    );
   }
 
-  /// Google and Facebook aren't set up in Firebase yet: say so plainly
-  /// rather than starting a sign-in that can't finish.
+  /// Shown when a social provider isn't configured.
   void _socialUnavailable(AppLocalizations l10n) => showAppSnackBar(
     ScaffoldMessenger.of(context),
     l10n.loginSocialUnavailable,
@@ -159,9 +166,7 @@ class _LoginViewState extends State<_LoginView> {
                                   obscureText: _controller.obscurePassword,
                                   style: type.body,
                                   textInputAction: TextInputAction.done,
-                                  autofillHints: const [
-                                    AutofillHints.password,
-                                  ],
+                                  autofillHints: const [AutofillHints.password],
                                   onFieldSubmitted: (_) => _submit(auth),
                                   decoration: slInputDecoration(
                                     context,
@@ -183,8 +188,11 @@ class _LoginViewState extends State<_LoginView> {
                                 Align(
                                   alignment: AlignmentDirectional.centerEnd,
                                   child: TextButton(
-                                    onPressed: () =>
-                                        _forgotPassword(l10n, auth),
+                                    onPressed: () => _requestCode(
+                                      l10n,
+                                      auth,
+                                      EmailCodePurpose.reset,
+                                    ),
                                     style: TextButton.styleFrom(
                                       foregroundColor: sl.accentText,
                                       minimumSize: const Size(0, 44),
@@ -212,12 +220,33 @@ class _LoginViewState extends State<_LoginView> {
                                   isLoading: auth.isLoading,
                                   onPressed: () => _submit(auth),
                                 ),
+                                const SizedBox(height: SLSpace.s),
+                                TextButton(
+                                  onPressed: auth.isLoading
+                                      ? null
+                                      : () => _requestCode(
+                                          l10n,
+                                          auth,
+                                          EmailCodePurpose.login,
+                                        ),
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: sl.accentText,
+                                  ),
+                                  child: Text(l10n.loginWithEmailCode),
+                                ),
                                 const SizedBox(height: SLSpace.xl),
-                                AuthSocialButtons(
-                                  dividerLabel: l10n.loginOrContinueWith,
-                                  googleLabel: l10n.loginWithGoogle,
-                                  facebookLabel: l10n.loginWithFacebook,
-                                  onPressed: () => _socialUnavailable(l10n),
+                                AuthOrDivider(label: l10n.loginOrContinueWith),
+                                const SizedBox(height: SLSpace.l),
+                                GoogleSignInButton(
+                                  label: l10n.loginWithGoogle,
+                                  visualLabel: 'Google',
+                                  onUnavailable: () => _socialUnavailable(l10n),
+                                ),
+                                const SizedBox(height: SLSpace.s),
+                                FacebookSignInButton(
+                                  label: l10n.loginWithFacebook,
+                                  visualLabel: 'Facebook',
+                                  onUnavailable: () => _socialUnavailable(l10n),
                                 ),
                                 const Spacer(),
                                 const SizedBox(height: SLSpace.xl),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../core/constants/app_colors.dart';
 import '../core/theme/sl_tokens.dart';
 
 /// Shared look for the login and register screens. Fields use
@@ -185,6 +186,179 @@ class AuthSocialButtons extends StatelessWidget {
       ],
     );
   }
+}
+
+/// Divider used above individual provider buttons.
+class AuthOrDivider extends StatelessWidget {
+  const AuthOrDivider({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(child: Divider()),
+        Flexible(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SLSpace.m),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: context.slType.small,
+            ),
+          ),
+        ),
+        const Expanded(child: Divider()),
+      ],
+    );
+  }
+}
+
+/// Compatibility widgets used by the OTP and social-profile screens added
+/// with the API backend. They share the same auth form primitives as the
+/// redesigned password screens.
+class AuthHeader extends StatelessWidget {
+  const AuthHeader({super.key, this.leading});
+
+  final Widget? leading;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      SLSpace.screen,
+      SLSpace.m,
+      SLSpace.screen,
+      SLSpace.l,
+    ),
+    child: AuthHeroImage(
+      asset: 'assets/images/login_hero.jpg',
+      background: AppColors.introBackground,
+      leading: leading,
+    ),
+  );
+}
+
+class AuthAccentTitle extends StatelessWidget {
+  const AuthAccentTitle({super.key, required this.text});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Text(
+    text,
+    textAlign: TextAlign.center,
+    style: Theme.of(context).textTheme.headlineSmall
+        ?.copyWith(color: AppColors.deepGreen, fontWeight: FontWeight.w700),
+  );
+}
+
+class AuthFieldLabel extends StatelessWidget {
+  const AuthFieldLabel(this.text, {super.key});
+
+  final String text;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: SLSpace.xs),
+    child: Text(text, style: Theme.of(context).textTheme.labelLarge),
+  );
+}
+
+InputDecoration authInputDecoration(String hint, {Widget? suffixIcon}) =>
+    InputDecoration(
+      hintText: hint,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: AppColors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.deepGreen, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    );
+
+class AuthSubmitButton extends StatelessWidget {
+  const AuthSubmitButton({
+    super.key,
+    required this.label,
+    required this.isLoading,
+    required this.onPressed,
+  });
+
+  final String label;
+  final bool isLoading;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => SizedBox(
+    height: 52,
+    child: ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.deepGreen,
+        foregroundColor: AppColors.white,
+        shape: const StadiumBorder(),
+      ),
+      child: isLoading
+          ? const SizedBox.square(
+              dimension: 22,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(label),
+    ),
+  );
+}
+
+class AuthSocialTile extends StatelessWidget {
+  const AuthSocialTile({
+    super.key,
+    required this.asset,
+    required this.provider,
+    required this.semanticsLabel,
+    required this.onPressed,
+  });
+
+  static const googleIcon = AuthSocialButtons.googleIcon;
+  static const facebookIcon = AuthSocialButtons.facebookIcon;
+
+  final String asset;
+  final String provider;
+  final String semanticsLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: semanticsLabel,
+    excludeSemantics: true,
+    child: OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.ink,
+        minimumSize: const Size.fromHeight(48),
+        shape: const StadiumBorder(),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(asset, width: 22, height: 22),
+          const SizedBox(width: 8),
+          Flexible(child: Text(provider, overflow: TextOverflow.ellipsis)),
+        ],
+      ),
+    ),
+  );
 }
 
 /// Surface button with a provider's logo and name, in the shape of the

@@ -1965,6 +1965,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count, plural, =1{1 review} other{{count} reviews}}'**
   String myReviewsCount(int count);
+
+  /// No description provided for @loginWithEmailCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with an email code instead'**
+  String get loginWithEmailCode;
+
+  /// No description provided for @loginCodeEnterEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter your email above to get a sign-in code.'**
+  String get loginCodeEnterEmail;
+
+  /// No description provided for @verifyTitleRegister.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm your email'**
+  String get verifyTitleRegister;
+
+  /// No description provided for @verifyTitleLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Sign in with a code'**
+  String get verifyTitleLogin;
+
+  /// No description provided for @verifyTitleReset.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset your password'**
+  String get verifyTitleReset;
+
+  /// No description provided for @verifySentTo.
+  ///
+  /// In en, this message translates to:
+  /// **'We emailed a 6-digit code to {email}. It expires in 10 minutes.'**
+  String verifySentTo(String email);
+
+  /// No description provided for @verifyCheckSpam.
+  ///
+  /// In en, this message translates to:
+  /// **'Can\'t find it? Check your spam folder.'**
+  String get verifyCheckSpam;
+
+  /// No description provided for @verifyDebugCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Test mode (no email set up): your code is {code}'**
+  String verifyDebugCode(String code);
+
+  /// No description provided for @verifyCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get verifyCodeLabel;
+
+  /// No description provided for @verifyCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'000000'**
+  String get verifyCodeHint;
+
+  /// No description provided for @verifyCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter the 6-digit code'**
+  String get verifyCodeRequired;
+
+  /// No description provided for @verifyNewPasswordLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New password'**
+  String get verifyNewPasswordLabel;
+
+  /// No description provided for @verifyChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get verifyChangePassword;
+
+  /// No description provided for @verifyPasswordChanged.
+  ///
+  /// In en, this message translates to:
+  /// **'Password changed. Sign in with your new password.'**
+  String get verifyPasswordChanged;
+
+  /// No description provided for @verifyResend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code'**
+  String get verifyResend;
+
+  /// No description provided for @verifyResendIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Send a new code in {seconds}s'**
+  String verifyResendIn(int seconds);
+
+  /// No description provided for @verifyResent.
+  ///
+  /// In en, this message translates to:
+  /// **'A new code is on its way.'**
+  String get verifyResent;
+
+  /// No description provided for @googleCompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there'**
+  String get googleCompleteTitle;
+
+  /// No description provided for @googleCompleteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signing up with Google as {email}. Add your phone number and district to finish.'**
+  String googleCompleteSubtitle(String email);
+
+  /// No description provided for @googleCompleteButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Finish Sign-up'**
+  String get googleCompleteButton;
+
+  /// No description provided for @facebookCompleteSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re signing up with Facebook as {email}. Add your phone number and district to finish.'**
+  String facebookCompleteSubtitle(String email);
 }
 
 class _AppLocalizationsDelegate

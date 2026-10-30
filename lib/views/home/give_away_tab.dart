@@ -36,7 +36,8 @@ class GiveAwayTab extends StatelessWidget {
     final badgeController = context.read<BadgeController>();
     final l10n = AppLocalizations.of(context);
 
-    final posts = itemController.posts;
+    // Keep rows that are no longer available out of the browse grid.
+    final posts = itemController.availablePosts;
     if (!itemController.isLoading && posts.isEmpty) {
       final Widget state;
       if (itemController.errorMessage case final error?) {

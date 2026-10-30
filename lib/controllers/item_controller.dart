@@ -72,6 +72,10 @@ class ItemController extends ChangeNotifier {
   /// Any loaded post by id, regardless of the Home filters.
   ItemPostModel? postById(String id) =>
       _allPosts.where((p) => p.id == id).firstOrNull;
+  /// [posts] that can still be requested, for the browse lists. Posts with a
+  /// handover underway or done stay in [posts] so their screens can find them.
+  List<ItemPostModel> get availablePosts =>
+      posts.where((p) => p.status == ItemPostStatus.active).toList();
 
   Future<void> loadPosts() async {
     isLoading = true;

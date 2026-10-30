@@ -1,5 +1,5 @@
 name: shareloop
-description: "A new Flutter project."
+description: "ShareLoop: give what you don't need, get what you do."
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -44,13 +44,15 @@ dependencies:
   # Date formatting and localization helpers.
   intl: ^0.20.3
 
-  # Firebase Authentication signs users in; app data is in-memory sample
-  # data (no database).
-  firebase_core: ^4.15.0
-  firebase_auth: ^6.7.0
+  # Backend: the ShareLoop Laravel API (backend/). Only used when
+  # API_BASE_URL is defined; otherwise the app runs on mock data.
+  http: ^1.5.0
+  google_sign_in: ^7.2.0
+  google_sign_in_web: ^1.1.3
   flutter_svg: ^2.3.0
   # Asks for the OS notification permission after sign-in, and remembers
-  # the answer on the device so the prompt isn't repeated.
+  # the answer on the device so the prompt isn't repeated. Also keeps the
+  # API token between launches.
   permission_handler: ^13.0.2
   shared_preferences: ^2.5.6
   # On-device check that donation photos show no people or body parts

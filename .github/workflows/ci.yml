@@ -1,0 +1,141 @@
+# ShareLoop CI/CD.
+#   Every push and pull request: backend tests + Flutter analyze/tests.
+#   Push to main (after both pass): deploy the API and web app to Azure App
+#   Service, and build an Android APK pointed at it (download it from the run).
+#
+# One-time setup (repo Settings > Secrets and variables > Actions):
+#   secret   AZURE_WEBAPP_PUBLISH_PROFILE  web app > Overview > Download publish profile
+#   variable AZURE_WEBAPP_NAME             e.g. shareloop-api-dilum
+#   variable GOOGLE_CLIENT_ID              Google OAuth web client ID (optional)
+#   variable FACEBOOK_APP_ID               Meta App ID (optional)
+# Until AZURE_WEBAPP_NAME is set, the deploy and APK jobs are skipped.
+name: CI/CD
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  FLUTTER_VERSION: '3.47.8'
+  PHP_VERSION: '8.3'
+  PHP_EXTENSIONS: mbstring, pdo_sqlite, sqlite3, gd, fileinfo, intl
+
+jobs:
+  backend:
+    name: Backend tests
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+      - name: Install dependencies
+        run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Prepare .env
+        run: |
+          cp .env.example .env
+          php artisan key:generate
+      - name: Run tests
+        run: php artisan test
+
+  app:
+    name: Flutter analyze and tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - run: flutter pub get
+      - run: flutter analyze
+      - run: flutter test
+
+  deploy:
+    name: Deploy to Azure
+    needs: [backend, app]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_WEBAPP_NAME != ''
+    runs-on: ubuntu-latest
+    concurrency:
+      group: deploy-azure
+      cancel-in-progress: false
+    environment:
+      name: production
+      url: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/app/
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build the web app (served at /app/)
+        run: >-
+          flutter build web --release --base-href /app/
+          --dart-define=API_BASE_URL=https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/api
+          --dart-define=GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
+          --dart-define=FACEBOOK_APP_ID=${{ vars.FACEBOOK_APP_ID }}
+      - name: Copy it into the backend
+        run: |
+          rm -rf backend/public/app
+          cp -r build/web backend/public/app
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ env.PHP_VERSION }}
+          extensions: ${{ env.PHP_EXTENSIONS }}
+          coverage: none
+      - name: Install production dependencies
+        working-directory: backend
+        run: composer install --no-dev --optimize-autoloader --no-interaction --no-progress --prefer-dist
+      - name: Package
+        working-directory: backend
+        # Server settings (APP_KEY, MAIL_*, ...) live in Azure, not in the zip.
+        run: >-
+          zip -qr ../shareloop-api.zip .
+          -x '.env' 'tests/*' 'node_modules/*' '.phpunit.cache/*'
+          'database/database.sqlite' 'storage/app/private/*' 'storage/logs/*.log'
+          'storage/framework/cache/data/*' 'storage/framework/sessions/*'
+          'storage/framework/views/*.php' 'bootstrap/cache/*.php'
+      - uses: azure/webapps-deploy@v3
+        with:
+          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          package: shareloop-api.zip
+
+  apk:
+    name: Android APK
+    needs: [backend, app]
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_WEBAPP_NAME != ''
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: stable
+          cache: true
+      - name: Build APK
+        run: >-
+          flutter build apk --release
+          --dart-define=API_BASE_URL=https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/api
+          --dart-define=GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
+          --dart-define=FACEBOOK_APP_ID=${{ vars.FACEBOOK_APP_ID }}
+      - uses: actions/upload-artifact@v4
+        with:
+          name: shareloop-apk
+          path: build/app/outputs/flutter-apk/app-release.apk
+          retention-days: 30
