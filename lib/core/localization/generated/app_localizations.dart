@@ -106,12 +106,6 @@ abstract class AppLocalizations {
   /// **'ShareLoop'**
   String get appTitle;
 
-  /// No description provided for @tagline.
-  ///
-  /// In en, this message translates to:
-  /// **'Give What You Don\'t Need. Get What You Do.'**
-  String get tagline;
-
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -129,12 +123,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
-
-  /// No description provided for @giveAway.
-  ///
-  /// In en, this message translates to:
-  /// **'Give Away'**
-  String get giveAway;
 
   /// No description provided for @requests.
   ///
@@ -171,18 +159,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password'**
   String get password;
-
-  /// No description provided for @fullName.
-  ///
-  /// In en, this message translates to:
-  /// **'Full Name'**
-  String get fullName;
-
-  /// No description provided for @phoneNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone Number'**
-  String get phoneNumber;
 
   /// No description provided for @district.
   ///
@@ -226,41 +202,11 @@ abstract class AppLocalizations {
   /// **'My Requests'**
   String get myRequests;
 
-  /// No description provided for @reviewsReceived.
-  ///
-  /// In en, this message translates to:
-  /// **'Reviews Received'**
-  String get reviewsReceived;
-
-  /// No description provided for @donations.
-  ///
-  /// In en, this message translates to:
-  /// **'Donations'**
-  String get donations;
-
-  /// No description provided for @requestThisItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Request this item'**
-  String get requestThisItem;
-
-  /// No description provided for @viewIncomingRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'View Incoming Requests'**
-  String get viewIncomingRequests;
-
   /// No description provided for @submitRequest.
   ///
   /// In en, this message translates to:
   /// **'Submit Request'**
   String get submitRequest;
-
-  /// No description provided for @publishPost.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish Post'**
-  String get publishPost;
 
   /// No description provided for @language.
   ///
@@ -327,12 +273,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome back!'**
   String get loginWelcomeBack;
-
-  /// No description provided for @loginSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Fill your details or continue with social media'**
-  String get loginSubtitle;
 
   /// No description provided for @loginEmailHint.
   ///
@@ -405,12 +345,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In'**
   String get loginSignIn;
-
-  /// No description provided for @loginOr.
-  ///
-  /// In en, this message translates to:
-  /// **'or'**
-  String get loginOr;
 
   /// No description provided for @loginNoAccount.
   ///
@@ -489,12 +423,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select your district'**
   String get registerDistrictHint;
-
-  /// No description provided for @registerCityHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Negombo'**
-  String get registerCityHint;
 
   /// No description provided for @registerConfirmPasswordHint.
   ///
@@ -652,30 +580,6 @@ abstract class AppLocalizations {
   /// **'Find items you need...'**
   String get homeSearchHint;
 
-  /// No description provided for @homeGiveItemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Give an Item'**
-  String get homeGiveItemTitle;
-
-  /// No description provided for @homeGiveItemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pass on what you no longer need, free'**
-  String get homeGiveItemSubtitle;
-
-  /// No description provided for @homeRequestItemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Request an Item'**
-  String get homeRequestItemTitle;
-
-  /// No description provided for @homeRequestItemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tell the community what you need'**
-  String get homeRequestItemSubtitle;
-
   /// No description provided for @homeAllCategories.
   ///
   /// In en, this message translates to:
@@ -693,18 +597,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Available near you'**
   String get homeAvailableNearYou;
-
-  /// No description provided for @homeOpenRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Open requests'**
-  String get homeOpenRequests;
-
-  /// No description provided for @homeAllDistricts.
-  ///
-  /// In en, this message translates to:
-  /// **'All districts'**
-  String get homeAllDistricts;
 
   /// No description provided for @homeChooseDistrict.
   ///
@@ -892,12 +784,6 @@ abstract class AppLocalizations {
   /// **'New donor'**
   String get homeNewDonor;
 
-  /// No description provided for @homeRequestedBy.
-  ///
-  /// In en, this message translates to:
-  /// **'Requested by {name}'**
-  String homeRequestedBy(String name);
-
   /// No description provided for @giveTitle.
   ///
   /// In en, this message translates to:
@@ -921,12 +807,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add photos of your item'**
   String get giveAddPhotos;
-
-  /// No description provided for @giveAddPhotosHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Clear photos help others decide faster'**
-  String get giveAddPhotosHint;
 
   /// No description provided for @givePhotosItemOnly.
   ///
@@ -1491,12 +1371,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Open settings'**
   String get notifOpenSettings;
-
-  /// No description provided for @stateLoadFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t load this. Check your connection and try again.'**
-  String get stateLoadFailed;
 
   /// No description provided for @stateRetry.
   ///

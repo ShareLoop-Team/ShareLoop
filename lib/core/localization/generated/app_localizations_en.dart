@@ -13,9 +13,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'ShareLoop';
 
   @override
-  String get tagline => 'Give What You Don\'t Need. Get What You Do.';
-
-  @override
   String get home => 'Home';
 
   @override
@@ -23,9 +20,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
-
-  @override
-  String get giveAway => 'Give Away';
 
   @override
   String get requests => 'Requests';
@@ -44,12 +38,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get password => 'Password';
-
-  @override
-  String get fullName => 'Full Name';
-
-  @override
-  String get phoneNumber => 'Phone Number';
 
   @override
   String get district => 'District';
@@ -73,22 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myRequests => 'My Requests';
 
   @override
-  String get reviewsReceived => 'Reviews Received';
-
-  @override
-  String get donations => 'Donations';
-
-  @override
-  String get requestThisItem => 'Request this item';
-
-  @override
-  String get viewIncomingRequests => 'View Incoming Requests';
-
-  @override
   String get submitRequest => 'Submit Request';
-
-  @override
-  String get publishPost => 'Publish Post';
 
   @override
   String get language => 'Language';
@@ -127,9 +100,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginWelcomeBack => 'Welcome back!';
-
-  @override
-  String get loginSubtitle => 'Fill your details or continue with social media';
 
   @override
   String get loginEmailHint => 'Enter your Email';
@@ -172,9 +142,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSignIn => 'Sign In';
 
   @override
-  String get loginOr => 'or';
-
-  @override
   String get loginNoAccount => 'New user?';
 
   @override
@@ -212,9 +179,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerDistrictHint => 'Select your district';
-
-  @override
-  String get registerCityHint => 'e.g. Negombo';
 
   @override
   String get registerConfirmPasswordHint => 'Re-enter your password';
@@ -302,18 +266,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSearchHint => 'Find items you need...';
 
   @override
-  String get homeGiveItemTitle => 'Give an Item';
-
-  @override
-  String get homeGiveItemSubtitle => 'Pass on what you no longer need, free';
-
-  @override
-  String get homeRequestItemTitle => 'Request an Item';
-
-  @override
-  String get homeRequestItemSubtitle => 'Tell the community what you need';
-
-  @override
   String get homeAllCategories => 'All';
 
   @override
@@ -321,12 +273,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeAvailableNearYou => 'Available near you';
-
-  @override
-  String get homeOpenRequests => 'Open requests';
-
-  @override
-  String get homeAllDistricts => 'All districts';
 
   @override
   String get homeChooseDistrict => 'Choose a district';
@@ -443,11 +389,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeNewDonor => 'New donor';
 
   @override
-  String homeRequestedBy(String name) {
-    return 'Requested by $name';
-  }
-
-  @override
   String get giveTitle => 'Give an Item';
 
   @override
@@ -458,9 +399,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get giveAddPhotos => 'Add photos of your item';
-
-  @override
-  String get giveAddPhotosHint => 'Clear photos help others decide faster';
 
   @override
   String get givePhotosItemOnly =>
@@ -763,10 +701,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'Open settings';
-
-  @override
-  String get stateLoadFailed =>
-      'Couldn\'t load this. Check your connection and try again.';
 
   @override
   String get stateRetry => 'Try again';

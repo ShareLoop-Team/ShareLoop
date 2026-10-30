@@ -13,9 +13,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get appTitle => 'ShareLoop';
 
   @override
-  String get tagline => 'ඔබට අවශ්‍ය නැති දේ දෙන්න. ඔබට අවශ්‍ය දේ ලබා ගන්න.';
-
-  @override
   String get home => 'මුල් පිටුව';
 
   @override
@@ -23,9 +20,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get settings => 'සැකසුම්';
-
-  @override
-  String get giveAway => 'පරිත්‍යාග කරන්න';
 
   @override
   String get requests => 'ඉල්ලීම්';
@@ -44,12 +38,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get password => 'මුරපදය';
-
-  @override
-  String get fullName => 'සම්පූර්ණ නම';
-
-  @override
-  String get phoneNumber => 'දුරකථන අංකය';
 
   @override
   String get district => 'දිස්ත්‍රික්කය';
@@ -73,22 +61,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get myRequests => 'මගේ ඉල්ලීම්';
 
   @override
-  String get reviewsReceived => 'ලැබුණු විචාර';
-
-  @override
-  String get donations => 'පරිත්‍යාග';
-
-  @override
-  String get requestThisItem => 'මෙම අයිතමය ඉල්ලන්න';
-
-  @override
-  String get viewIncomingRequests => 'ලැබෙන ඉල්ලීම් බලන්න';
-
-  @override
   String get submitRequest => 'ඉල්ලීම ඉදිරිපත් කරන්න';
-
-  @override
-  String get publishPost => 'පළ කරන්න';
 
   @override
   String get language => 'භාෂාව';
@@ -127,10 +100,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get loginWelcomeBack => 'නැවත සාදරයෙන් පිළිගනිමු';
-
-  @override
-  String get loginSubtitle =>
-      'ඔබේ විස්තර ඇතුළත් කරන්න හෝ සමාජ මාධ්‍ය හරහා ඉදිරියට යන්න';
 
   @override
   String get loginEmailHint => 'ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න';
@@ -173,9 +142,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginSignIn => 'ඇතුල් වන්න';
 
   @override
-  String get loginOr => 'හෝ';
-
-  @override
   String get loginNoAccount => 'නව පරිශීලකයෙක්ද?';
 
   @override
@@ -214,9 +180,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get registerDistrictHint => 'ඔබේ දිස්ත්‍රික්කය තෝරන්න';
-
-  @override
-  String get registerCityHint => 'උදා. මීගමුව';
 
   @override
   String get registerConfirmPasswordHint => 'මුරපදය නැවත ඇතුළත් කරන්න';
@@ -304,18 +267,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeSearchHint => 'ඔබට අවශ්‍ය අයිතම සොයන්න...';
 
   @override
-  String get homeGiveItemTitle => 'අයිතමයක් දෙන්න';
-
-  @override
-  String get homeGiveItemSubtitle => 'ඔබට තවදුරටත් අවශ්‍ය නැති දේ නොමිලේ දෙන්න';
-
-  @override
-  String get homeRequestItemTitle => 'අයිතමයක් ඉල්ලන්න';
-
-  @override
-  String get homeRequestItemSubtitle => 'ඔබට අවශ්‍ය දේ ප්‍රජාවට කියන්න';
-
-  @override
   String get homeAllCategories => 'සියල්ල';
 
   @override
@@ -323,12 +274,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeAvailableNearYou => 'ඔබ අසල ලබාගත හැකි';
-
-  @override
-  String get homeOpenRequests => 'විවෘත ඉල්ලීම්';
-
-  @override
-  String get homeAllDistricts => 'සියලු දිස්ත්‍රික්ක';
 
   @override
   String get homeChooseDistrict => 'දිස්ත්‍රික්කයක් තෝරන්න';
@@ -445,11 +390,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeNewDonor => 'නව පරිත්‍යාගශීලී';
 
   @override
-  String homeRequestedBy(String name) {
-    return 'ඉල්ලුවේ $name';
-  }
-
-  @override
   String get giveTitle => 'අයිතමයක් දෙන්න';
 
   @override
@@ -460,10 +400,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get giveAddPhotos => 'ඔබේ අයිතමයේ ඡායාරූප එක් කරන්න';
-
-  @override
-  String get giveAddPhotosHint =>
-      'පැහැදිලි ඡායාරූප අනෙක් අයට ඉක්මනින් තීරණය කිරීමට උදව් වේ';
 
   @override
   String get givePhotosItemOnly =>
@@ -770,10 +706,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'සැකසීම් විවෘත කරන්න';
-
-  @override
-  String get stateLoadFailed =>
-      'මෙය පූරණය කළ නොහැකි විය. ඔබගේ සම්බන්ධතාව පරීක්ෂා කර නැවත උත්සාහ කරන්න.';
 
   @override
   String get stateRetry => 'නැවත උත්සාහ කරන්න';

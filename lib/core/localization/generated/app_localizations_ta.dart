@@ -13,10 +13,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get appTitle => 'ShareLoop';
 
   @override
-  String get tagline =>
-      'உங்களுக்குத் தேவையற்றதைக் கொடுங்கள். உங்களுக்குத் தேவையானதைப் பெறுங்கள்.';
-
-  @override
   String get home => 'முகப்பு';
 
   @override
@@ -24,9 +20,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get settings => 'அமைப்புகள்';
-
-  @override
-  String get giveAway => 'கொடுங்கள்';
 
   @override
   String get requests => 'கோரிக்கைகள்';
@@ -45,12 +38,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get password => 'கடவுச்சொல்';
-
-  @override
-  String get fullName => 'முழு பெயர்';
-
-  @override
-  String get phoneNumber => 'தொலைபேசி எண்';
 
   @override
   String get district => 'மாவட்டம்';
@@ -74,22 +61,7 @@ class AppLocalizationsTa extends AppLocalizations {
   String get myRequests => 'எனது கோரிக்கைகள்';
 
   @override
-  String get reviewsReceived => 'பெறப்பட்ட மதிப்பீடுகள்';
-
-  @override
-  String get donations => 'நன்கொடைகள்';
-
-  @override
-  String get requestThisItem => 'இந்த பொருளை கோருங்கள்';
-
-  @override
-  String get viewIncomingRequests => 'வரும் கோரிக்கைகளைக் காண்க';
-
-  @override
   String get submitRequest => 'கோரிக்கையை சமர்ப்பிக்க';
-
-  @override
-  String get publishPost => 'வெளியிடு';
 
   @override
   String get language => 'மொழி';
@@ -128,10 +100,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get loginWelcomeBack => 'மீண்டும் வருக';
-
-  @override
-  String get loginSubtitle =>
-      'உங்கள் விவரங்களை நிரப்புங்கள் அல்லது சமூக ஊடகம் மூலம் தொடருங்கள்';
 
   @override
   String get loginEmailHint => 'உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்';
@@ -174,9 +142,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loginSignIn => 'உள்நுழைய';
 
   @override
-  String get loginOr => 'அல்லது';
-
-  @override
   String get loginNoAccount => 'புதிய பயனரா?';
 
   @override
@@ -215,9 +180,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get registerDistrictHint => 'உங்கள் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
-
-  @override
-  String get registerCityHint => 'எ.கா. நீர்கொழும்பு';
 
   @override
   String get registerConfirmPasswordHint =>
@@ -306,20 +268,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get homeSearchHint => 'உங்களுக்குத் தேவையான பொருட்களைத் தேடுங்கள்...';
 
   @override
-  String get homeGiveItemTitle => 'ஒரு பொருளைக் கொடுங்கள்';
-
-  @override
-  String get homeGiveItemSubtitle =>
-      'உங்களுக்குத் தேவையில்லாததை இலவசமாகக் கொடுங்கள்';
-
-  @override
-  String get homeRequestItemTitle => 'ஒரு பொருளைக் கோருங்கள்';
-
-  @override
-  String get homeRequestItemSubtitle =>
-      'உங்களுக்கு என்ன தேவை என்று சமூகத்திடம் சொல்லுங்கள்';
-
-  @override
   String get homeAllCategories => 'அனைத்தும்';
 
   @override
@@ -327,12 +275,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get homeAvailableNearYou => 'உங்கள் அருகில் கிடைப்பவை';
-
-  @override
-  String get homeOpenRequests => 'திறந்த கோரிக்கைகள்';
-
-  @override
-  String get homeAllDistricts => 'அனைத்து மாவட்டங்கள்';
 
   @override
   String get homeChooseDistrict => 'மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
@@ -450,11 +392,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get homeNewDonor => 'புதிய நன்கொடையாளர்';
 
   @override
-  String homeRequestedBy(String name) {
-    return 'கோரியவர் $name';
-  }
-
-  @override
   String get giveTitle => 'ஒரு பொருளைக் கொடுங்கள்';
 
   @override
@@ -465,10 +402,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get giveAddPhotos => 'உங்கள் பொருளின் புகைப்படங்களைச் சேர்க்கவும்';
-
-  @override
-  String get giveAddPhotosHint =>
-      'தெளிவான புகைப்படங்கள் மற்றவர்கள் விரைவாக முடிவெடுக்க உதவும்';
 
   @override
   String get givePhotosItemOnly =>
@@ -779,10 +712,6 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get notifOpenSettings => 'அமைப்புகளைத் திற';
-
-  @override
-  String get stateLoadFailed =>
-      'இதை ஏற்ற முடியவில்லை. இணைப்பைச் சரிபார்த்து மீண்டும் முயற்சிக்கவும்.';
 
   @override
   String get stateRetry => 'மீண்டும் முயற்சி';
