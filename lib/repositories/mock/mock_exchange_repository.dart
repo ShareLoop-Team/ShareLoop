@@ -17,14 +17,15 @@ class MockExchangeRepository implements ExchangeRepository {
   }
 
   int _liveExchangeIndex(String postId) => _data.exchanges.indexWhere(
-        (e) => e.itemPostId == postId && e.status != ExchangeStatus.cancelled,
-      );
+    (e) => e.itemPostId == postId && e.status != ExchangeStatus.cancelled,
+  );
 
   void _setRequestStatus(String requestId, ItemRequestStatus status) {
     final index = _data.itemRequests.indexWhere((r) => r.id == requestId);
     if (index != -1) {
-      _data.itemRequests[index] =
-          _data.itemRequests[index].copyWith(status: status);
+      _data.itemRequests[index] = _data.itemRequests[index].copyWith(
+        status: status,
+      );
     }
   }
 
@@ -93,14 +94,17 @@ class MockExchangeRepository implements ExchangeRepository {
         exchange.requesterConfirmedAt != null) {
       exchange = exchange.copyWith(status: ExchangeStatus.completed);
       final postIndex = _postIndex(postId);
-      _data.itemPosts[postIndex] = _data.itemPosts[postIndex]
-          .copyWith(status: ItemPostStatus.completed);
-      final donorIndex =
-          _data.users.indexWhere((u) => u.id == exchange.donorId);
+      _data.itemPosts[postIndex] = _data.itemPosts[postIndex].copyWith(
+        status: ItemPostStatus.completed,
+      );
+      final donorIndex = _data.users.indexWhere(
+        (u) => u.id == exchange.donorId,
+      );
       if (donorIndex != -1) {
         final donor = _data.users[donorIndex];
-        _data.users[donorIndex] =
-            donor.copyWith(donationCount: donor.donationCount + 1);
+        _data.users[donorIndex] = donor.copyWith(
+          donationCount: donor.donationCount + 1,
+        );
       }
       for (final request in _data.itemRequests.toList()) {
         if (request.itemPostId == postId &&
@@ -152,5 +156,17 @@ class MockExchangeRepository implements ExchangeRepository {
     await Future.delayed(const Duration(milliseconds: 100));
     final index = _liveExchangeIndex(postId);
     return index == -1 ? null : _data.exchanges[index];
+  }
+
+  @override
+  Future<List<ExchangeModel>> getExchangesByUser(String userId) async {
+    await Future.delayed(const Duration(milliseconds: 100));
+    return _data.exchanges
+        .where(
+          (exchange) =>
+              exchange.donorId == userId || exchange.requesterId == userId,
+        )
+        .toList()
+      ..sort((a, b) => b.id.compareTo(a.id));
   }
 }

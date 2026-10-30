@@ -14,6 +14,7 @@ class AppRoutes {
   static const String myDonations = '/profile/donations';
   static const String myRequests = '/profile/requests';
   static const String myReviews = '/profile/reviews';
+  static const String myExchanges = '/profile/exchanges';
   static const String categoryBrowse = '/browse/category';
   static const String searchFilter = '/browse/search';
   static const String createGiveAway = '/give-away/create';
