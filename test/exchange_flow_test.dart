@@ -152,7 +152,24 @@ void main() {
     expect(route, AppRoutes.home);
   });
 
-  test('password reset is reported unavailable on mock data', () {
-    expect(AuthController().supportsPasswordReset, isFalse);
+  test('password reset with an emailed code works on mock data', () async {
+    final auth = AuthController();
+    expect(
+      await auth.resetPassword(
+        email: 'nimal@example.com',
+        code: '000000',
+        newPassword: 'newpass1',
+      ),
+      isFalse,
+    );
+    expect(auth.errorMessage, "That code isn't right.");
+    expect(
+      await auth.resetPassword(
+        email: 'nimal@example.com',
+        code: '123456',
+        newPassword: 'newpass1',
+      ),
+      isTrue,
+    );
   });
 }

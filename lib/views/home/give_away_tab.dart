@@ -50,7 +50,7 @@ class GiveAwayTab extends StatelessWidget {
         child: LoadingIndicator(),
       );
     }
-    final posts = itemController.posts;
+    final posts = itemController.availablePosts;
     if (posts.isEmpty) {
       final EmptyState state;
       if (itemController.errorMessage case final error?) {

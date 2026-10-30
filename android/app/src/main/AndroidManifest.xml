@@ -1,5 +1,5 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- Required in release builds for Firebase Auth network calls. -->
+    <!-- Required in release builds to reach the ShareLoop API. -->
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Android 13+: lets the app ask to show notifications. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
