@@ -6,14 +6,15 @@ import '../../controllers/badge_controller.dart';
 import '../../controllers/item_controller.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
-import '../../models/item_post_model.dart';
-import '../../widgets/confirm_dialog.dart';
-import '../../widgets/empty_state.dart';
-import '../../widgets/item_grid_card.dart';
-import '../../widgets/loading_indicator.dart';
+import '../../core/theme/sl_tokens.dart';
+import '../../widgets/sl/sl_item_card.dart';
+import '../../widgets/sl/sl_motion.dart';
+import '../../widgets/sl/sl_states.dart';
 
-/// View: two-column grid of Give Away posts matching the Home filters.
-/// Built as a sliver so it scrolls together with the Home header.
+/// View: the grid of Give Away posts matching the Home filters, as a
+/// sliver so it scrolls with the Home header. Two columns on phones, more
+/// on wide windows. Cards only open the post; owners manage (edit, delete)
+/// their posts from its details page.
 class GiveAwayTab extends StatelessWidget {
   const GiveAwayTab({super.key, this.onClearFilters});
 
@@ -21,20 +22,11 @@ class GiveAwayTab extends StatelessWidget {
   /// search box the parent owns.
   final VoidCallback? onClearFilters;
 
-  Future<void> _confirmDelete(BuildContext context, ItemPostModel post) async {
-    final l10n = AppLocalizations.of(context);
-    final itemController = context.read<ItemController>();
-    final messenger = ScaffoldMessenger.of(context);
-    final confirmed = await confirmDestructiveAction(
-      context,
-      title: l10n.postDeleteConfirm,
-      message: l10n.postDeleteMessage,
-      actionLabel: l10n.requestsDeleteAction,
-    );
-    if (!confirmed) return;
-    final error = await itemController.deletePost(post.id);
-    messenger.showSnackBar(SnackBar(content: Text(error ?? l10n.postDeleted)));
-  }
+  static const double _gap = SLSpace.m;
+  static const double _maxCardWidth = 220;
+
+  /// Placeholder cards while loading: two rows on a phone.
+  static const int _skeletonCount = 4;
 
   @override
   Widget build(BuildContext context) {
@@ -44,69 +36,78 @@ class GiveAwayTab extends StatelessWidget {
     final badgeController = context.read<BadgeController>();
     final l10n = AppLocalizations.of(context);
 
-    if (itemController.isLoading) {
-      return const SliverFillRemaining(
-        hasScrollBody: false,
-        child: LoadingIndicator(),
-      );
-    }
+    // Keep rows that are no longer available out of the browse grid.
     final posts = itemController.availablePosts;
-    if (posts.isEmpty) {
-      final EmptyState state;
+    if (!itemController.isLoading && posts.isEmpty) {
+      final Widget state;
       if (itemController.errorMessage case final error?) {
         // A failed load is not "no items": say so and offer a retry.
-        state = EmptyState(
-          icon: Icons.cloud_off_outlined,
+        state = SLErrorState(
           message: error,
-          actionLabel: l10n.stateRetry,
-          onAction: itemController.loadPosts,
+          retryLabel: l10n.stateRetry,
+          onRetry: itemController.loadPosts,
         );
       } else if (itemController.hasActiveFilters) {
-        state = EmptyState(
+        state = SLEmptyState(
           icon: Icons.search_off,
           message: l10n.stateNoMatches,
           actionLabel: l10n.stateClearFilters,
           onAction: onClearFilters ?? itemController.clearFilters,
         );
       } else {
-        state = EmptyState(message: l10n.noItemsAvailable);
+        state = SLEmptyState(message: l10n.noItemsAvailable);
       }
-      return SliverFillRemaining(hasScrollBody: false, child: state);
+      return SliverToBoxAdapter(child: state);
     }
-    // The donor photo row is a little taller than its text.
-    final tileHeight =
-        ItemGridCard.imageHeight +
-        32 +
-        MediaQuery.textScalerOf(context).scale(80);
+
+    final scaler = MediaQuery.textScalerOf(context);
     return SliverPadding(
-      padding: const EdgeInsets.symmetric(horizontal: 20),
-      sliver: SliverGrid.builder(
-        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
-          maxCrossAxisExtent: 220,
-          mainAxisExtent: tileHeight,
-          mainAxisSpacing: 14,
-          crossAxisSpacing: 14,
-        ),
-        itemCount: posts.length,
-        itemBuilder: (context, index) {
-          final post = posts[index];
-          final badge = badgeController.badgeForDonationCount(
-            itemController.donorDonationCount(post.donorId),
+      padding: const EdgeInsets.symmetric(horizontal: SLSpace.screen),
+      sliver: SliverLayoutBuilder(
+        builder: (context, constraints) {
+          final width = constraints.crossAxisExtent;
+          final columns = ((width + _gap) / (_maxCardWidth + _gap))
+              .ceil()
+              .clamp(2, 6);
+          final cardWidth = (width - _gap * (columns - 1)) / columns;
+          final delegate = SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: columns,
+            mainAxisSpacing: _gap,
+            crossAxisSpacing: _gap,
+            mainAxisExtent: SLItemCard.heightFor(cardWidth, scaler),
           );
-          final canDelete =
-              post.donorId == userId && itemController.canDeletePost(post);
-          return ItemGridCard(
-            post: post,
-            donorBadge: badge?.name,
-            // Your own posts follow a profile photo change at once.
-            donorAvatarUrl: post.donorId == userId
-                ? currentUser?.avatarUrl
-                : null,
-            onTap: () =>
-                Navigator.of(context)
-                    .pushNamed(AppRoutes.itemDetails, arguments: post.id),
-            onDelete: canDelete ? () => _confirmDelete(context, post) : null,
-            deleteTooltip: l10n.postDelete,
+
+          if (itemController.isLoading) {
+            return SliverGrid.builder(
+              gridDelegate: delegate,
+              itemCount: _skeletonCount,
+              itemBuilder: (_, _) => const SLItemCardSkeleton(),
+            );
+          }
+          return SliverGrid.builder(
+            gridDelegate: delegate,
+            itemCount: posts.length,
+            itemBuilder: (context, index) {
+              final post = posts[index];
+              final badge = badgeController.badgeForDonationCount(
+                itemController.donorDonationCount(post.donorId),
+              );
+              return SLFadeIn(
+                key: ValueKey(post.id),
+                index: index,
+                child: SLItemCard(
+                  post: post,
+                  donorBadge: badge?.name,
+                  // Your own posts follow a profile photo change at once.
+                  donorAvatarUrl: post.donorId == userId
+                      ? currentUser?.avatarUrl
+                      : null,
+                  onTap: () =>
+                      Navigator.of(context)
+                          .pushNamed(AppRoutes.itemDetails, arguments: post.id),
+                ),
+              );
+            },
           );
         },
       ),

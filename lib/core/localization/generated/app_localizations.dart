@@ -310,12 +310,6 @@ abstract class AppLocalizations {
   /// **'Hide password'**
   String get loginHidePassword;
 
-  /// No description provided for @loginRememberMe.
-  ///
-  /// In en, this message translates to:
-  /// **'Remember me'**
-  String get loginRememberMe;
-
   /// No description provided for @loginForgotPassword.
   ///
   /// In en, this message translates to:
@@ -562,18 +556,6 @@ abstract class AppLocalizations {
   /// **'Sign up with Facebook'**
   String get registerWithFacebook;
 
-  /// No description provided for @homeGreeting.
-  ///
-  /// In en, this message translates to:
-  /// **'Hello, {name}. What are you sharing today?'**
-  String homeGreeting(String name);
-
-  /// No description provided for @homeGreetingGuest.
-  ///
-  /// In en, this message translates to:
-  /// **'Hello! What are you sharing today?'**
-  String get homeGreetingGuest;
-
   /// No description provided for @homeSearchHint.
   ///
   /// In en, this message translates to:
@@ -585,12 +567,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All'**
   String get homeAllCategories;
-
-  /// No description provided for @homeCategories.
-  ///
-  /// In en, this message translates to:
-  /// **'Categories'**
-  String get homeCategories;
 
   /// No description provided for @homeAvailableNearYou.
   ///
@@ -783,6 +759,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New donor'**
   String get homeNewDonor;
+
+  /// No description provided for @categoryEducationalBooks.
+  ///
+  /// In en, this message translates to:
+  /// **'Educational Books'**
+  String get categoryEducationalBooks;
+
+  /// No description provided for @categorySchoolSupplies.
+  ///
+  /// In en, this message translates to:
+  /// **'School Supplies'**
+  String get categorySchoolSupplies;
+
+  /// No description provided for @categoryClothes.
+  ///
+  /// In en, this message translates to:
+  /// **'Clothes'**
+  String get categoryClothes;
+
+  /// No description provided for @categoryShoes.
+  ///
+  /// In en, this message translates to:
+  /// **'Shoes'**
+  String get categoryShoes;
+
+  /// No description provided for @categoryElectronics.
+  ///
+  /// In en, this message translates to:
+  /// **'Electronics'**
+  String get categoryElectronics;
+
+  /// No description provided for @categoryHouseholdItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Household Items'**
+  String get categoryHouseholdItems;
+
+  /// No description provided for @categoryOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get categoryOther;
+
+  /// No description provided for @conditionNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get conditionNew;
+
+  /// No description provided for @conditionGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get conditionGood;
+
+  /// No description provided for @conditionUsed.
+  ///
+  /// In en, this message translates to:
+  /// **'Used'**
+  String get conditionUsed;
+
+  /// No description provided for @badgeBronze.
+  ///
+  /// In en, this message translates to:
+  /// **'Bronze'**
+  String get badgeBronze;
+
+  /// No description provided for @badgeSilver.
+  ///
+  /// In en, this message translates to:
+  /// **'Silver'**
+  String get badgeSilver;
+
+  /// No description provided for @badgeGold.
+  ///
+  /// In en, this message translates to:
+  /// **'Gold'**
+  String get badgeGold;
+
+  /// No description provided for @badgePlatinum.
+  ///
+  /// In en, this message translates to:
+  /// **'Platinum'**
+  String get badgePlatinum;
+
+  /// No description provided for @badgeLevelNew.
+  ///
+  /// In en, this message translates to:
+  /// **'New Contributor'**
+  String get badgeLevelNew;
+
+  /// No description provided for @badgeLevelActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Contributor'**
+  String get badgeLevelActive;
+
+  /// No description provided for @badgeLevelTrusted.
+  ///
+  /// In en, this message translates to:
+  /// **'Trusted Contributor'**
+  String get badgeLevelTrusted;
+
+  /// No description provided for @badgeLevelChampion.
+  ///
+  /// In en, this message translates to:
+  /// **'Community Champion'**
+  String get badgeLevelChampion;
+
+  /// Bottom navigation label for the Requests tab; keep it to one short word.
+  ///
+  /// In en, this message translates to:
+  /// **'Requests'**
+  String get navRequests;
 
   /// No description provided for @giveTitle.
   ///
@@ -1779,6 +1869,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Browse items'**
   String get myReviewsAction;
+
+  /// No description provided for @profileMyExchanges.
+  ///
+  /// In en, this message translates to:
+  /// **'My exchanges'**
+  String get profileMyExchanges;
+
+  /// No description provided for @myExchangesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Handovers you are part of'**
+  String get myExchangesSubtitle;
+
+  /// No description provided for @myExchangesEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No exchanges yet'**
+  String get myExchangesEmptyTitle;
+
+  /// No description provided for @myExchangesEmptyBody.
+  ///
+  /// In en, this message translates to:
+  /// **'When a donor and requester are matched, the handover will appear here. It is marked complete only after both people confirm.'**
+  String get myExchangesEmptyBody;
+
+  /// No description provided for @myExchangesUnknownItem.
+  ///
+  /// In en, this message translates to:
+  /// **'Shared item'**
+  String get myExchangesUnknownItem;
+
+  /// No description provided for @myExchangesDonor.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor'**
+  String get myExchangesDonor;
+
+  /// No description provided for @myExchangesRequester.
+  ///
+  /// In en, this message translates to:
+  /// **'Requester'**
+  String get myExchangesRequester;
+
+  /// No description provided for @myExchangesPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Handover in progress'**
+  String get myExchangesPending;
+
+  /// No description provided for @myExchangesCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get myExchangesCompleted;
+
+  /// No description provided for @myExchangesCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get myExchangesCancelled;
+
+  /// No description provided for @myExchangesDonorConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Donor confirmation'**
+  String get myExchangesDonorConfirmation;
+
+  /// No description provided for @myExchangesRequesterConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Requester confirmation'**
+  String get myExchangesRequesterConfirmation;
+
+  /// No description provided for @myExchangesBothConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'Both people confirmed this handover.'**
+  String get myExchangesBothConfirmed;
+
+  /// No description provided for @myExchangesYouAnd.
+  ///
+  /// In en, this message translates to:
+  /// **'You are the donor · requester: {name}'**
+  String myExchangesYouAnd(String name);
+
+  /// No description provided for @myExchangesWith.
+  ///
+  /// In en, this message translates to:
+  /// **'You are the requester · donor: {name}'**
+  String myExchangesWith(String name);
 
   /// No description provided for @myReviewsCount.
   ///

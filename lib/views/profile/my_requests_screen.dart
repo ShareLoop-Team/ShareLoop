@@ -2,15 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/profile_controller.dart';
-import '../../core/constants/app_colors.dart';
+import '../../controllers/request_controller.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/item_request_model.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/illustrated_empty_state.dart';
 import '../../widgets/info_note.dart';
 import '../../widgets/status_chip.dart';
+import '../../widgets/confirm_dialog.dart';
+import '../requests/create_request_screen.dart';
 import 'activity_page.dart';
 
 /// View: the items the signed-in user has asked for, newest first.
@@ -37,12 +40,23 @@ class MyRequestsScreen extends StatelessWidget {
         for (final request in requests)
           _RequestCard(
             request: request,
+            canEdit: context.read<RequestController>().canEdit(request),
+            canDelete: request.status != ItemRequestStatus.approved,
             onTap: request.itemPostId == null
                 ? null
                 : () => navigator.pushNamed(
-                      AppRoutes.itemDetails,
-                      arguments: request.itemPostId,
-                    ),
+                    AppRoutes.itemDetails,
+                    arguments: request.itemPostId,
+                  ),
+            onEdit: () async {
+              await navigator.push<void>(
+                MaterialPageRoute(
+                  builder: (_) => CreateRequestScreen(editRequest: request),
+                ),
+              );
+              if (context.mounted) await ActivityPage.refresh(context);
+            },
+            onDelete: () => _deleteRequest(context, request),
           ),
       ],
       action: ActivityAction(
@@ -51,6 +65,27 @@ class MyRequestsScreen extends StatelessWidget {
         onOpen: () => navigator.pushNamed(AppRoutes.createRequest),
       ),
     );
+  }
+
+  Future<void> _deleteRequest(
+    BuildContext context,
+    ItemRequestModel request,
+  ) async {
+    final l10n = AppLocalizations.of(context);
+    final confirmed = await confirmDestructiveAction(
+      context,
+      title: l10n.requestsDeleteConfirm,
+      message: l10n.requestsDeleteMessage,
+      actionLabel: l10n.requestsDeleteAction,
+    );
+    if (!confirmed || !context.mounted) return;
+    final error = await context.read<RequestController>().deleteRequest(
+      request.id,
+    );
+    if (!context.mounted) return;
+    ScaffoldMessenger.of(context)
+        .showSnackBar(SnackBar(content: Text(error ?? l10n.requestsDeleted)));
+    if (error == null) await ActivityPage.refresh(context);
   }
 }
 
@@ -68,17 +103,30 @@ class _Tip extends StatelessWidget {
 }
 
 class _RequestCard extends StatelessWidget {
-  const _RequestCard({required this.request, required this.onTap});
+  const _RequestCard({
+    required this.request,
+    required this.onTap,
+    required this.canEdit,
+    required this.canDelete,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   final ItemRequestModel request;
   final VoidCallback? onTap;
+  final bool canEdit;
+  final bool canDelete;
+  final VoidCallback onEdit;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final title =
-        request.itemName.isEmpty ? request.description : request.itemName;
+    final sl = context.sl;
+    final title = request.itemName.isEmpty
+        ? request.description
+        : request.itemName;
     return SoftCard(
       onTap: onTap,
       child: Column(
@@ -91,21 +139,37 @@ class _RequestCard extends StatelessWidget {
                 child: Text(
                   title,
                   style: textTheme.titleMedium?.copyWith(
-                    color: AppColors.ink,
+                    color: sl.ink,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
               ),
               const SizedBox(width: 8),
-              StatusChip.forRequest(l10n, request.status),
+              Flexible(child: StatusChip.forRequest(l10n, request.status)),
+              if (canEdit || canDelete)
+                PopupMenuButton<String>(
+                  tooltip: MaterialLocalizations.of(context).showMenuTooltip,
+                  onSelected: (action) =>
+                      action == 'edit' ? onEdit() : onDelete(),
+                  itemBuilder: (context) => [
+                    if (canEdit)
+                      PopupMenuItem(
+                        value: 'edit',
+                        child: Text(l10n.requestsEdit),
+                      ),
+                    if (canDelete)
+                      PopupMenuItem(
+                        value: 'delete',
+                        child: Text(l10n.requestsDelete),
+                      ),
+                  ],
+                ),
             ],
           ),
           const SizedBox(height: 4),
           Text(
-            '${request.category} · ${request.district}',
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            '${request.category} · ${request.city}, ${request.district}',
+            style: textTheme.bodySmall?.copyWith(color: sl.inkMuted),
           ),
           if (request.reason.isNotEmpty) ...[
             const SizedBox(height: 10),
@@ -114,7 +178,7 @@ class _RequestCard extends StatelessWidget {
               maxLines: 2,
               overflow: TextOverflow.ellipsis,
               style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.ink,
+                color: sl.ink,
                 fontStyle: FontStyle.italic,
                 height: 1.4,
               ),
@@ -123,22 +187,13 @@ class _RequestCard extends StatelessWidget {
           const SizedBox(height: 10),
           Row(
             children: [
-              const Icon(
-                Icons.schedule,
-                size: 16,
-                color: AppColors.textSecondary,
-              ),
+              Icon(Icons.schedule, size: 16, color: sl.inkMuted),
               const SizedBox(width: 4),
               Text(
                 timeAgo(l10n, request.createdAt),
-                style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: textTheme.bodySmall?.copyWith(color: sl.inkMuted),
               ),
-              if (onTap != null) ...[
-                const Spacer(),
-                const RowChevron(),
-              ],
+              if (onTap != null) ...[const Spacer(), const RowChevron()],
             ],
           ),
         ],

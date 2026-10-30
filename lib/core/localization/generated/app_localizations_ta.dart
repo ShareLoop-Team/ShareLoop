@@ -120,9 +120,6 @@ class AppLocalizationsTa extends AppLocalizations {
   String get loginHidePassword => 'கடவுச்சொல்லை மறை';
 
   @override
-  String get loginRememberMe => 'என்னை நினைவில் கொள்';
-
-  @override
   String get loginForgotPassword => 'கடவுச்சொல் மறந்துவிட்டதா?';
 
   @override
@@ -257,21 +254,10 @@ class AppLocalizationsTa extends AppLocalizations {
   String get registerWithFacebook => 'Facebook மூலம் பதிவு செய்';
 
   @override
-  String homeGreeting(String name) {
-    return 'வணக்கம், $name. இன்று என்ன பகிர்கிறீர்கள்?';
-  }
-
-  @override
-  String get homeGreetingGuest => 'வணக்கம்! இன்று என்ன பகிர்கிறீர்கள்?';
-
-  @override
   String get homeSearchHint => 'உங்களுக்குத் தேவையான பொருட்களைத் தேடுங்கள்...';
 
   @override
   String get homeAllCategories => 'அனைத்தும்';
-
-  @override
-  String get homeCategories => 'வகைகள்';
 
   @override
   String get homeAvailableNearYou => 'உங்கள் அருகில் கிடைப்பவை';
@@ -390,6 +376,63 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get homeNewDonor => 'புதிய நன்கொடையாளர்';
+
+  @override
+  String get categoryEducationalBooks => 'கல்விப் புத்தகங்கள்';
+
+  @override
+  String get categorySchoolSupplies => 'பள்ளிப் பொருட்கள்';
+
+  @override
+  String get categoryClothes => 'ஆடைகள்';
+
+  @override
+  String get categoryShoes => 'காலணிகள்';
+
+  @override
+  String get categoryElectronics => 'மின்னணுப் பொருட்கள்';
+
+  @override
+  String get categoryHouseholdItems => 'வீட்டுப் பொருட்கள்';
+
+  @override
+  String get categoryOther => 'மற்றவை';
+
+  @override
+  String get conditionNew => 'புதியது';
+
+  @override
+  String get conditionGood => 'நல்ல நிலை';
+
+  @override
+  String get conditionUsed => 'பயன்படுத்தியது';
+
+  @override
+  String get badgeBronze => 'வெண்கலம்';
+
+  @override
+  String get badgeSilver => 'வெள்ளி';
+
+  @override
+  String get badgeGold => 'தங்கம்';
+
+  @override
+  String get badgePlatinum => 'பிளாட்டினம்';
+
+  @override
+  String get badgeLevelNew => 'புதிய பங்களிப்பாளர்';
+
+  @override
+  String get badgeLevelActive => 'செயலில் உள்ள பங்களிப்பாளர்';
+
+  @override
+  String get badgeLevelTrusted => 'நம்பகமான பங்களிப்பாளர்';
+
+  @override
+  String get badgeLevelChampion => 'சமூக சாம்பியன்';
+
+  @override
+  String get navRequests => 'கோரிக்கை';
 
   @override
   String get giveTitle => 'ஒரு பொருளைக் கொடுங்கள்';
@@ -955,6 +998,57 @@ class AppLocalizationsTa extends AppLocalizations {
 
   @override
   String get myReviewsAction => 'பொருட்களைப் பாருங்கள்';
+
+  @override
+  String get profileMyExchanges => 'எனது பரிமாற்றங்கள்';
+
+  @override
+  String get myExchangesSubtitle => 'நீங்கள் பங்கேற்ற ஒப்படைப்புகள்';
+
+  @override
+  String get myExchangesEmptyTitle => 'இன்னும் பரிமாற்றங்கள் இல்லை';
+
+  @override
+  String get myExchangesEmptyBody =>
+      'ஒரு நன்கொடையாளர் மற்றும் கோருபவர் இணைக்கப்பட்டதும் ஒப்படைப்பு இங்கே தோன்றும். இருவரும் உறுதிப்படுத்திய பிறகே அது முடிந்ததாகக் குறிக்கப்படும்.';
+
+  @override
+  String get myExchangesUnknownItem => 'பகிரப்பட்ட பொருள்';
+
+  @override
+  String get myExchangesDonor => 'நன்கொடையாளர்';
+
+  @override
+  String get myExchangesRequester => 'கோருபவர்';
+
+  @override
+  String get myExchangesPending => 'ஒப்படைப்பு நடைபெறுகிறது';
+
+  @override
+  String get myExchangesCompleted => 'முடிந்தது';
+
+  @override
+  String get myExchangesCancelled => 'ரத்து செய்யப்பட்டது';
+
+  @override
+  String get myExchangesDonorConfirmation => 'நன்கொடையாளர் உறுதிப்படுத்தல்';
+
+  @override
+  String get myExchangesRequesterConfirmation => 'கோருபவர் உறுதிப்படுத்தல்';
+
+  @override
+  String get myExchangesBothConfirmed =>
+      'இருவரும் இந்த ஒப்படைப்பை உறுதிப்படுத்தினர்.';
+
+  @override
+  String myExchangesYouAnd(String name) {
+    return 'நீங்கள் நன்கொடையாளர் · கோருபவர்: $name';
+  }
+
+  @override
+  String myExchangesWith(String name) {
+    return 'நீங்கள் கோருபவர் · நன்கொடையாளர்: $name';
+  }
 
   @override
   String myReviewsCount(int count) {

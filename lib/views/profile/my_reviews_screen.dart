@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/profile_controller.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/utils/time_ago.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../models/rating_review_model.dart';
 import '../../widgets/illustrated_empty_state.dart';
 import '../../widgets/rating_stars.dart';
@@ -20,7 +20,9 @@ class MyReviewsScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
-    final reviews = context.watch<ProfileController>().myReviews;
+    final sl = context.sl;
+    final profile = context.watch<ProfileController>();
+    final reviews = profile.myReviews;
     final average = reviews.isEmpty
         ? 0.0
         : reviews.fold<int>(0, (sum, r) => sum + r.stars) / reviews.length;
@@ -43,7 +45,7 @@ class MyReviewsScreen extends StatelessWidget {
                 Text(
                   l10n.myReviewsFirstTitle,
                   style: textTheme.titleSmall?.copyWith(
-                    color: AppColors.ink,
+                    color: sl.ink,
                     fontWeight: FontWeight.w700,
                   ),
                 ),
@@ -51,7 +53,7 @@ class MyReviewsScreen extends StatelessWidget {
                 Text(
                   l10n.myReviewsFirstBody,
                   style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+                    color: sl.inkMuted,
                     height: 1.5,
                   ),
                 ),
@@ -62,7 +64,12 @@ class MyReviewsScreen extends StatelessWidget {
       ),
       items: [
         _Summary(average: average, count: reviews.length),
-        for (final review in reviews) _ReviewCard(review: review),
+        for (final review in reviews)
+          _ReviewCard(
+            review: review,
+            reviewerName: profile.reviewAuthors[review.raterId]?.name,
+            itemTitle: profile.reviewPosts[review.itemPostId]?.title,
+          ),
       ],
       // Back to the home feed, where items are browsed.
       action: ActivityAction(
@@ -70,10 +77,8 @@ class MyReviewsScreen extends StatelessWidget {
         icon: Icons.search,
         outlined: true,
         onOpen: () async {
-          Navigator.of(context).pushNamedAndRemoveUntil(
-            AppRoutes.home,
-            (_) => false,
-          );
+          Navigator.of(context)
+              .pushNamedAndRemoveUntil(AppRoutes.home, (_) => false);
         },
       ),
     );
@@ -91,6 +96,7 @@ class _Summary extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     return SoftCard(
       padding: const EdgeInsets.all(18),
       child: Row(
@@ -98,7 +104,7 @@ class _Summary extends StatelessWidget {
           Text(
             average.toStringAsFixed(1),
             style: textTheme.displaySmall?.copyWith(
-              color: AppColors.ink,
+              color: sl.ink,
               fontWeight: FontWeight.w800,
             ),
           ),
@@ -111,9 +117,7 @@ class _Summary extends StatelessWidget {
                 const SizedBox(height: 4),
                 Text(
                   l10n.myReviewsCount(count),
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+                  style: textTheme.bodyMedium?.copyWith(color: sl.inkMuted),
                 ),
               ],
             ),
@@ -125,14 +129,21 @@ class _Summary extends StatelessWidget {
 }
 
 class _ReviewCard extends StatelessWidget {
-  const _ReviewCard({required this.review});
+  const _ReviewCard({
+    required this.review,
+    required this.reviewerName,
+    required this.itemTitle,
+  });
 
   final RatingReviewModel review;
+  final String? reviewerName;
+  final String? itemTitle;
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     return SoftCard(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -143,20 +154,26 @@ class _ReviewCard extends StatelessWidget {
               const Spacer(),
               Text(
                 timeAgo(l10n, review.createdAt),
-                style: textTheme.bodySmall?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+                style: textTheme.bodySmall?.copyWith(color: sl.inkMuted),
               ),
             ],
           ),
+          if (reviewerName case final name? when name.isNotEmpty) ...[
+            const SizedBox(height: 8),
+            Text(name, style: textTheme.titleSmall),
+          ],
+          if (itemTitle case final title? when title.isNotEmpty) ...[
+            const SizedBox(height: 4),
+            Text(
+              title,
+              style: textTheme.bodySmall?.copyWith(color: sl.inkMuted),
+            ),
+          ],
           if (review.comment.isNotEmpty) ...[
             const SizedBox(height: 10),
             Text(
               review.comment,
-              style: textTheme.bodyMedium?.copyWith(
-                color: AppColors.ink,
-                height: 1.5,
-              ),
+              style: textTheme.bodyMedium?.copyWith(color: sl.ink, height: 1.5),
             ),
           ],
         ],

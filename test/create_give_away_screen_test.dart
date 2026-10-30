@@ -6,12 +6,15 @@ import 'package:provider/provider.dart';
 import 'package:shareloop/controllers/auth_controller.dart';
 import 'package:shareloop/controllers/item_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
+import 'package:shareloop/core/theme/app_theme.dart';
+import 'package:shareloop/core/theme/sl_tokens.dart';
 import 'package:shareloop/views/give_away/create_give_away_screen.dart';
 
 Future<void> _pumpGive(
   WidgetTester tester, {
   Size size = const Size(390, 844),
   Locale locale = const Locale('en'),
+  ThemeData? theme,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
@@ -27,6 +30,7 @@ Future<void> _pumpGive(
         ChangeNotifierProvider(create: (_) => ItemController()),
       ],
       child: MaterialApp(
+        theme: theme,
         locale: locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -83,7 +87,7 @@ void main() {
   for (final size in const [Size(320, 568), Size(360, 800)]) {
     testWidgets('does not overflow at $size', (tester) async {
       await _pumpGive(tester, size: size);
-      await tester.tap(find.byType(ElevatedButton));
+      await tester.tap(find.text('Publish Item'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });
@@ -99,4 +103,21 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('shows condition names in the app language', (tester) async {
+    await _pumpGive(tester, locale: const Locale('ta'));
+
+    expect(find.text('நல்ல நிலை'), findsOneWidget);
+    expect(find.text('Good'), findsNothing);
+  });
+
+  testWidgets('follows the dark theme', (tester) async {
+    await _pumpGive(tester, theme: AppTheme.darkTheme);
+
+    final scaffold = tester.widget<Scaffold>(find.byType(Scaffold).first);
+    expect(scaffold.backgroundColor, SLColors.dark.ground);
+    await tester.tap(find.text('Publish Item'));
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
 }

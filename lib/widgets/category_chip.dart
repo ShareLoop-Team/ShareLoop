@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
 import '../core/constants/app_constants.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Reusable selectable pill for category filters/selection.
 class CategoryChip extends StatelessWidget {
@@ -18,15 +18,14 @@ class CategoryChip extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return Semantics(
       selected: selected,
       button: true,
       child: Material(
-        color: selected ? AppColors.deepGreen : AppColors.white,
+        color: selected ? sl.action : sl.surface,
         shape: StadiumBorder(
-          side: BorderSide(
-            color: selected ? AppColors.deepGreen : AppColors.softMint,
-          ),
+          side: BorderSide(color: selected ? sl.action : sl.divider),
         ),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
@@ -36,9 +35,9 @@ class CategoryChip extends StatelessWidget {
             child: Text(
               label,
               style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                    color: selected ? AppColors.white : AppColors.ink,
-                    fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
-                  ),
+                color: selected ? sl.onAction : sl.ink,
+                fontWeight: selected ? FontWeight.w700 : FontWeight.w500,
+              ),
             ),
           ),
         ),

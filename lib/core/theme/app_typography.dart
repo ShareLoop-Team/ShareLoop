@@ -2,10 +2,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-/// The app's type scale. Inter is the primary font; it has no Sinhala
-/// glyphs, so Flutter falls back to Noto Sans Sinhala character by
-/// character, letting mixed English/Sinhala text render correctly. Both are
-/// bundled (pubspec.yaml), so nothing is downloaded at runtime.
+/// The app's type scale. Inter is the primary font; it has no Sinhala or
+/// Tamil glyphs, so Flutter falls back to Noto Sans Sinhala and Noto Sans
+/// Tamil character by character, letting mixed-script text render
+/// correctly. All three are bundled (pubspec.yaml), so nothing is
+/// downloaded at runtime.
 ///
 /// Sizes are logical pixels (Flutter's sp) and scale with the device's text
 /// size setting. Screens pick a role from `Theme.of(context).textTheme`:
@@ -26,7 +27,10 @@ class AppTypography {
   static const String fontFamily = 'Inter';
 
   /// Used for any character Inter can't draw.
-  static const List<String> fontFamilyFallback = ['NotoSansSinhala'];
+  static const List<String> fontFamilyFallback = [
+    'NotoSansSinhala',
+    'NotoSansTamil',
+  ];
 
   static TextTheme textTheme(Color color) {
     TextStyle style(
@@ -72,6 +76,7 @@ class AppTypography {
       for (final (name, file) in const [
         ('Inter', 'Inter-OFL.txt'),
         ('Noto Sans Sinhala', 'NotoSansSinhala-OFL.txt'),
+        ('Noto Sans Tamil', 'NotoSansTamil-OFL.txt'),
       ]) {
         yield LicenseEntryWithLineBreaks(
           [name],

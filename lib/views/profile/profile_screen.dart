@@ -1,28 +1,30 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/badge_controller.dart';
 import '../../controllers/language_controller.dart';
 import '../../controllers/profile_controller.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/localization/data_labels.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../models/badge_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/donor_badge_dot.dart';
-import '../../widgets/empty_state.dart';
-import '../../widgets/loading_indicator.dart';
 import '../../widgets/notification_prompt.dart';
+import '../../widgets/sl/sl_button.dart';
+import '../../widgets/sl/sl_motion.dart';
+import '../../widgets/sl/sl_panel.dart';
+import '../../widgets/sl/sl_states.dart';
 import '../../widgets/user_avatar.dart';
 
-/// View: the Profile tab — identity card, giving stats, badge progress,
-/// the user's activity (donations, requests, reviews), settings, and
-/// sign out. Shown inside the home shell, so it has no Scaffold of its own.
+/// View: the Profile tab — who you are, your giving stats and badge
+/// progress, your activity (donations, requests, reviews), settings, and
+/// sign out. Flat panels on the page tone, no decoration. Shown inside the
+/// home shell, so it has no Scaffold of its own.
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
 
@@ -55,76 +57,75 @@ class _ProfileScreenState extends State<ProfileScreen> {
     showModalBottomSheet<void>(
       context: context,
       showDragHandle: true,
-      backgroundColor: AppColors.white,
-      builder: (sheetContext) => Theme(
-        data: AppTheme.lightTheme,
-        child: SafeArea(
+      builder: (sheetContext) {
+        final sl = sheetContext.sl;
+        final type = sheetContext.slType;
+        return SafeArea(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
-                child: Text(
-                  l10n.language,
-                  style: Theme.of(sheetContext).textTheme.titleMedium
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                padding: const EdgeInsets.fromLTRB(
+                  SLSpace.screen,
+                  0,
+                  SLSpace.screen,
+                  SLSpace.s,
                 ),
+                child: Text(l10n.language, style: type.section),
               ),
               for (final MapEntry(key: code, value: name)
                   in AppConstants.languageNames.entries)
                 ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: SLSpace.screen,
+                  ),
                   title: Text(
                     name,
-                    style: TextStyle(
-                      color: code == selected
-                          ? AppColors.deepGreen
-                          : AppColors.ink,
+                    style: type.body.copyWith(
+                      color: code == selected ? sl.accentText : sl.ink,
                       fontWeight: code == selected
-                          ? FontWeight.w700
+                          ? FontWeight.w600
                           : FontWeight.w400,
                     ),
                   ),
                   trailing: code == selected
-                      ? const Icon(Icons.check, color: AppColors.deepGreen)
+                      ? Icon(Icons.check, color: sl.accentText)
                       : null,
                   onTap: () {
                     languageController.setLanguage(code);
                     Navigator.of(sheetContext).pop();
                   },
                 ),
-              const SizedBox(height: 8),
+              const SizedBox(height: SLSpace.s),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
   Future<void> _confirmSignOut(AppLocalizations l10n) async {
     final confirmed = await showDialog<bool>(
       context: context,
-      builder: (dialogContext) => Theme(
-        data: AppTheme.lightTheme,
-        child: AlertDialog(
-          backgroundColor: AppColors.white,
-          title: Text(l10n.profileSignOutConfirm),
-          content: Text(l10n.profileSignOutMessage),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(false),
-              child: Text(
-                MaterialLocalizations.of(dialogContext).cancelButtonLabel,
-              ),
+      builder: (dialogContext) => AlertDialog(
+        title: Text(l10n.profileSignOutConfirm),
+        content: Text(l10n.profileSignOutMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text(
+              MaterialLocalizations.of(dialogContext).cancelButtonLabel,
             ),
-            TextButton(
-              onPressed: () => Navigator.of(dialogContext).pop(true),
-              style: TextButton.styleFrom(foregroundColor: AppColors.error),
-              child: Text(l10n.profileSignOut),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            style: TextButton.styleFrom(
+              foregroundColor: dialogContext.sl.danger,
             ),
-          ],
-        ),
+            child: Text(l10n.profileSignOut),
+          ),
+        ],
       ),
     );
     if (confirmed != true || !mounted) return;
@@ -149,165 +150,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
       // A failed load would otherwise spin forever.
       if (profile.errorMessage case final error? when !profile.isLoading) {
         return SafeArea(
-          child: EmptyState(
-            icon: Icons.cloud_off_outlined,
-            message: error,
-            actionLabel: l10n.stateRetry,
-            onAction: _load,
+          child: Center(
+            child: SLErrorState(
+              message: error,
+              retryLabel: l10n.stateRetry,
+              onRetry: _load,
+            ),
           ),
         );
       }
-      return const LoadingIndicator();
+      return const _ProfileSkeleton();
     }
 
     final badgeController = context.read<BadgeController>();
     final badge = badgeController.badgeForDonationCount(user.donationCount);
     final nextBadge = badgeController.nextBadge(user.donationCount);
 
-    // Light status bar icons over the green header.
-    return AnnotatedRegion<SystemUiOverlayStyle>(
-      value: SystemUiOverlayStyle.light,
+    return SafeArea(
+      bottom: false,
       child: RefreshIndicator(
         onRefresh: _load,
-        edgeOffset: MediaQuery.paddingOf(context).top,
         child: ListView(
-          padding: const EdgeInsets.only(bottom: 24),
+          padding: const EdgeInsets.fromLTRB(
+            SLSpace.screen,
+            SLSpace.m,
+            SLSpace.screen,
+            SLSpace.xl,
+          ),
           children: [
-            _ProfileHeader(
+            _TitleRow(
               title: l10n.profileTitle,
               notificationsTooltip: l10n.profileNotifications,
               onNotifications: () => manageNotifications(context),
-              card: _IdentityCard(
-                user: user,
-                badgeLabel: badge == null
-                    ? l10n.homeNewDonor
-                    : '${badge.level} · ${badge.name}',
-                // The same tier colours as the badge dots on posts.
-                badgeColor: DonorBadgeDot.colorFor(badge?.name),
-                editLabel: l10n.profileEditProfile,
-                onEdit: _openEditProfile,
-              ),
             ),
-            Padding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  IntrinsicHeight(
-                    child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        Expanded(
-                          child: _StatTile(
-                            value: '${user.donationCount}',
-                            label: l10n.profileItemsGiven,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _StatTile(
-                            value: '${profile.myRequests.length}',
-                            label: l10n.requests,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Expanded(
-                          child: _StatTile(
-                            value: user.ratingCount == 0
-                                ? '–'
-                                : user.averageRating.toStringAsFixed(1),
-                            label: l10n.profileRating,
-                          ),
-                        ),
-                      ],
-                    ),
+            const SizedBox(height: SLSpace.l),
+            _IdentityPanel(
+              user: user,
+              badgeName: badge?.name,
+              badgeLabel: badge == null
+                  ? l10n.homeNewDonor
+                  : '${l10n.badgeLevel(badge.level)} · '
+                        '${l10n.badge(badge.name)}',
+              editLabel: l10n.profileEditProfile,
+              onEdit: _openEditProfile,
+            ),
+            const SizedBox(height: SLSpace.m),
+            _StatsPanel(
+              stats: [
+                ('${user.donationCount}', l10n.profileItemsGiven),
+                ('${profile.myRequests.length}', l10n.requests),
+                (
+                  user.ratingCount == 0
+                      ? '–'
+                      : user.averageRating.toStringAsFixed(1),
+                  l10n.profileRating,
+                ),
+              ],
+            ),
+            const SizedBox(height: SLSpace.m),
+            _BadgeProgressPanel(
+              donationCount: user.donationCount,
+              nextBadge: nextBadge,
+            ),
+            const SizedBox(height: SLSpace.section),
+            _RowGroup(
+              title: l10n.profileMyActivity,
+              rows: [
+                SLListRow(
+                  icon: const Icon(Icons.card_giftcard_outlined),
+                  label: l10n.profileMyDonations,
+                  value: '${profile.myPosts.length}',
+                  onTap: () => _openRoute(AppRoutes.myDonations),
+                ),
+                SLListRow(
+                  icon: const Icon(Icons.format_list_bulleted),
+                  label: l10n.myRequests,
+                  value: '${profile.myRequests.length}',
+                  onTap: () => _openRoute(AppRoutes.myRequests),
+                ),
+                SLListRow(
+                  icon: const Icon(Icons.star_border),
+                  label: l10n.profileReviews,
+                  value: '${profile.myReviews.length}',
+                  onTap: () => _openRoute(AppRoutes.myReviews),
+                ),
+                SLListRow(
+                  icon: const Icon(Icons.handshake_outlined),
+                  label: l10n.profileMyExchanges,
+                  value: '${profile.myExchanges.length}',
+                  onTap: () => _openRoute(AppRoutes.myExchanges),
+                ),
+              ],
+            ),
+            if (user.isAdmin) ...[
+              const SizedBox(height: SLSpace.section),
+              _RowGroup(
+                title: l10n.profileAdmin,
+                rows: [
+                  SLListRow(
+                    icon: const Icon(Icons.people_outline),
+                    label: l10n.profileManageUsers,
+                    onTap: () => _openRoute(AppRoutes.adminUsers),
                   ),
-                  const SizedBox(height: 12),
-                  _BadgeProgressCard(
-                    donationCount: user.donationCount,
-                    nextBadge: nextBadge,
+                  SLListRow(
+                    icon: const Icon(Icons.flag_outlined),
+                    label: l10n.profileModeratePosts,
+                    onTap: () => _openRoute(AppRoutes.adminPosts),
                   ),
-                  const SizedBox(height: 12),
-                  _MenuSection(
-                    title: l10n.profileMyActivity,
-                    tiles: [
-                      _MenuTile(
-                        icon: const Icon(Icons.card_giftcard_outlined),
-                        label: l10n.profileMyDonations,
-                        trailing: '${profile.myPosts.length}',
-                        onTap: () => _openRoute(AppRoutes.myDonations),
-                      ),
-                      _MenuTile(
-                        icon: const Icon(Icons.format_list_bulleted),
-                        label: l10n.myRequests,
-                        trailing: '${profile.myRequests.length}',
-                        onTap: () => _openRoute(AppRoutes.myRequests),
-                      ),
-                      _MenuTile(
-                        icon: const Icon(Icons.star_border),
-                        label: l10n.profileReviews,
-                        trailing: '${profile.myReviews.length}',
-                        onTap: () => _openRoute(AppRoutes.myReviews),
-                      ),
-                    ],
-                  ),
-                  if (user.isAdmin) ...[
-                    const SizedBox(height: 12),
-                    _MenuSection(
-                      title: l10n.profileAdmin,
-                      tiles: [
-                        _MenuTile(
-                          icon: const Icon(Icons.people_outline),
-                          label: l10n.profileManageUsers,
-                          onTap: () => _openRoute(AppRoutes.adminUsers),
-                        ),
-                        _MenuTile(
-                          icon: const Icon(Icons.flag_outlined),
-                          label: l10n.profileModeratePosts,
-                          onTap: () => _openRoute(AppRoutes.adminPosts),
-                        ),
-                        _MenuTile(
-                          icon: const Icon(Icons.category_outlined),
-                          label: l10n.profileManageCategories,
-                          onTap: () => _openRoute(AppRoutes.adminCategories),
-                        ),
-                      ],
-                    ),
-                  ],
-                  const SizedBox(height: 12),
-                  _MenuSection(
-                    title: l10n.settings,
-                    tiles: [
-                      _MenuTile(
-                        icon: const AppIcon(AppGlyph.language),
-                        label: l10n.language,
-                        trailing: AppConstants.languageNames[languageCode],
-                        onTap: () => _showLanguagePicker(l10n),
-                      ),
-                      _MenuTile(
-                        icon: const AppIcon(AppGlyph.notifications),
-                        label: l10n.profileNotifications,
-                        onTap: () => manageNotifications(context),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  OutlinedButton.icon(
-                    onPressed: () => _confirmSignOut(l10n),
-                    icon: const Icon(Icons.logout, size: 20),
-                    label: Text(l10n.profileSignOut),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.error,
-                      backgroundColor: AppColors.white,
-                      side: const BorderSide(color: AppColors.error),
-                      minimumSize: const Size.fromHeight(54),
-                      shape: const StadiumBorder(),
-                      textStyle: Theme.of(context).textTheme.titleMedium
-                          ?.copyWith(fontWeight: FontWeight.w700),
-                    ),
+                  SLListRow(
+                    icon: const Icon(Icons.category_outlined),
+                    label: l10n.profileManageCategories,
+                    onTap: () => _openRoute(AppRoutes.adminCategories),
                   ),
                 ],
               ),
+            ],
+            const SizedBox(height: SLSpace.section),
+            _RowGroup(
+              title: l10n.settings,
+              rows: [
+                SLListRow(
+                  icon: const AppIcon(AppGlyph.language),
+                  label: l10n.language,
+                  value: AppConstants.languageNames[languageCode],
+                  onTap: () => _showLanguagePicker(l10n),
+                ),
+                SLListRow(
+                  icon: const AppIcon(AppGlyph.notifications),
+                  label: l10n.profileNotifications,
+                  onTap: () => manageNotifications(context),
+                ),
+              ],
+            ),
+            const SizedBox(height: SLSpace.section),
+            // Destructive, so last and on its own.
+            SLPanel(
+              children: [
+                SLListRow(
+                  icon: const Icon(Icons.logout),
+                  label: l10n.profileSignOut,
+                  destructive: true,
+                  showChevron: false,
+                  onTap: () => _confirmSignOut(l10n),
+                ),
+              ],
             ),
           ],
         ),
@@ -316,301 +302,237 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 }
 
-/// White rounded card with a soft shadow; clips ink ripples to its shape.
-class _SectionCard extends StatelessWidget {
-  const _SectionCard({required this.child, this.padding = EdgeInsets.zero});
-
-  final Widget child;
-  final EdgeInsetsGeometry padding;
-
-  @override
-  Widget build(BuildContext context) {
-    final radius = BorderRadius.circular(20);
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: radius,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.ink.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 2),
-          ),
-        ],
-      ),
-      child: Material(
-        color: AppColors.white,
-        borderRadius: radius,
-        clipBehavior: Clip.antiAlias,
-        child: Padding(padding: padding, child: child),
-      ),
-    );
-  }
-}
-
-/// Green band behind the status bar with the title and a bell, and [card]
-/// overlapping its bottom edge.
-class _ProfileHeader extends StatelessWidget {
-  const _ProfileHeader({
+/// "My Profile" and the bell that opens notification settings.
+class _TitleRow extends StatelessWidget {
+  const _TitleRow({
     required this.title,
     required this.notificationsTooltip,
     required this.onNotifications,
-    required this.card,
   });
-
-  /// Band height below the status bar; [card] starts [_cardTop] down.
-  static const double _bandHeight = 150;
-  static const double _cardTop = 82;
 
   final String title;
   final String notificationsTooltip;
   final VoidCallback onNotifications;
-  final Widget card;
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top;
-    return Stack(
+    return Row(
       children: [
-        Container(
-          height: topInset + _bandHeight,
-          clipBehavior: Clip.antiAlias,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [AppColors.deepGreen, AppColors.brightGreen],
+        Expanded(
+          child: Semantics(
+            header: true,
+            // Two lines at most, for long Tamil titles on small phones.
+            child: Text(
+              title,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: context.slType.title,
             ),
           ),
-          child: Stack(
-            children: [
-              // Soft decorative bubbles.
-              _bubble(right: -30, top: -20, size: 140),
-              _bubble(left: -24, bottom: -40, size: 110),
-              _bubble(right: 90, bottom: 18, size: 26),
-            ],
-          ),
         ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, topInset + 12, 8, 0),
-          child: Row(
-            children: [
-              Expanded(
-                child: Semantics(
-                  header: true,
-                  child: Text(
-                    title,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
-                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.w800,
-                      color: AppColors.white,
-                    ),
-                  ),
-                ),
-              ),
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_none_rounded,
-                  color: AppColors.white,
-                  size: 28,
-                ),
-                tooltip: notificationsTooltip,
-                onPressed: onNotifications,
-              ),
-            ],
+        IconButton(
+          tooltip: notificationsTooltip,
+          onPressed: onNotifications,
+          icon: IconTheme(
+            data: IconThemeData(size: 24, color: context.sl.ink),
+            child: const AppIcon(AppGlyph.notifications),
           ),
-        ),
-        Padding(
-          padding: EdgeInsets.fromLTRB(20, topInset + _cardTop, 20, 0),
-          child: card,
         ),
       ],
     );
   }
-
-  static Widget _bubble({
-    double? left,
-    double? right,
-    double? top,
-    double? bottom,
-    required double size,
-  }) {
-    return Positioned(
-      left: left,
-      right: right,
-      top: top,
-      bottom: bottom,
-      child: Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(
-          shape: BoxShape.circle,
-          color: AppColors.white.withValues(alpha: 0.08),
-        ),
-      ),
-    );
-  }
 }
 
-class _IdentityCard extends StatelessWidget {
-  const _IdentityCard({
+/// Photo, name, email, city and badge, with the way into Edit Profile.
+class _IdentityPanel extends StatelessWidget {
+  const _IdentityPanel({
     required this.user,
+    required this.badgeName,
     required this.badgeLabel,
-    required this.badgeColor,
     required this.editLabel,
     required this.onEdit,
   });
 
   final UserModel user;
+
+  /// Badge name for its colour, or null for new donors.
+  final String? badgeName;
   final String badgeLabel;
-  final Color badgeColor;
   final String editLabel;
   final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     final location = [
       user.city,
       user.district,
     ].where((part) => part.trim().isNotEmpty).join(', ');
-    final secondary = textTheme.bodyMedium?.copyWith(
-      color: AppColors.textSecondary,
-    );
-    return _SectionCard(
-      padding: const EdgeInsets.fromLTRB(16, 18, 8, 18),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          UserAvatar(url: user.avatarUrl, size: 76),
-          const SizedBox(width: 14),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+    return SLPanel(
+      padding: const EdgeInsets.all(SLSpace.l),
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
               children: [
-                Text(
-                  user.name,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.titleLarge?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.ink,
-                  ),
-                ),
-                const SizedBox(height: 2),
-                Text(
-                  user.email,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: secondary,
-                ),
-                if (location.isNotEmpty) ...[
-                  const SizedBox(height: 2),
-                  Row(
+                UserAvatar(url: user.avatarUrl, size: 64, ringWidth: 2),
+                const SizedBox(width: SLSpace.l),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Icon(
-                        Icons.location_on_outlined,
-                        size: 16,
-                        color: AppColors.textSecondary,
+                      Text(
+                        user.name,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: type.section,
                       ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          location,
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
-                          style: secondary,
+                      const SizedBox(height: 2),
+                      Text(
+                        user.email,
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: type.small,
+                      ),
+                      if (location.isNotEmpty) ...[
+                        const SizedBox(height: 2),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 16,
+                              color: sl.inkMuted,
+                            ),
+                            const SizedBox(width: SLSpace.xs),
+                            Flexible(
+                              child: Text(
+                                location,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: type.small,
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                ],
-                const SizedBox(height: 10),
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 10,
-                    vertical: 5,
-                  ),
-                  decoration: BoxDecoration(
-                    color: badgeColor.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(20),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 8,
-                        height: 8,
-                        decoration: BoxDecoration(
-                          color: badgeColor,
-                          shape: BoxShape.circle,
-                        ),
-                      ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          badgeLabel,
-                          style: textTheme.labelMedium?.copyWith(
-                            fontWeight: FontWeight.w700,
-                            color: AppColors.ink,
-                          ),
-                        ),
-                      ),
+                      ],
                     ],
                   ),
                 ),
               ],
             ),
-          ),
-          IconButton(
-            icon: const Icon(Icons.edit_square, color: AppColors.deepGreen),
-            tooltip: editLabel,
-            onPressed: onEdit,
-          ),
-        ],
-      ),
+            const SizedBox(height: SLSpace.m),
+            Align(
+              alignment: AlignmentDirectional.centerStart,
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: SLSpace.m,
+                  vertical: SLSpace.xs + 2,
+                ),
+                decoration: BoxDecoration(
+                  color: sl.accentSoft,
+                  borderRadius: BorderRadius.circular(SLRadius.control),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    DonorBadgeDot(badge: badgeName),
+                    const SizedBox(width: SLSpace.s - 2),
+                    Flexible(
+                      child: Text(
+                        badgeLabel,
+                        style: type.small.copyWith(
+                          color: sl.ink,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: SLSpace.l),
+            SLButton(
+              label: editLabel,
+              icon: Icons.edit_outlined,
+              variant: SLButtonVariant.secondary,
+              expand: true,
+              onPressed: onEdit,
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
 
-class _StatTile extends StatelessWidget {
-  const _StatTile({required this.value, required this.label});
+/// The giving numbers in one panel, divided by thin lines.
+class _StatsPanel extends StatelessWidget {
+  const _StatsPanel({required this.stats});
 
-  final String value;
-  final String label;
+  /// (value, label) pairs.
+  final List<(String, String)> stats;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return _SectionCard(
-      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Text(
-            value,
-            style: textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.deepGreen,
-            ),
+    final sl = context.sl;
+    final type = context.slType;
+    return SLPanel(
+      children: [
+        IntrinsicHeight(
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var i = 0; i < stats.length; i++) ...[
+                if (i > 0)
+                  VerticalDivider(
+                    width: 1,
+                    thickness: 1,
+                    indent: SLSpace.m,
+                    endIndent: SLSpace.m,
+                    color: sl.divider,
+                  ),
+                Expanded(
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: SLSpace.s,
+                      vertical: SLSpace.l,
+                    ),
+                    // Top-aligned, so the numbers line up even when a
+                    // translated label wraps to more lines than its
+                    // neighbours.
+                    child: Column(
+                      children: [
+                        Text(
+                          stats[i].$1,
+                          style: type.section.copyWith(
+                            fontWeight: FontWeight.w700,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        const SizedBox(height: 2),
+                        Text(
+                          stats[i].$2,
+                          textAlign: TextAlign.center,
+                          style: type.small,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ],
           ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            textAlign: TextAlign.center,
-            style: textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 /// Progress toward the next badge plus a legend of every tier.
-class _BadgeProgressCard extends StatelessWidget {
-  const _BadgeProgressCard({
+class _BadgeProgressPanel extends StatelessWidget {
+  const _BadgeProgressPanel({
     required this.donationCount,
     required this.nextBadge,
   });
@@ -623,90 +545,106 @@ class _BadgeProgressCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     final next = nextBadge;
     final tiers = AppConstants.badgeThresholds.entries.toList()
       ..sort((a, b) => a.value.compareTo(b.value));
 
-    return _SectionCard(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (next == null)
-            Row(
-              children: [
-                const Icon(Icons.emoji_events_outlined, color: AppColors.amber),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.profileAllBadgesEarned,
-                    style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
+    return SLPanel(
+      padding: const EdgeInsets.all(SLSpace.l),
+      children: [
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (next == null)
+              Row(
+                children: [
+                  Icon(Icons.emoji_events_outlined, color: sl.accentText),
+                  const SizedBox(width: SLSpace.s),
+                  Expanded(
+                    child: Text(
+                      l10n.profileAllBadgesEarned,
+                      style: type.cardTitle,
                     ),
                   ),
-                ),
-              ],
-            )
-          else ...[
-            Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    l10n.profileNextBadge(next.name),
-                    style: textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
+                ],
+              )
+            else ...[
+              LayoutBuilder(
+                builder: (context, constraints) => Row(
+                  crossAxisAlignment: CrossAxisAlignment.baseline,
+                  textBaseline: TextBaseline.alphabetic,
+                  children: [
+                    Expanded(
+                      child: Text(
+                        l10n.profileNextBadge(l10n.badge(next.name)),
+                        style: type.cardTitle,
+                      ),
                     ),
-                  ),
+                    const SizedBox(width: SLSpace.s),
+                    // At the row's end; long in Tamil, so it may wrap.
+                    ConstrainedBox(
+                      constraints: BoxConstraints(
+                        maxWidth: constraints.maxWidth * 0.4,
+                      ),
+                      child: Text(
+                        l10n.profileBadgeProgress(
+                          donationCount,
+                          next.requiredDonations,
+                        ),
+                        textAlign: TextAlign.end,
+                        style: type.small,
+                      ),
+                    ),
+                  ],
                 ),
-                const SizedBox(width: 8),
-                Text(
-                  l10n.profileBadgeProgress(
-                    donationCount,
-                    next.requiredDonations,
-                  ),
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 10),
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: LinearProgressIndicator(
-                value: donationCount / next.requiredDonations,
-                minHeight: 8,
-                color: AppColors.brightGreen,
-                backgroundColor: AppColors.mutedSurface,
               ),
+              const SizedBox(height: SLSpace.m),
+              ClipRRect(
+                borderRadius: BorderRadius.circular(4),
+                child: LinearProgressIndicator(
+                  value: donationCount / next.requiredDonations,
+                  minHeight: 8,
+                  color: sl.accent,
+                  backgroundColor: sl.surfaceMuted,
+                ),
+              ),
+            ],
+            const SizedBox(height: SLSpace.m),
+            Wrap(
+              spacing: SLSpace.l,
+              runSpacing: SLSpace.s,
+              children: [
+                for (final MapEntry(key: name, value: threshold) in tiers)
+                  _TierLegend(
+                    label: l10n.badge(name),
+                    color: DonorBadgeDot.colorFor(name),
+                    earned: donationCount >= threshold,
+                  ),
+              ],
             ),
           ],
-          const SizedBox(height: 14),
-          Wrap(
-            spacing: 16,
-            runSpacing: 8,
-            children: [
-              for (final MapEntry(key: name, value: threshold) in tiers)
-                _TierLegend(name: name, earned: donationCount >= threshold),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
 
 class _TierLegend extends StatelessWidget {
-  const _TierLegend({required this.name, required this.earned});
+  const _TierLegend({
+    required this.label,
+    required this.color,
+    required this.earned,
+  });
 
-  final String name;
+  final String label;
+  final Color color;
   final bool earned;
 
   @override
   Widget build(BuildContext context) {
-    final color = DonorBadgeDot.colorFor(name);
+    final sl = context.sl;
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -719,12 +657,12 @@ class _TierLegend extends StatelessWidget {
             border: Border.all(color: color, width: 1.5),
           ),
         ),
-        const SizedBox(width: 6),
+        const SizedBox(width: SLSpace.s - 2),
         Text(
-          name,
-          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-            color: earned ? AppColors.ink : AppColors.textSecondary,
-            fontWeight: earned ? FontWeight.w700 : FontWeight.w500,
+          label,
+          style: context.slType.small.copyWith(
+            color: earned ? sl.ink : sl.inkMuted,
+            fontWeight: earned ? FontWeight.w600 : FontWeight.w400,
           ),
         ),
       ],
@@ -732,103 +670,76 @@ class _TierLegend extends StatelessWidget {
   }
 }
 
-class _MenuSection extends StatelessWidget {
-  const _MenuSection({required this.title, required this.tiles});
+/// A section title over one panel of rows.
+class _RowGroup extends StatelessWidget {
+  const _RowGroup({required this.title, required this.rows});
 
   final String title;
-  final List<Widget> tiles;
+  final List<Widget> rows;
 
   @override
   Widget build(BuildContext context) {
-    // A plain heading, then each tile as its own rounded card.
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Padding(
-          padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.titleMedium
-                ?.copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
-          ),
-        ),
-        for (var i = 0; i < tiles.length; i++) ...[
-          if (i > 0) const SizedBox(height: 10),
-          _SectionCard(child: tiles[i]),
-        ],
+        SLSectionHeader(title: title),
+        const SizedBox(height: SLSpace.s),
+        SLPanel(dividerIndent: SLListRow.labelInset, children: rows),
       ],
     );
   }
 }
 
-class _MenuTile extends StatelessWidget {
-  const _MenuTile({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-    this.trailing,
-  });
-
-  /// An [Icon] or [AppIcon]; sized and coloured by the tile.
-  final Widget icon;
-  final String label;
-  final VoidCallback onTap;
-  final String? trailing;
+/// The profile's layout in flat grey blocks while it loads.
+class _ProfileSkeleton extends StatelessWidget {
+  const _ProfileSkeleton();
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    return InkWell(
-      onTap: onTap,
+    return SafeArea(
+      bottom: false,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-        child: Row(
+        padding: const EdgeInsets.fromLTRB(
+          SLSpace.screen,
+          SLSpace.l,
+          SLSpace.screen,
+          0,
+        ),
+        child: SLLoadingPulse(child: _blocks()),
+      ),
+    );
+  }
+
+  Widget _blocks() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const SLSkeleton(width: 160, height: 28),
+        const SizedBox(height: SLSpace.l),
+        SLPanel(
+          padding: const EdgeInsets.all(SLSpace.l),
           children: [
-            Container(
-              width: 40,
-              height: 40,
-              decoration: BoxDecoration(
-                color: AppColors.paleMint,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              alignment: Alignment.center,
-              child: IconTheme(
-                data: const IconThemeData(size: 22, color: AppColors.deepGreen),
-                child: icon,
-              ),
-            ),
-            const SizedBox(width: 14),
-            Expanded(
-              child: Text(
-                label,
-                style: textTheme.bodyLarge?.copyWith(
-                  fontWeight: FontWeight.w500,
-                  color: AppColors.ink,
-                ),
-              ),
-            ),
-            if (trailing != null) ...[
-              const SizedBox(width: 8),
-              // Capped rather than Flexible, so the label keeps all the
-              // spare width and the value + arrow sit at the row's end.
-              ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 140),
-                child: Text(
-                  trailing!,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  textAlign: TextAlign.end,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
+            Row(
+              children: [
+                const SLSkeleton(width: 64, height: 64, radius: 32),
+                const SizedBox(width: SLSpace.l),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: const [
+                      SLSkeleton(width: 140, height: 18),
+                      SizedBox(height: SLSpace.s),
+                      SLSkeleton(width: 180),
+                    ],
                   ),
                 ),
-              ),
-            ],
-            const SizedBox(width: 6),
-            const RowChevron(),
+              ],
+            ),
           ],
         ),
-      ),
+        const SizedBox(height: SLSpace.m),
+        const SLSkeleton(height: 84, radius: SLRadius.card),
+      ],
     );
   }
 }

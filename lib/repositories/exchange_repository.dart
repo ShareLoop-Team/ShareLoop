@@ -26,4 +26,7 @@ abstract class ExchangeRepository {
 
   /// The live (not cancelled) exchange for a post, if the caller is part of it.
   Future<ExchangeModel?> getExchangeForPost(String postId);
+
+  /// Exchanges where [userId] is the donor or requester, newest first.
+  Future<List<ExchangeModel>> getExchangesByUser(String userId);
 }

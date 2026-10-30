@@ -13,13 +13,13 @@ class LoginController extends ChangeNotifier {
   /// logs out, so this value is not stored anywhere.
   bool rememberMe = false;
 
-  void togglePasswordVisibility() {
-    obscurePassword = !obscurePassword;
+  void setRememberMe(bool value) {
+    rememberMe = value;
     notifyListeners();
   }
 
-  void setRememberMe(bool value) {
-    rememberMe = value;
+  void togglePasswordVisibility() {
+    obscurePassword = !obscurePassword;
     notifyListeners();
   }
 

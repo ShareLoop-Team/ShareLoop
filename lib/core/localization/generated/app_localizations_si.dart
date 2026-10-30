@@ -120,9 +120,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginHidePassword => 'මුරපදය සඟවන්න';
 
   @override
-  String get loginRememberMe => 'මාව මතක තබා ගන්න';
-
-  @override
   String get loginForgotPassword => 'මුරපදය අමතකද?';
 
   @override
@@ -256,21 +253,10 @@ class AppLocalizationsSi extends AppLocalizations {
   String get registerWithFacebook => 'Facebook සමඟ ලියාපදිංචි වන්න';
 
   @override
-  String homeGreeting(String name) {
-    return 'ආයුබෝවන්, $name. අද ඔබ බෙදා ගන්නේ කුමක්ද?';
-  }
-
-  @override
-  String get homeGreetingGuest => 'ආයුබෝවන්! අද ඔබ බෙදා ගන්නේ කුමක්ද?';
-
-  @override
   String get homeSearchHint => 'ඔබට අවශ්‍ය අයිතම සොයන්න...';
 
   @override
   String get homeAllCategories => 'සියල්ල';
-
-  @override
-  String get homeCategories => 'කාණ්ඩ';
 
   @override
   String get homeAvailableNearYou => 'ඔබ අසල ලබාගත හැකි';
@@ -388,6 +374,63 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeNewDonor => 'නව පරිත්‍යාගශීලී';
+
+  @override
+  String get categoryEducationalBooks => 'අධ්‍යාපනික පොත්';
+
+  @override
+  String get categorySchoolSupplies => 'පාසල් උපකරණ';
+
+  @override
+  String get categoryClothes => 'ඇඳුම්';
+
+  @override
+  String get categoryShoes => 'සපත්තු';
+
+  @override
+  String get categoryElectronics => 'ඉලෙක්ට්‍රොනික උපකරණ';
+
+  @override
+  String get categoryHouseholdItems => 'ගෘහ භාණ්ඩ';
+
+  @override
+  String get categoryOther => 'වෙනත්';
+
+  @override
+  String get conditionNew => 'අලුත්';
+
+  @override
+  String get conditionGood => 'හොඳ තත්ත්වයේ';
+
+  @override
+  String get conditionUsed => 'භාවිත කළ';
+
+  @override
+  String get badgeBronze => 'ලෝකඩ';
+
+  @override
+  String get badgeSilver => 'රිදී';
+
+  @override
+  String get badgeGold => 'රන්';
+
+  @override
+  String get badgePlatinum => 'ප්ලැටිනම්';
+
+  @override
+  String get badgeLevelNew => 'නව දායකයා';
+
+  @override
+  String get badgeLevelActive => 'සක්‍රීය දායකයා';
+
+  @override
+  String get badgeLevelTrusted => 'විශ්වාසනීය දායකයා';
+
+  @override
+  String get badgeLevelChampion => 'ප්‍රජා ශූරයා';
+
+  @override
+  String get navRequests => 'ඉල්ලීම්';
 
   @override
   String get giveTitle => 'අයිතමයක් දෙන්න';
@@ -946,6 +989,56 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get myReviewsAction => 'භාණ්ඩ බලන්න';
+
+  @override
+  String get profileMyExchanges => 'මාගේ හුවමාරු';
+
+  @override
+  String get myExchangesSubtitle => 'ඔබ සම්බන්ධ වූ භාරදීම්';
+
+  @override
+  String get myExchangesEmptyTitle => 'තවම හුවමාරු නැත';
+
+  @override
+  String get myExchangesEmptyBody =>
+      'දායකයෙකු සහ ඉල්ලුම්කරුවෙකු තෝරාගත් විට භාරදීම මෙහි පෙන්වයි. දෙදෙනාම තහවුරු කළ පසු පමණක් එය සම්පූර්ණ වේ.';
+
+  @override
+  String get myExchangesUnknownItem => 'බෙදාගත් භාණ්ඩය';
+
+  @override
+  String get myExchangesDonor => 'දායකයා';
+
+  @override
+  String get myExchangesRequester => 'ඉල්ලුම්කරු';
+
+  @override
+  String get myExchangesPending => 'භාරදීම සිදුවෙමින් පවතී';
+
+  @override
+  String get myExchangesCompleted => 'සම්පූර්ණයි';
+
+  @override
+  String get myExchangesCancelled => 'අවලංගුයි';
+
+  @override
+  String get myExchangesDonorConfirmation => 'දායකයාගේ තහවුරු කිරීම';
+
+  @override
+  String get myExchangesRequesterConfirmation => 'ඉල්ලුම්කරුගේ තහවුරු කිරීම';
+
+  @override
+  String get myExchangesBothConfirmed => 'දෙදෙනාම මෙම භාරදීම තහවුරු කළා.';
+
+  @override
+  String myExchangesYouAnd(String name) {
+    return 'ඔබ දායකයා · ඉල්ලුම්කරු: $name';
+  }
+
+  @override
+  String myExchangesWith(String name) {
+    return 'ඔබ ඉල්ලුම්කරු · දායකයා: $name';
+  }
 
   @override
   String myReviewsCount(int count) {

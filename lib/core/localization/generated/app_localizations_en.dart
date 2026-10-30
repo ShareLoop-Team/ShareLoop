@@ -120,9 +120,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginHidePassword => 'Hide password';
 
   @override
-  String get loginRememberMe => 'Remember me';
-
-  @override
   String get loginForgotPassword => 'Forgot password?';
 
   @override
@@ -255,21 +252,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get registerWithFacebook => 'Sign up with Facebook';
 
   @override
-  String homeGreeting(String name) {
-    return 'Hello, $name. What are you sharing today?';
-  }
-
-  @override
-  String get homeGreetingGuest => 'Hello! What are you sharing today?';
-
-  @override
   String get homeSearchHint => 'Find items you need...';
 
   @override
   String get homeAllCategories => 'All';
-
-  @override
-  String get homeCategories => 'Categories';
 
   @override
   String get homeAvailableNearYou => 'Available near you';
@@ -387,6 +373,63 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeNewDonor => 'New donor';
+
+  @override
+  String get categoryEducationalBooks => 'Educational Books';
+
+  @override
+  String get categorySchoolSupplies => 'School Supplies';
+
+  @override
+  String get categoryClothes => 'Clothes';
+
+  @override
+  String get categoryShoes => 'Shoes';
+
+  @override
+  String get categoryElectronics => 'Electronics';
+
+  @override
+  String get categoryHouseholdItems => 'Household Items';
+
+  @override
+  String get categoryOther => 'Other';
+
+  @override
+  String get conditionNew => 'New';
+
+  @override
+  String get conditionGood => 'Good';
+
+  @override
+  String get conditionUsed => 'Used';
+
+  @override
+  String get badgeBronze => 'Bronze';
+
+  @override
+  String get badgeSilver => 'Silver';
+
+  @override
+  String get badgeGold => 'Gold';
+
+  @override
+  String get badgePlatinum => 'Platinum';
+
+  @override
+  String get badgeLevelNew => 'New Contributor';
+
+  @override
+  String get badgeLevelActive => 'Active Contributor';
+
+  @override
+  String get badgeLevelTrusted => 'Trusted Contributor';
+
+  @override
+  String get badgeLevelChampion => 'Community Champion';
+
+  @override
+  String get navRequests => 'Requests';
 
   @override
   String get giveTitle => 'Give an Item';
@@ -941,6 +984,56 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get myReviewsAction => 'Browse items';
+
+  @override
+  String get profileMyExchanges => 'My exchanges';
+
+  @override
+  String get myExchangesSubtitle => 'Handovers you are part of';
+
+  @override
+  String get myExchangesEmptyTitle => 'No exchanges yet';
+
+  @override
+  String get myExchangesEmptyBody =>
+      'When a donor and requester are matched, the handover will appear here. It is marked complete only after both people confirm.';
+
+  @override
+  String get myExchangesUnknownItem => 'Shared item';
+
+  @override
+  String get myExchangesDonor => 'Donor';
+
+  @override
+  String get myExchangesRequester => 'Requester';
+
+  @override
+  String get myExchangesPending => 'Handover in progress';
+
+  @override
+  String get myExchangesCompleted => 'Completed';
+
+  @override
+  String get myExchangesCancelled => 'Cancelled';
+
+  @override
+  String get myExchangesDonorConfirmation => 'Donor confirmation';
+
+  @override
+  String get myExchangesRequesterConfirmation => 'Requester confirmation';
+
+  @override
+  String get myExchangesBothConfirmed => 'Both people confirmed this handover.';
+
+  @override
+  String myExchangesYouAnd(String name) {
+    return 'You are the donor · requester: $name';
+  }
+
+  @override
+  String myExchangesWith(String name) {
+    return 'You are the requester · donor: $name';
+  }
 
   @override
   String myReviewsCount(int count) {

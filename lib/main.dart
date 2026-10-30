@@ -43,6 +43,7 @@ import 'views/profile/edit_profile_screen.dart';
 import 'views/profile/my_donations_screen.dart';
 import 'views/profile/my_requests_screen.dart';
 import 'views/profile/my_reviews_screen.dart';
+import 'views/profile/my_exchanges_screen.dart';
 import 'views/requests/create_request_screen.dart';
 import 'views/settings/settings_screen.dart';
 import 'views/splash/splash_screen.dart';
@@ -150,6 +151,10 @@ class ShareLoopApp extends StatelessWidget {
                 case AppRoutes.myReviews:
                   return MaterialPageRoute(
                     builder: (_) => const MyReviewsScreen(),
+                  );
+                case AppRoutes.myExchanges:
+                  return MaterialPageRoute(
+                    builder: (_) => const MyExchangesScreen(),
                   );
                 case AppRoutes.categoryBrowse:
                   return MaterialPageRoute(

@@ -43,7 +43,10 @@ void main() {
   test('theme uses Inter with the agreed type scale', () {
     final text = AppTheme.lightTheme.textTheme;
     expect(text.bodyMedium!.fontFamily, 'Inter');
-    expect(text.bodyMedium!.fontFamilyFallback, ['NotoSansSinhala']);
+    expect(text.bodyMedium!.fontFamilyFallback, [
+      'NotoSansSinhala',
+      'NotoSansTamil',
+    ]);
     expect(text.headlineSmall!.fontSize, 26);
     expect(text.titleLarge!.fontSize, 20);
     expect(text.titleMedium!.fontSize, 16);

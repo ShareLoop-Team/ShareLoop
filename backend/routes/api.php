@@ -40,6 +40,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('/auth/me', [AuthController::class, 'me']);
     Route::post('/auth/logout', [AuthController::class, 'logout']);
     Route::patch('/me', [ProfileController::class, 'update']);
+    Route::get('/me/exchanges', [ProfileController::class, 'exchanges']);
     Route::post('/me/avatar', [ProfileController::class, 'updateAvatar']);
 
     Route::get('/users', [UserController::class, 'index']);

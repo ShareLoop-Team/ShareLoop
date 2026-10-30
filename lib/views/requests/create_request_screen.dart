@@ -4,13 +4,14 @@ import 'package:provider/provider.dart';
 import '../../controllers/auth_controller.dart';
 import '../../controllers/item_controller.dart';
 import '../../controllers/request_controller.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/localization/data_labels.dart';
 import '../../core/localization/generated/app_localizations.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../models/item_post_model.dart';
 import '../../models/item_request_model.dart';
 import '../../widgets/post_form_widgets.dart';
+import '../../widgets/sl/sl_input.dart';
 import '../../widgets/unsaved_changes_guard.dart';
 
 /// View: create an item request. If [postId] is supplied, this request
@@ -20,7 +21,7 @@ import '../../widgets/unsaved_changes_guard.dart';
 /// With [editRequest], edits the user's own request instead, starting from
 /// its current details.
 ///
-/// Always uses the light brand theme, like the home shell it opens from.
+/// Follows the app's light or dark theme.
 class CreateRequestScreen extends StatelessWidget {
   const CreateRequestScreen({super.key, this.postId, this.editRequest});
 
@@ -29,12 +30,9 @@ class CreateRequestScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: AppTheme.lightTheme,
-      child: _RequestForm(
-        postId: editRequest?.itemPostId ?? postId,
-        editRequest: editRequest,
-      ),
+    return _RequestForm(
+      postId: editRequest?.itemPostId ?? postId,
+      editRequest: editRequest,
     );
   }
 }
@@ -223,13 +221,19 @@ class _RequestFormState extends State<_RequestForm> {
     String? required(String? value, String message) =>
         (value == null || value.trim().isEmpty) ? message : null;
 
+    final type = context.slType;
     final page = Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: context.sl.ground,
       body: SafeArea(
         bottom: false,
         // Not a ListView: lazily built fields would skip validation.
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(
+            SLSpace.screen,
+            SLSpace.m,
+            SLSpace.screen,
+            SLSpace.section,
+          ),
           child: Form(
             key: _formKey,
             autovalidateMode: _attemptedSubmit
@@ -245,60 +249,66 @@ class _RequestFormState extends State<_RequestForm> {
                       ? l10n.requestEditSubtitle
                       : l10n.requestSubtitle,
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: SLSpace.xl),
                 _InfoBanner(
                   title: l10n.requestInfoTitle,
                   body: l10n.requestInfoBody,
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: SLSpace.section),
                 if (isTargeted) ...[
-                  PostFieldLabel(l10n.requestYouAreRequesting),
+                  SLFieldLabel(l10n.requestYouAreRequesting),
                   if (post != null)
                     _RequestedItemCard(
                       title: post.title,
-                      details:
-                          '${post.category} · ${post.city}, ${post.district}',
+                      details: '${l10n.category(post.category)} · '
+                          '${post.city}, ${post.district}',
                     )
                   else
                     _RequestedItemCard(
                       title: editing!.itemName.isEmpty
                           ? editing.description
                           : editing.itemName,
-                      details: '${editing.category} · '
+                      details: '${l10n.category(editing.category)} · '
                           '${editing.city}, ${editing.district}',
                     ),
                 ] else ...[
-                  PostFieldLabel(l10n.requestItemName),
+                  SLFieldLabel(l10n.requestItemName),
                   TextFormField(
                     controller: _itemNameController,
                     maxLength: _itemNameMaxLength,
                     textCapitalization: TextCapitalization.sentences,
                     textInputAction: TextInputAction.next,
-                    decoration:
-                        postInputDecoration(hint: l10n.requestItemNameHint)
-                            .copyWith(counterText: ''),
+                    style: type.body,
+                    decoration: slInputDecoration(
+                      context,
+                      hint: l10n.requestItemNameHint,
+                    ).copyWith(counterText: ''),
                     validator: (v) =>
                         required(v, l10n.requestItemNameRequired),
                   ),
-                  const SizedBox(height: 20),
-                  PostFieldLabel(l10n.giveDescription),
+                  const SizedBox(height: SLSpace.xl),
+                  SLFieldLabel(l10n.giveDescription),
                   TextFormField(
                     controller: _descriptionController,
                     maxLength: _descriptionMaxLength,
                     minLines: 3,
                     maxLines: 5,
                     textCapitalization: TextCapitalization.sentences,
-                    decoration:
-                        postInputDecoration(hint: l10n.requestDescriptionHint),
+                    style: type.body,
+                    decoration: slInputDecoration(
+                      context,
+                      hint: l10n.requestDescriptionHint,
+                    ),
                     validator: (v) =>
                         required(v, l10n.giveDescriptionRequired),
                   ),
-                  const SizedBox(height: 12),
-                  PostFieldLabel(l10n.giveCategory),
+                  const SizedBox(height: SLSpace.m),
+                  SLFieldLabel(l10n.giveCategory),
                   PostDropdownField(
                     value: _category,
                     hint: l10n.giveCategoryHint,
                     options: AppConstants.itemCategories,
+                    labelOf: l10n.category,
                     onChanged: (value) {
                       setState(() => _category = value);
                       _updateHasInput();
@@ -306,22 +316,24 @@ class _RequestFormState extends State<_RequestForm> {
                     validator: (v) => required(v, l10n.giveCategoryRequired),
                   ),
                 ],
-                const SizedBox(height: 20),
-                PostFieldLabel(l10n.requestReason),
+                const SizedBox(height: SLSpace.xl),
+                SLFieldLabel(l10n.requestReason),
                 TextFormField(
                   controller: _reasonController,
                   maxLength: _reasonMaxLength,
                   minLines: 3,
                   maxLines: 5,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: postInputDecoration(
+                  style: type.body,
+                  decoration: slInputDecoration(
+                    context,
                     hint: l10n.requestReasonHint,
                     helper: l10n.requestReasonHelper,
                   ),
                   validator: (v) => required(v, l10n.requestReasonRequired),
                 ),
                 if (!isTargeted) ...[
-                  const SizedBox(height: 12),
+                  const SizedBox(height: SLSpace.m),
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -329,7 +341,7 @@ class _RequestFormState extends State<_RequestForm> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            PostFieldLabel(l10n.district),
+                            SLFieldLabel(l10n.district),
                             PostDropdownField(
                               value: _district,
                               hint: l10n.giveDistrictHint,
@@ -345,18 +357,21 @@ class _RequestFormState extends State<_RequestForm> {
                           ],
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      const SizedBox(width: SLSpace.m),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.stretch,
                           children: [
-                            PostFieldLabel(l10n.cityTown),
+                            SLFieldLabel(l10n.cityTown),
                             TextFormField(
                               controller: _cityController,
                               textCapitalization: TextCapitalization.words,
                               textInputAction: TextInputAction.next,
-                              decoration:
-                                  postInputDecoration(hint: l10n.giveCityHint),
+                              style: type.body,
+                              decoration: slInputDecoration(
+                                context,
+                                hint: l10n.giveCityHint,
+                              ),
                               validator: (v) =>
                                   required(v, l10n.giveCityRequired),
                             ),
@@ -366,8 +381,8 @@ class _RequestFormState extends State<_RequestForm> {
                     ],
                   ),
                 ],
-                const SizedBox(height: 20),
-                PostFieldLabel(
+                const SizedBox(height: SLSpace.xl),
+                SLFieldLabel(
                   l10n.requestNotes,
                   suffix: l10n.requestOptional,
                 ),
@@ -376,8 +391,11 @@ class _RequestFormState extends State<_RequestForm> {
                   maxLength: _notesMaxLength,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.done,
-                  decoration: postInputDecoration(hint: l10n.requestNotesHint)
-                      .copyWith(counterText: ''),
+                  style: type.body,
+                  decoration: slInputDecoration(
+                    context,
+                    hint: l10n.requestNotesHint,
+                  ).copyWith(counterText: ''),
                 ),
               ],
             ),
@@ -395,7 +413,7 @@ class _RequestFormState extends State<_RequestForm> {
   }
 }
 
-/// Mint card reminding requesters that donors read their reason.
+/// Soft green note reminding requesters that donors read their reason.
 class _InfoBanner extends StatelessWidget {
   const _InfoBanner({required this.title, required this.body});
 
@@ -404,44 +422,33 @@ class _InfoBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return Container(
-      padding: const EdgeInsets.all(16),
+      padding: const EdgeInsets.all(SLSpace.l),
       decoration: BoxDecoration(
-        color: AppColors.paleMint,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppColors.softMint),
+        color: sl.accentSoft,
+        borderRadius: BorderRadius.circular(SLRadius.card),
       ),
       child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Container(
-            width: 44,
-            height: 44,
-            decoration: const BoxDecoration(
-              color: AppColors.white,
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.favorite_border,
-              size: 22,
-              color: AppColors.deepGreen,
-            ),
-          ),
-          const SizedBox(width: 14),
+          Icon(Icons.favorite_border, size: 22, color: sl.accentText),
+          const SizedBox(width: SLSpace.m),
           Expanded(
             child: Text.rich(
               TextSpan(
                 children: [
                   TextSpan(
                     text: title,
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: const TextStyle(fontWeight: FontWeight.w600),
                   ),
                   TextSpan(text: ' $body'),
                 ],
               ),
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.ink,
-                    height: 1.4,
-                  ),
+              style: context.slType.small.copyWith(
+                color: sl.ink,
+                height: 1.45,
+              ),
             ),
           ),
         ],
@@ -461,13 +468,13 @@ class _RequestedItemCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: const EdgeInsets.all(SLSpace.l),
       decoration: BoxDecoration(
-        color: AppColors.white,
-        borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: AppColors.border),
+        color: sl.surface,
+        borderRadius: BorderRadius.circular(SLRadius.card),
       ),
       child: Row(
         children: [
@@ -475,33 +482,19 @@ class _RequestedItemCard extends StatelessWidget {
             width: 44,
             height: 44,
             decoration: BoxDecoration(
-              color: AppColors.paleMint,
-              borderRadius: BorderRadius.circular(12),
+              color: sl.accentSoft,
+              borderRadius: BorderRadius.circular(SLRadius.control),
             ),
-            child: const Icon(
-              Icons.card_giftcard_outlined,
-              color: AppColors.deepGreen,
-            ),
+            child: Icon(Icons.card_giftcard_outlined, color: sl.accentText),
           ),
-          const SizedBox(width: 12),
+          const SizedBox(width: SLSpace.m),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  title,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
-                  ),
-                ),
+                Text(title, style: type.cardTitle),
                 const SizedBox(height: 2),
-                Text(
-                  details,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                Text(details, style: type.small),
               ],
             ),
           ),

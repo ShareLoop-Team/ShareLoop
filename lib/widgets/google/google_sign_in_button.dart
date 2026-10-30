@@ -23,10 +23,12 @@ class GoogleSignInButton extends StatefulWidget {
     super.key,
     required this.label,
     required this.onUnavailable,
+    this.visualLabel,
   });
 
   final String label;
   final VoidCallback onUnavailable;
+  final String? visualLabel;
 
   @override
   State<GoogleSignInButton> createState() => _GoogleSignInButtonState();
@@ -47,13 +49,16 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     _subscriptions
       ..add(google.idTokens.listen(_handleIdToken))
       ..add(google.errors.listen(_handleError));
-    google.ensureInitialized().then((_) {
-      if (mounted) setState(() => _ready = true);
-    }, onError: (Object _) {
-      if (mounted) {
-        _handleError('Google sign-in is not available right now.');
-      }
-    });
+    google.ensureInitialized().then(
+      (_) {
+        if (mounted) setState(() => _ready = true);
+      },
+      onError: (Object _) {
+        if (mounted) {
+          _handleError('Google sign-in is not available right now.');
+        }
+      },
+    );
   }
 
   @override
@@ -89,7 +94,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     if (!_enabled) {
       return AuthSocialTile(
         asset: AuthSocialTile.googleIcon,
-        provider: widget.label,
+        provider: widget.visualLabel ?? widget.label,
         semanticsLabel: widget.label,
         onPressed: widget.onUnavailable,
       );
@@ -118,7 +123,7 @@ class _GoogleSignInButtonState extends State<GoogleSignInButton> {
     }
     return AuthSocialTile(
       asset: AuthSocialTile.googleIcon,
-      provider: widget.label,
+      provider: widget.visualLabel ?? widget.label,
       semanticsLabel: widget.label,
       onPressed: GoogleAuthService.instance.signIn,
     );

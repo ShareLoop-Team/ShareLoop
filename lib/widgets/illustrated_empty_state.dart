@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Friendly empty state: a round illustration, a bold title, a short
 /// explanation and an optional card below (a tip, progress, next step).
@@ -23,6 +23,7 @@ class IllustratedEmptyState extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
@@ -34,7 +35,7 @@ class IllustratedEmptyState extends StatelessWidget {
           title,
           textAlign: TextAlign.center,
           style: textTheme.headlineSmall?.copyWith(
-            color: AppColors.ink,
+            color: sl.ink,
             fontWeight: FontWeight.w800,
           ),
         ),
@@ -42,10 +43,7 @@ class IllustratedEmptyState extends StatelessWidget {
         Text(
           message,
           textAlign: TextAlign.center,
-          style: textTheme.bodyLarge?.copyWith(
-            color: AppColors.textSecondary,
-            height: 1.5,
-          ),
+          style: textTheme.bodyLarge?.copyWith(color: sl.inkMuted, height: 1.5),
         ),
         if (footer != null) ...[const SizedBox(height: 20), footer!],
       ],
@@ -68,20 +66,12 @@ class SoftCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     final radius = BorderRadius.circular(20);
     return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: radius,
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.ink.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: BoxDecoration(borderRadius: radius),
       child: Material(
-        color: AppColors.white,
+        color: sl.surface,
         borderRadius: radius,
         clipBehavior: Clip.antiAlias,
         child: InkWell(
