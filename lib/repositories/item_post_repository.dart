@@ -1,13 +1,17 @@
+import '../core/config/backend_config.dart';
 import '../models/item_post_model.dart';
 import '../models/photo_upload.dart';
 import 'mock/mock_item_post_repository.dart';
+import 'api/api_item_post_repository.dart';
 
 /// Repository: "Give Away" posts and their photos, held in memory.
 abstract class ItemPostRepository {
-  factory ItemPostRepository() => MockItemPostRepository();
+  factory ItemPostRepository() => BackendConfig.isConfigured
+      ? ApiItemPostRepository()
+      : MockItemPostRepository();
 
   /// Posts fetched per feed page.
-  static const int pageSize = 50;
+  static const int pageSize = BackendConfig.pageSize;
 
   /// Newest first, one page at a time.
   Future<List<ItemPostModel>> getAllPosts({

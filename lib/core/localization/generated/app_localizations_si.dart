@@ -957,4 +957,80 @@ class AppLocalizationsSi extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get loginWithEmailCode => 'ඒ වෙනුවට ඊමේල් කේතයකින් ඇතුල් වන්න';
+
+  @override
+  String get loginCodeEnterEmail =>
+      'ඇතුල් වීමේ කේතයක් ලබා ගැනීමට ඉහත ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න.';
+
+  @override
+  String get verifyTitleRegister => 'ඔබේ ඊමේල් තහවුරු කරන්න';
+
+  @override
+  String get verifyTitleLogin => 'කේතයකින් ඇතුල් වන්න';
+
+  @override
+  String get verifyTitleReset => 'මුරපදය යළි සකසන්න';
+
+  @override
+  String verifySentTo(String email) {
+    return 'අපි $email වෙත ඉලක්කම් 6ක කේතයක් ඊමේල් කළෙමු. එය මිනිත්තු 10කින් කල් ඉකුත් වේ.';
+  }
+
+  @override
+  String get verifyCheckSpam =>
+      'සොයාගත නොහැකිද? ඔබේ spam ෆෝල්ඩරය පරීක්ෂා කරන්න.';
+
+  @override
+  String verifyDebugCode(String code) {
+    return 'පරීක්ෂණ ප්‍රකාරය (ඊමේල් සකසා නැත): ඔබේ කේතය $code';
+  }
+
+  @override
+  String get verifyCodeLabel => 'කේතය';
+
+  @override
+  String get verifyCodeHint => '000000';
+
+  @override
+  String get verifyCodeRequired => 'ඉලක්කම් 6ක කේතය ඇතුළත් කරන්න';
+
+  @override
+  String get verifyNewPasswordLabel => 'නව මුරපදය';
+
+  @override
+  String get verifyChangePassword => 'මුරපදය වෙනස් කරන්න';
+
+  @override
+  String get verifyPasswordChanged =>
+      'මුරපදය වෙනස් විය. නව මුරපදයෙන් ඇතුල් වන්න.';
+
+  @override
+  String get verifyResend => 'නව කේතයක් යවන්න';
+
+  @override
+  String verifyResendIn(int seconds) {
+    return 'තත්පර $secondsකින් නව කේතයක් යවන්න';
+  }
+
+  @override
+  String get verifyResent => 'නව කේතයක් එවමින් පවතී.';
+
+  @override
+  String get googleCompleteTitle => 'තව ටිකයි';
+
+  @override
+  String googleCompleteSubtitle(String email) {
+    return 'ඔබ $email ලෙස Google සමඟ ලියාපදිංචි වෙමින් සිටී. අවසන් කිරීමට ඔබේ දුරකථන අංකය සහ දිස්ත්‍රික්කය එක් කරන්න.';
+  }
+
+  @override
+  String get googleCompleteButton => 'ලියාපදිංචිය අවසන් කරන්න';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'ඔබ $email ලෙස Facebook සමඟ ලියාපදිංචි වෙමින් සිටී. අවසන් කිරීමට ඔබේ දුරකථන අංකය සහ දිස්ත්‍රික්කය එක් කරන්න.';
+  }
 }

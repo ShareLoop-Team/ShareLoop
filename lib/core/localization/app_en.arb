@@ -438,5 +438,61 @@
         "type": "int"
       }
     }
+  },
+  "loginWithEmailCode": "Sign in with an email code instead",
+  "loginCodeEnterEmail": "Enter your email above to get a sign-in code.",
+  "verifyTitleRegister": "Confirm your email",
+  "verifyTitleLogin": "Sign in with a code",
+  "verifyTitleReset": "Reset your password",
+  "verifySentTo": "We emailed a 6-digit code to {email}. It expires in 10 minutes.",
+  "@verifySentTo": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyCheckSpam": "Can't find it? Check your spam folder.",
+  "verifyDebugCode": "Test mode (no email set up): your code is {code}",
+  "@verifyDebugCode": {
+    "placeholders": {
+      "code": {
+        "type": "String"
+      }
+    }
+  },
+  "verifyCodeLabel": "Code",
+  "verifyCodeHint": "000000",
+  "verifyCodeRequired": "Enter the 6-digit code",
+  "verifyNewPasswordLabel": "New password",
+  "verifyChangePassword": "Change Password",
+  "verifyPasswordChanged": "Password changed. Sign in with your new password.",
+  "verifyResend": "Send a new code",
+  "verifyResendIn": "Send a new code in {seconds}s",
+  "@verifyResendIn": {
+    "placeholders": {
+      "seconds": {
+        "type": "int"
+      }
+    }
+  },
+  "verifyResent": "A new code is on its way.",
+  "googleCompleteTitle": "Almost there",
+  "googleCompleteSubtitle": "You're signing up with Google as {email}. Add your phone number and district to finish.",
+  "googleCompleteButton": "Finish Sign-up",
+  "facebookCompleteSubtitle": "You're signing up with Facebook as {email}. Add your phone number and district to finish.",
+  "@facebookCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
+  "@googleCompleteSubtitle": {
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
   }
 }

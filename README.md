@@ -1,10 +1,9 @@
 # ShareLoop
 
 A Flutter app for **ShareLoop** — a recycling & item-sharing platform for
-Sri Lanka ("Give What You Don't Need. Get What You Do."). It is a
-frontend-focused project: Firebase Authentication handles sign-in (see
-[Authentication](#authentication)), and all app data is in-memory sample
-data.
+Sri Lanka ("Give What You Don't Need. Get What You Do."), backed by a PHP
+Laravel API in [`backend/`](backend/README.md) (see [Backend](#backend)),
+with an in-memory mock mode for tests and offline UI work.
 
 ## Architecture
 
@@ -14,9 +13,9 @@ Repository/Service layer, as described in `doc/MVC_Architecture_in_Mobile_Applic
 ```
 View (Flutter widgets)
   -> Controller (ChangeNotifier, via Provider)
-    -> Repository (interface; mock implementation, Firebase for accounts)
-      -> Service (AuthService: Firebase Authentication,
-                  MockDataService: in-memory data)
+    -> Repository (interface; API or mock implementation)
+      -> Service (ApiClient: HTTP + token for the Laravel API,
+                  or MockDataService: in-memory data)
 ```
 
 - **Models** (`lib/models/`): plain data classes (`UserModel`, `ItemPostModel`,
@@ -100,18 +99,35 @@ flutter analyze
 flutter test
 ```
 
-## Authentication
+## Backend
 
-Firebase Authentication (project `shareloop-c2157`, configured for Android
-and web in `lib/firebase_options.dart`) handles email/password registration,
-login, session restoration, password reset and logout
-(`lib/repositories/firebase/firebase_user_repository.dart`). Google sign-in
-is not implemented yet; its buttons show a "not available" message.
+Sign-in: email + password, a one-time code emailed instead of the password
+(also used to confirm new accounts and reset passwords), "Sign in with
+Google" and "Continue with Facebook" (shown once FACEBOOK_APP_ID is set).
 
-There is no database. Profile details Firebase doesn't store (phone,
-district, city, photo), as well as items, requests, exchanges and ratings,
-come from `MockDataService` and last for the current run only.
+A PHP Laravel 13 REST API in [`backend/`](backend/README.md): accounts and
+login tokens (Sanctum), posts with photos, requests, the handover workflow,
+ratings, reports and admin moderation. See
+[doc/BACKEND.md](doc/BACKEND.md) for the API, data model and rules.
 
-On platforms without a Firebase configuration (e.g. Windows desktop) and in
-tests, sign-in falls back to the in-memory sample accounts, where any
-password is accepted.
+Run both (Windows; PHP 8.3 and Flutter on PATH):
+
+```bat
+tool\start_backend.bat      :: first run installs, migrates and seeds; serves http://localhost:8000
+tool\run_app_chrome.bat     :: flutter run -d chrome with API_BASE_URL=http://localhost:8000/api
+tool\build_web_app.bat      :: or build once, then open http://localhost:8000/app
+tool\check_all.bat          :: backend tests + flutter analyze + flutter test
+```
+
+or by hand:
+
+```bash
+cd backend && composer install && cp .env.example .env && php artisan key:generate
+php artisan migrate --seed && php artisan serve
+# in another terminal, from the repo root
+cp .env.example .env
+flutter run --dart-define-from-file=.env
+```
+
+Without `API_BASE_URL` the app runs on the in-memory mock data, which is
+also what the Flutter tests use.

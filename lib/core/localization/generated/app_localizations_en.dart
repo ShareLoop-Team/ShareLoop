@@ -952,4 +952,79 @@ class AppLocalizationsEn extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get loginWithEmailCode => 'Sign in with an email code instead';
+
+  @override
+  String get loginCodeEnterEmail =>
+      'Enter your email above to get a sign-in code.';
+
+  @override
+  String get verifyTitleRegister => 'Confirm your email';
+
+  @override
+  String get verifyTitleLogin => 'Sign in with a code';
+
+  @override
+  String get verifyTitleReset => 'Reset your password';
+
+  @override
+  String verifySentTo(String email) {
+    return 'We emailed a 6-digit code to $email. It expires in 10 minutes.';
+  }
+
+  @override
+  String get verifyCheckSpam => 'Can\'t find it? Check your spam folder.';
+
+  @override
+  String verifyDebugCode(String code) {
+    return 'Test mode (no email set up): your code is $code';
+  }
+
+  @override
+  String get verifyCodeLabel => 'Code';
+
+  @override
+  String get verifyCodeHint => '000000';
+
+  @override
+  String get verifyCodeRequired => 'Enter the 6-digit code';
+
+  @override
+  String get verifyNewPasswordLabel => 'New password';
+
+  @override
+  String get verifyChangePassword => 'Change Password';
+
+  @override
+  String get verifyPasswordChanged =>
+      'Password changed. Sign in with your new password.';
+
+  @override
+  String get verifyResend => 'Send a new code';
+
+  @override
+  String verifyResendIn(int seconds) {
+    return 'Send a new code in ${seconds}s';
+  }
+
+  @override
+  String get verifyResent => 'A new code is on its way.';
+
+  @override
+  String get googleCompleteTitle => 'Almost there';
+
+  @override
+  String googleCompleteSubtitle(String email) {
+    return 'You\'re signing up with Google as $email. Add your phone number and district to finish.';
+  }
+
+  @override
+  String get googleCompleteButton => 'Finish Sign-up';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'You\'re signing up with Facebook as $email. Add your phone number and district to finish.';
+  }
 }

@@ -966,4 +966,80 @@ class AppLocalizationsTa extends AppLocalizations {
     );
     return '$_temp0';
   }
+
+  @override
+  String get loginWithEmailCode => 'பதிலாக மின்னஞ்சல் குறியீட்டுடன் உள்நுழைக';
+
+  @override
+  String get loginCodeEnterEmail =>
+      'உள்நுழைவு குறியீட்டைப் பெற மேலே உங்கள் மின்னஞ்சலை உள்ளிடுங்கள்.';
+
+  @override
+  String get verifyTitleRegister => 'உங்கள் மின்னஞ்சலை உறுதிப்படுத்துங்கள்';
+
+  @override
+  String get verifyTitleLogin => 'குறியீட்டுடன் உள்நுழைக';
+
+  @override
+  String get verifyTitleReset => 'கடவுச்சொல்லை மீட்டமைக்கவும்';
+
+  @override
+  String verifySentTo(String email) {
+    return '$email க்கு 6 இலக்கக் குறியீட்டை மின்னஞ்சல் செய்தோம். இது 10 நிமிடங்களில் காலாவதியாகும்.';
+  }
+
+  @override
+  String get verifyCheckSpam =>
+      'கிடைக்கவில்லையா? உங்கள் spam கோப்புறையைச் சரிபார்க்கவும்.';
+
+  @override
+  String verifyDebugCode(String code) {
+    return 'சோதனை முறை (மின்னஞ்சல் அமைக்கப்படவில்லை): உங்கள் குறியீடு $code';
+  }
+
+  @override
+  String get verifyCodeLabel => 'குறியீடு';
+
+  @override
+  String get verifyCodeHint => '000000';
+
+  @override
+  String get verifyCodeRequired => '6 இலக்கக் குறியீட்டை உள்ளிடுங்கள்';
+
+  @override
+  String get verifyNewPasswordLabel => 'புதிய கடவுச்சொல்';
+
+  @override
+  String get verifyChangePassword => 'கடவுச்சொல்லை மாற்று';
+
+  @override
+  String get verifyPasswordChanged =>
+      'கடவுச்சொல் மாற்றப்பட்டது. புதிய கடவுச்சொல்லுடன் உள்நுழைக.';
+
+  @override
+  String get verifyResend => 'புதிய குறியீட்டை அனுப்பு';
+
+  @override
+  String verifyResendIn(int seconds) {
+    return '$seconds வினாடிகளில் புதிய குறியீட்டை அனுப்பலாம்';
+  }
+
+  @override
+  String get verifyResent => 'புதிய குறியீடு அனுப்பப்படுகிறது.';
+
+  @override
+  String get googleCompleteTitle => 'கிட்டத்தட்ட முடிந்தது';
+
+  @override
+  String googleCompleteSubtitle(String email) {
+    return 'நீங்கள் $email ஆக Google மூலம் பதிவு செய்கிறீர்கள். முடிக்க உங்கள் தொலைபேசி எண்ணையும் மாவட்டத்தையும் சேர்க்கவும்.';
+  }
+
+  @override
+  String get googleCompleteButton => 'பதிவை முடிக்கவும்';
+
+  @override
+  String facebookCompleteSubtitle(String email) {
+    return 'நீங்கள் $email ஆக Facebook மூலம் பதிவு செய்கிறீர்கள். முடிக்க உங்கள் தொலைபேசி எண்ணையும் மாவட்டத்தையும் சேர்க்கவும்.';
+  }
 }
