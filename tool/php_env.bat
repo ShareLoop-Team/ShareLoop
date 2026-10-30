@@ -11,7 +11,15 @@ if not defined SL_PHPEXE (
   exit /b 1
 )
 for %%d in ("%SL_PHPEXE%") do set "SL_PHPDIR=%%~dpd"
+rem Trusted certificates for HTTPS calls (Google sign-in keys, Facebook):
+rem the one that comes with PHP, else Git for Windows' bundle.
+set "SL_CA="
+if exist "%SL_PHPDIR%cacert.pem" set "SL_CA=%SL_PHPDIR%cacert.pem"
+if not defined SL_CA if exist "%ProgramFiles%\Git\mingw64\etc\ssl\certs\ca-bundle.crt" set "SL_CA=%ProgramFiles%\Git\mingw64\etc\ssl\certs\ca-bundle.crt"
+if not defined SL_CA echo Warning: no CA certificate bundle found; Google and Facebook sign-in will fail.
 (
+if defined SL_CA echo curl.cainfo="%SL_CA%"
+if defined SL_CA echo openssl.cafile="%SL_CA%"
 echo extension_dir="%SL_PHPDIR%ext"
 echo extension=curl
 echo extension=fileinfo

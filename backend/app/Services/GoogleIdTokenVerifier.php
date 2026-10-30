@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Firebase\JWT\JWK;
 use Firebase\JWT\JWT;
+use Illuminate\Http\Client\ConnectionException;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
@@ -28,8 +29,9 @@ class GoogleIdTokenVerifier
             abort(503, 'Google sign-in is not set up on the server yet.');
         }
 
+        $keys = $this->keys();
         try {
-            $claims = (array) JWT::decode($idToken, JWK::parseKeySet($this->keys()));
+            $claims = (array) JWT::decode($idToken, JWK::parseKeySet($keys));
         } catch (Throwable $e) {
             Log::info('ShareLoop: rejected Google ID token', ['error' => $e->getMessage()]);
             abort(401, 'Google sign-in failed. Please try again.');
@@ -54,7 +56,12 @@ class GoogleIdTokenVerifier
     private function keys(): array
     {
         return Cache::remember('shareloop.google.jwks', 3600, function () {
-            $response = Http::timeout(10)->get(config('shareloop.google.certs_url'));
+            try {
+                $response = Http::timeout(10)->get(config('shareloop.google.certs_url'));
+            } catch (ConnectionException $e) {
+                Log::warning('ShareLoop: could not fetch Google keys', ['error' => $e->getMessage()]);
+                abort(503, "Couldn't reach Google right now. Please try again.");
+            }
             if (! $response->successful() || ! is_array($response->json('keys'))) {
                 abort(503, "Couldn't reach Google right now. Please try again.");
             }
