@@ -98,21 +98,7 @@ class _LoginViewState extends State<_LoginView> {
         backgroundColor: AppColors.canvas,
         body: CustomScrollView(
           slivers: [
-            SliverToBoxAdapter(
-              child: _LoginHero(
-                leading: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: Semantics(
-                    label: l10n.appTitle,
-                    child: const Icon(
-                      Icons.eco_outlined,
-                      color: AppColors.deepGreen,
-                      size: 26,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            const SliverToBoxAdapter(child: _LoginHero()),
             SliverFillRemaining(
               hasScrollBody: false,
               child: Center(
@@ -277,13 +263,11 @@ class _LoginViewState extends State<_LoginView> {
 /// Full-width illustration with the form's sheet rising over its bottom
 /// edge: rounded top corners, a soft shadow and a small handle.
 class _LoginHero extends StatelessWidget {
-  const _LoginHero({this.leading});
+  const _LoginHero();
 
   static const String _asset = 'assets/images/login_hero.jpg';
   static const double _height = 340;
   static const double _sheetOverlap = 28;
-
-  final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
@@ -309,12 +293,6 @@ class _LoginHero extends StatelessWidget {
               ),
             ),
           ),
-          if (leading != null)
-            PositionedDirectional(
-              start: 14,
-              top: topInset + 10,
-              child: leading!,
-            ),
           Positioned(
             left: 0,
             right: 0,
