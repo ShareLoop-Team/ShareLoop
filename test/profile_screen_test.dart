@@ -106,13 +106,17 @@ void main() {
     await _pumpProfile(tester);
 
     await tester.scrollUntilVisible(find.text('Sign Out'), 200);
+    await tester.ensureVisible(find.text('Sign Out'));
+    await tester.pumpAndSettle();
     await tester.tap(find.text('Sign Out'));
     await tester.pumpAndSettle();
     expect(find.text('Sign out of ShareLoop?'), findsOneWidget);
 
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.text('Nimal Perera'), findsOneWidget);
+    expect(find.text('Sign out of ShareLoop?'), findsNothing);
+    expect(find.byType(ProfileScreen), findsOneWidget);
+    expect(find.text('Sign Out'), findsOneWidget);
   });
 
   for (final code in const ['en', 'si', 'ta']) {

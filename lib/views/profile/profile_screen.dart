@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
@@ -65,9 +66,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 padding: const EdgeInsets.fromLTRB(20, 0, 20, 8),
                 child: Text(
                   l10n.language,
-                  style: Theme.of(sheetContext).textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.w700,
-                      ),
+                  style: Theme.of(sheetContext).textTheme.titleMedium
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
               ),
               for (final MapEntry(key: code, value: name)
@@ -77,10 +77,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   title: Text(
                     name,
                     style: TextStyle(
-                      color:
-                          code == selected ? AppColors.deepGreen : AppColors.ink,
-                      fontWeight:
-                          code == selected ? FontWeight.w700 : FontWeight.w400,
+                      color: code == selected
+                          ? AppColors.deepGreen
+                          : AppColors.ink,
+                      fontWeight: code == selected
+                          ? FontWeight.w700
+                          : FontWeight.w400,
                     ),
                   ),
                   trailing: code == selected
@@ -126,10 +128,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
     if (confirmed != true || !mounted) return;
     context.read<AuthController>().logout();
-    Navigator.of(context).pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
+    Navigator.of(context)
+        .pushNamedAndRemoveUntil(AppRoutes.login, (route) => false);
   }
 
   @override
@@ -137,7 +137,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final l10n = AppLocalizations.of(context);
     final profile = context.watch<ProfileController>();
     final authUserId = context.watch<AuthController>().currentUser?.id;
-    final languageCode = context.watch<LanguageController>().locale.languageCode;
+    final languageCode = context
+        .watch<LanguageController>()
+        .locale
+        .languageCode;
     final user = profile.user;
 
     // Also covers a profile still cached from a previous account.
@@ -160,143 +163,150 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final badge = badgeController.badgeForDonationCount(user.donationCount);
     final nextBadge = badgeController.nextBadge(user.donationCount);
 
-    return SafeArea(
-      bottom: false,
+    // Light status bar icons over the green header.
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle.light,
       child: RefreshIndicator(
         onRefresh: _load,
+        edgeOffset: MediaQuery.paddingOf(context).top,
         child: ListView(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 24),
+          padding: const EdgeInsets.only(bottom: 24),
           children: [
-            _Header(
+            _ProfileHeader(
               title: l10n.profileTitle,
-              editTooltip: l10n.profileEditProfile,
-              onEdit: _openEditProfile,
+              notificationsTooltip: l10n.profileNotifications,
+              onNotifications: () => manageNotifications(context),
+              card: _IdentityCard(
+                user: user,
+                badgeLabel: badge == null
+                    ? l10n.homeNewDonor
+                    : '${badge.level} · ${badge.name}',
+                badgeColor: badge == null
+                    ? AppColors.softMint
+                    : _tierColor(badge.name),
+                editLabel: l10n.profileEditProfile,
+                onEdit: _openEditProfile,
+              ),
             ),
-            const SizedBox(height: 16),
-            _IdentityCard(
-              user: user,
-              badgeLabel: badge == null
-                  ? l10n.homeNewDonor
-                  : '${badge.level} · ${badge.name}',
-              badgeColor: badge == null
-                  ? AppColors.softMint
-                  : _tierColor(badge.name),
-              editLabel: l10n.profileEditProfile,
-              onEdit: _openEditProfile,
-            ),
-            const SizedBox(height: 12),
-            IntrinsicHeight(
-              child: Row(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  Expanded(
-                    child: _StatTile(
-                      value: '${user.donationCount}',
-                      label: l10n.profileItemsGiven,
+                  IntrinsicHeight(
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Expanded(
+                          child: _StatTile(
+                            value: '${user.donationCount}',
+                            label: l10n.profileItemsGiven,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _StatTile(
+                            value: '${profile.myRequests.length}',
+                            label: l10n.requests,
+                          ),
+                        ),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: _StatTile(
+                            value: user.ratingCount == 0
+                                ? '–'
+                                : user.averageRating.toStringAsFixed(1),
+                            label: l10n.profileRating,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _StatTile(
-                      value: '${profile.myRequests.length}',
-                      label: l10n.requests,
-                    ),
+                  const SizedBox(height: 12),
+                  _BadgeProgressCard(
+                    donationCount: user.donationCount,
+                    nextBadge: nextBadge,
                   ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: _StatTile(
-                      value: user.ratingCount == 0
-                          ? '–'
-                          : user.averageRating.toStringAsFixed(1),
-                      label: l10n.profileRating,
+                  const SizedBox(height: 12),
+                  _MenuSection(
+                    title: l10n.profileMyActivity,
+                    tiles: [
+                      _MenuTile(
+                        icon: const Icon(Icons.card_giftcard_outlined),
+                        label: l10n.profileMyDonations,
+                        trailing: '${profile.myPosts.length}',
+                        onTap: () => _openRoute(AppRoutes.myDonations),
+                      ),
+                      _MenuTile(
+                        icon: const Icon(Icons.format_list_bulleted),
+                        label: l10n.myRequests,
+                        trailing: '${profile.myRequests.length}',
+                        onTap: () => _openRoute(AppRoutes.myRequests),
+                      ),
+                      _MenuTile(
+                        icon: const Icon(Icons.star_border),
+                        label: l10n.profileReviews,
+                        trailing: '${profile.myReviews.length}',
+                        onTap: () => _openRoute(AppRoutes.myReviews),
+                      ),
+                    ],
+                  ),
+                  if (user.isAdmin) ...[
+                    const SizedBox(height: 12),
+                    _MenuSection(
+                      title: l10n.profileAdmin,
+                      tiles: [
+                        _MenuTile(
+                          icon: const Icon(Icons.people_outline),
+                          label: l10n.profileManageUsers,
+                          onTap: () => _openRoute(AppRoutes.adminUsers),
+                        ),
+                        _MenuTile(
+                          icon: const Icon(Icons.flag_outlined),
+                          label: l10n.profileModeratePosts,
+                          onTap: () => _openRoute(AppRoutes.adminPosts),
+                        ),
+                        _MenuTile(
+                          icon: const Icon(Icons.category_outlined),
+                          label: l10n.profileManageCategories,
+                          onTap: () => _openRoute(AppRoutes.adminCategories),
+                        ),
+                      ],
+                    ),
+                  ],
+                  const SizedBox(height: 12),
+                  _MenuSection(
+                    title: l10n.settings,
+                    tiles: [
+                      _MenuTile(
+                        icon: const AppIcon(AppGlyph.language),
+                        label: l10n.language,
+                        trailing: AppConstants.languageNames[languageCode],
+                        onTap: () => _showLanguagePicker(l10n),
+                      ),
+                      _MenuTile(
+                        icon: const AppIcon(AppGlyph.notifications),
+                        label: l10n.profileNotifications,
+                        onTap: () => manageNotifications(context),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  OutlinedButton.icon(
+                    onPressed: () => _confirmSignOut(l10n),
+                    icon: const Icon(Icons.logout, size: 20),
+                    label: Text(l10n.profileSignOut),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.error,
+                      backgroundColor: AppColors.white,
+                      side: const BorderSide(color: AppColors.error),
+                      minimumSize: const Size.fromHeight(54),
+                      shape: const StadiumBorder(),
+                      textStyle: Theme.of(context).textTheme.titleMedium
+                          ?.copyWith(fontWeight: FontWeight.w700),
                     ),
                   ),
                 ],
-              ),
-            ),
-            const SizedBox(height: 12),
-            _BadgeProgressCard(
-              donationCount: user.donationCount,
-              nextBadge: nextBadge,
-            ),
-            const SizedBox(height: 12),
-            _MenuSection(
-              title: l10n.profileMyActivity,
-              tiles: [
-                _MenuTile(
-                  icon: const Icon(Icons.card_giftcard_outlined),
-                  label: l10n.profileMyDonations,
-                  trailing: '${profile.myPosts.length}',
-                  onTap: () => _openRoute(AppRoutes.myDonations),
-                ),
-                _MenuTile(
-                  icon: const Icon(Icons.format_list_bulleted),
-                  label: l10n.myRequests,
-                  trailing: '${profile.myRequests.length}',
-                  onTap: () => _openRoute(AppRoutes.myRequests),
-                ),
-                _MenuTile(
-                  icon: const Icon(Icons.star_border),
-                  label: l10n.profileReviews,
-                  trailing: '${profile.myReviews.length}',
-                  onTap: () => _openRoute(AppRoutes.myReviews),
-                ),
-              ],
-            ),
-            if (user.isAdmin) ...[
-              const SizedBox(height: 12),
-              _MenuSection(
-                title: l10n.profileAdmin,
-                tiles: [
-                  _MenuTile(
-                    icon: const Icon(Icons.people_outline),
-                    label: l10n.profileManageUsers,
-                    onTap: () => _openRoute(AppRoutes.adminUsers),
-                  ),
-                  _MenuTile(
-                    icon: const Icon(Icons.flag_outlined),
-                    label: l10n.profileModeratePosts,
-                    onTap: () => _openRoute(AppRoutes.adminPosts),
-                  ),
-                  _MenuTile(
-                    icon: const Icon(Icons.category_outlined),
-                    label: l10n.profileManageCategories,
-                    onTap: () => _openRoute(AppRoutes.adminCategories),
-                  ),
-                ],
-              ),
-            ],
-            const SizedBox(height: 12),
-            _MenuSection(
-              title: l10n.settings,
-              tiles: [
-                _MenuTile(
-                  icon: const AppIcon(AppGlyph.language),
-                  label: l10n.language,
-                  trailing: AppConstants.languageNames[languageCode],
-                  onTap: () => _showLanguagePicker(l10n),
-                ),
-                _MenuTile(
-                  icon: const AppIcon(AppGlyph.notifications),
-                  label: l10n.profileNotifications,
-                  onTap: () => manageNotifications(context),
-                ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            OutlinedButton.icon(
-              onPressed: () => _confirmSignOut(l10n),
-              icon: const Icon(Icons.logout, size: 20),
-              label: Text(l10n.profileSignOut),
-              style: OutlinedButton.styleFrom(
-                foregroundColor: AppColors.error,
-                backgroundColor: AppColors.white,
-                side: const BorderSide(color: AppColors.error),
-                minimumSize: const Size.fromHeight(54),
-                shape: const StadiumBorder(),
-                textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
               ),
             ),
           ],
@@ -308,11 +318,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
 /// Brand color for each badge tier.
 Color _tierColor(String badgeName) => switch (badgeName) {
-      'Bronze' => AppColors.bronze,
-      'Silver' => AppColors.silver,
-      'Gold' => AppColors.amber,
-      _ => AppColors.textSecondary,
-    };
+  'Bronze' => AppColors.bronze,
+  'Silver' => AppColors.silver,
+  'Gold' => AppColors.amber,
+  _ => AppColors.textSecondary,
+};
 
 /// White rounded card with a soft shadow; clips ink ripples to its shape.
 class _SectionCard extends StatelessWidget {
@@ -345,43 +355,107 @@ class _SectionCard extends StatelessWidget {
   }
 }
 
-class _Header extends StatelessWidget {
-  const _Header({
+/// Green band behind the status bar with the title and a bell, and [card]
+/// overlapping its bottom edge.
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({
     required this.title,
-    required this.editTooltip,
-    required this.onEdit,
+    required this.notificationsTooltip,
+    required this.onNotifications,
+    required this.card,
   });
 
+  /// Band height below the status bar; [card] starts [_cardTop] down.
+  static const double _bandHeight = 150;
+  static const double _cardTop = 82;
+
   final String title;
-  final String editTooltip;
-  final VoidCallback onEdit;
+  final String notificationsTooltip;
+  final VoidCallback onNotifications;
+  final Widget card;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    final topInset = MediaQuery.paddingOf(context).top;
+    return Stack(
       children: [
-        Expanded(
-          child: Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                  fontWeight: FontWeight.w800,
-                  color: AppColors.ink,
-                ),
+        Container(
+          height: topInset + _bandHeight,
+          clipBehavior: Clip.antiAlias,
+          decoration: const BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+              colors: [AppColors.deepGreen, AppColors.brightGreen],
+            ),
+          ),
+          child: Stack(
+            children: [
+              // Soft decorative bubbles.
+              _bubble(right: -30, top: -20, size: 140),
+              _bubble(left: -24, bottom: -40, size: 110),
+              _bubble(right: 90, bottom: 18, size: 26),
+            ],
           ),
         ),
-        const SizedBox(width: 12),
-        Material(
-          color: AppColors.white,
-          shape: const CircleBorder(
-            side: BorderSide(color: AppColors.border),
+        Padding(
+          padding: EdgeInsets.fromLTRB(20, topInset + 12, 8, 0),
+          child: Row(
+            children: [
+              Expanded(
+                child: Semantics(
+                  header: true,
+                  child: Text(
+                    title,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                      fontWeight: FontWeight.w800,
+                      color: AppColors.white,
+                    ),
+                  ),
+                ),
+              ),
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications_none_rounded,
+                  color: AppColors.white,
+                  size: 28,
+                ),
+                tooltip: notificationsTooltip,
+                onPressed: onNotifications,
+              ),
+            ],
           ),
-          child: IconButton(
-            icon: const Icon(Icons.edit_outlined, color: AppColors.ink),
-            tooltip: editTooltip,
-            onPressed: onEdit,
-          ),
+        ),
+        Padding(
+          padding: EdgeInsets.fromLTRB(20, topInset + _cardTop, 20, 0),
+          child: card,
         ),
       ],
+    );
+  }
+
+  static Widget _bubble({
+    double? left,
+    double? right,
+    double? top,
+    double? bottom,
+    required double size,
+  }) {
+    return Positioned(
+      left: left,
+      right: right,
+      top: top,
+      bottom: bottom,
+      child: Container(
+        width: size,
+        height: size,
+        decoration: BoxDecoration(
+          shape: BoxShape.circle,
+          color: AppColors.white.withValues(alpha: 0.08),
+        ),
+      ),
     );
   }
 }
@@ -404,98 +478,102 @@ class _IdentityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
-    final location = [user.city, user.district]
-        .where((part) => part.trim().isNotEmpty)
-        .join(', ');
+    final location = [
+      user.city,
+      user.district,
+    ].where((part) => part.trim().isNotEmpty).join(', ');
+    final secondary = textTheme.bodyMedium?.copyWith(
+      color: AppColors.textSecondary,
+    );
     return _SectionCard(
-      padding: const EdgeInsets.fromLTRB(20, 24, 20, 20),
-      child: Column(
+      padding: const EdgeInsets.fromLTRB(16, 18, 8, 18),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          UserAvatar(url: user.avatarUrl),
-          const SizedBox(height: 14),
-          Text(
-            user.name,
-            textAlign: TextAlign.center,
-            style: textTheme.titleLarge?.copyWith(
-              fontWeight: FontWeight.w800,
-              color: AppColors.ink,
-            ),
-          ),
-          const SizedBox(height: 4),
-          Text(
-            user.email,
-            textAlign: TextAlign.center,
-            style: textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-          if (location.isNotEmpty) ...[
-            const SizedBox(height: 4),
-            Row(
-              mainAxisSize: MainAxisSize.min,
+          UserAvatar(url: user.avatarUrl, size: 76),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Icon(
-                  Icons.location_on_outlined,
-                  size: 16,
-                  color: AppColors.textSecondary,
-                ),
-                const SizedBox(width: 4),
-                Flexible(
-                  child: Text(
-                    location,
-                    overflow: TextOverflow.ellipsis,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: AppColors.textSecondary,
-                    ),
+                Text(
+                  user.name,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: textTheme.titleLarge?.copyWith(
+                    fontWeight: FontWeight.w800,
+                    color: AppColors.ink,
                   ),
                 ),
-              ],
-            ),
-          ],
-          const SizedBox(height: 12),
-          Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-            decoration: BoxDecoration(
-              color: badgeColor.withValues(alpha: 0.2),
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
+                const SizedBox(height: 2),
+                Text(
+                  user.email,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: secondary,
+                ),
+                if (location.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.location_on_outlined,
+                        size: 16,
+                        color: AppColors.textSecondary,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          location,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: secondary,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+                const SizedBox(height: 10),
                 Container(
-                  width: 8,
-                  height: 8,
-                  decoration: BoxDecoration(
-                    color: badgeColor,
-                    shape: BoxShape.circle,
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 5,
                   ),
-                ),
-                const SizedBox(width: 6),
-                Flexible(
-                  child: Text(
-                    badgeLabel,
-                    style: textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
-                    ),
+                  decoration: BoxDecoration(
+                    color: badgeColor.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 8,
+                        height: 8,
+                        decoration: BoxDecoration(
+                          color: badgeColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          badgeLabel,
+                          style: textTheme.labelMedium?.copyWith(
+                            fontWeight: FontWeight.w700,
+                            color: AppColors.ink,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],
             ),
           ),
-          const SizedBox(height: 16),
-          OutlinedButton(
+          IconButton(
+            icon: const Icon(Icons.edit_square, color: AppColors.deepGreen),
+            tooltip: editLabel,
             onPressed: onEdit,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: AppColors.deepGreen,
-              side: const BorderSide(color: AppColors.deepGreen),
-              shape: const StadiumBorder(),
-              padding: const EdgeInsets.symmetric(horizontal: 28, vertical: 12),
-              textStyle: textTheme.titleSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
-            ),
-            child: Text(editLabel),
           ),
         ],
       ),
@@ -619,10 +697,7 @@ class _BadgeProgressCard extends StatelessWidget {
             runSpacing: 8,
             children: [
               for (final MapEntry(key: name, value: threshold) in tiers)
-                _TierLegend(
-                  name: name,
-                  earned: donationCount >= threshold,
-                ),
+                _TierLegend(name: name, earned: donationCount >= threshold),
             ],
           ),
         ],
@@ -656,9 +731,9 @@ class _TierLegend extends StatelessWidget {
         Text(
           name,
           style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                color: earned ? AppColors.ink : AppColors.textSecondary,
-                fontWeight: earned ? FontWeight.w700 : FontWeight.w500,
-              ),
+            color: earned ? AppColors.ink : AppColors.textSecondary,
+            fontWeight: earned ? FontWeight.w700 : FontWeight.w500,
+          ),
         ),
       ],
     );
@@ -673,33 +748,23 @@ class _MenuSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _SectionCard(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 16, 16, 4),
-            child: Text(
-              title.toUpperCase(),
-              style: Theme.of(context).textTheme.labelMedium?.copyWith(
-                    fontWeight: FontWeight.w800,
-                    color: AppColors.textSecondary,
-                    letterSpacing: 0.8,
-                  ),
-            ),
+    // A plain heading, then each tile as its own rounded card.
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Padding(
+          padding: const EdgeInsets.fromLTRB(4, 8, 4, 10),
+          child: Text(
+            title,
+            style: Theme.of(context).textTheme.titleMedium
+                ?.copyWith(fontWeight: FontWeight.w700, color: AppColors.ink),
           ),
-          for (var i = 0; i < tiles.length; i++) ...[
-            if (i > 0)
-              const Divider(
-                height: 1,
-                indent: 16,
-                endIndent: 16,
-                color: AppColors.border,
-              ),
-            tiles[i],
-          ],
+        ),
+        for (var i = 0; i < tiles.length; i++) ...[
+          if (i > 0) const SizedBox(height: 10),
+          _SectionCard(child: tiles[i]),
         ],
-      ),
+      ],
     );
   }
 }
@@ -724,12 +789,21 @@ class _MenuTile extends StatelessWidget {
     return InkWell(
       onTap: onTap,
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
         child: Row(
           children: [
-            IconTheme(
-              data: const IconThemeData(size: 22, color: AppColors.deepGreen),
-              child: icon,
+            Container(
+              width: 40,
+              height: 40,
+              decoration: BoxDecoration(
+                color: AppColors.paleMint,
+                borderRadius: BorderRadius.circular(12),
+              ),
+              alignment: Alignment.center,
+              child: IconTheme(
+                data: const IconThemeData(size: 22, color: AppColors.deepGreen),
+                child: icon,
+              ),
             ),
             const SizedBox(width: 14),
             Expanded(
