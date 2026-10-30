@@ -452,6 +452,15 @@
       }
     }
   },
+  "verifySentToIfAccount": "If an account exists for {email}, we've emailed it a 6-digit code. It expires in 10 minutes.",
+  "@verifySentToIfAccount": {
+    "description": "Sign-in and reset codes: only sent when the account exists, which the app is not told.",
+    "placeholders": {
+      "email": {
+        "type": "String"
+      }
+    }
+  },
   "verifyCheckSpam": "Can't find it? Check your spam folder.",
   "verifyDebugCode": "Test mode (no email set up): your code is {code}",
   "@verifyDebugCode": {
