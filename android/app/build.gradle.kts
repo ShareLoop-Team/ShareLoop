@@ -9,7 +9,9 @@ plugins {
 
 android {
     namespace = "com.shareloop.app"
-    compileSdk = flutter.compileSdkVersion
+    // permission_handler_android 14.x is compiled against API 37 and requires
+    // apps to compile against 37 too. targetSdk stays at Flutter's default.
+    compileSdk = 37
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
