@@ -14,6 +14,7 @@ import '../../models/item_post_model.dart';
 import '../../models/item_request_model.dart';
 import '../../models/photo_upload.dart';
 import '../../services/photo_check/photo_content_checker.dart';
+import '../../widgets/app_snack_bar.dart';
 import '../../widgets/camera_capture.dart';
 import '../../widgets/item_photo.dart';
 import '../../widgets/photo_source_sheet.dart';
@@ -257,14 +258,11 @@ class _GiveFormState extends State<_GiveForm> {
       message = null;
     }
     if (message != null) {
-      messenger
-        ..hideCurrentSnackBar()
-        ..showSnackBar(
-          SnackBar(
-            content: Text(message),
-            duration: const Duration(seconds: 6),
-          ),
-        );
+      showAppSnackBar(
+        messenger,
+        message,
+        duration: const Duration(seconds: 6),
+      );
     }
   }
 

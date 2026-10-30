@@ -13,6 +13,7 @@ import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
 import '../../models/photo_upload.dart';
 import '../../models/user_model.dart';
+import '../../widgets/app_snack_bar.dart';
 import '../../widgets/avatar_crop_screen.dart';
 import '../../widgets/camera_capture.dart';
 import '../../widgets/city_dropdown_field.dart';
@@ -126,15 +127,12 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     });
     if (match == null) return;
     final city = match.city;
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(
-        content: Text(
-          city == null
-              ? l10n.locationDistrictOnly(match.district)
-              : l10n.locationFilled(city, match.district),
-        ),
-      ));
+    showAppSnackBar(
+      messenger,
+      city == null
+          ? l10n.locationDistrictOnly(match.district)
+          : l10n.locationFilled(city, match.district),
+    );
   }
 
   Future<void> _submit() async {

@@ -8,6 +8,7 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/app_snack_bar.dart';
 import '../../widgets/auth_form_widgets.dart';
 import '../../widgets/city_dropdown_field.dart';
 
@@ -68,11 +69,10 @@ class _RegisterViewState extends State<_RegisterView> {
   }
 
   /// Social sign-up isn't wired to a provider yet.
-  void _socialSignUp(AppLocalizations l10n) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.loginSocialUnavailable)));
-  }
+  void _socialSignUp(AppLocalizations l10n) => showAppSnackBar(
+        ScaffoldMessenger.of(context),
+        l10n.loginSocialUnavailable,
+      );
 
   String? Function(String?) _required(String message) =>
       (value) => (value == null || value.trim().isEmpty) ? message : null;

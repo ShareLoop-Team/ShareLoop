@@ -10,6 +10,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/sri_lanka_locations.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../models/user_model.dart';
+import '../../widgets/app_snack_bar.dart';
 import '../../widgets/category_circle.dart';
 import '../../widgets/use_my_location.dart';
 import '../../widgets/user_avatar.dart';
@@ -155,11 +156,7 @@ class _HomeFeedState extends State<HomeFeed> {
     final saved =
         await _saveCity(l10n, user, district: match.district, city: city);
     if (!saved || !mounted) return;
-    messenger
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(content: Text(l10n.locationDetected(city, match.district))),
-      );
+    showAppSnackBar(messenger, l10n.locationDetected(city, match.district));
   }
 
   @override

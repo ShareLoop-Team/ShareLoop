@@ -5,6 +5,7 @@ import '../core/constants/app_colors.dart';
 import '../core/localization/generated/app_localizations.dart';
 import '../core/theme/app_theme.dart';
 import '../services/location_service.dart';
+import 'app_snack_bar.dart';
 import 'pill_button.dart';
 
 /// "Use my location": explains why before the system prompt, asks for
@@ -21,7 +22,7 @@ Future<PlaceMatch?> detectMyLocation(BuildContext context) async {
   final navigator = Navigator.of(context, rootNavigator: true);
 
   if (!service.isSupported) {
-    _show(messenger, l10n.locationErrorUnsupported);
+    showAppSnackBar(messenger, l10n.locationErrorUnsupported);
     return null;
   }
 
@@ -39,17 +40,17 @@ Future<PlaceMatch?> detectMyLocation(BuildContext context) async {
     }
   } catch (e) {
     debugPrint('Location permission request failed: $e');
-    _show(messenger, l10n.locationErrorFailed);
+    showAppSnackBar(messenger, l10n.locationErrorFailed);
     return null;
   }
   switch (access) {
     case LocationAccess.granted:
       break;
     case LocationAccess.askable:
-      _show(messenger, l10n.locationErrorDenied);
+      showAppSnackBar(messenger, l10n.locationErrorDenied);
       return null;
     case LocationAccess.blocked:
-      _show(
+      showAppSnackBar(
         messenger,
         l10n.locationErrorBlocked,
         action: SnackBarAction(
@@ -78,7 +79,7 @@ Future<PlaceMatch?> detectMyLocation(BuildContext context) async {
     case LocationFound(:final match):
       return match;
     case LocationNotFound(:final failure):
-      _show(
+      showAppSnackBar(
         messenger,
         _failureMessage(l10n, failure),
         action: switch (failure) {
@@ -110,16 +111,6 @@ String _failureMessage(AppLocalizations l10n, LocationFailure failure) =>
       LocationFailure.positionFailed => l10n.locationErrorFailed,
       LocationFailure.geocodingFailed => l10n.locationErrorLookup,
     };
-
-void _show(
-  ScaffoldMessengerState messenger,
-  String message, {
-  SnackBarAction? action,
-}) {
-  messenger
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message), action: action));
-}
 
 /// Why ShareLoop wants the location, shown before the system prompt. Pops
 /// true for Continue.

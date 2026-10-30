@@ -14,6 +14,7 @@ import '../../core/theme/app_theme.dart';
 import '../../models/badge_model.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_icon.dart';
+import '../../widgets/donor_badge_dot.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_indicator.dart';
 import '../../widgets/notification_prompt.dart';
@@ -181,9 +182,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 badgeLabel: badge == null
                     ? l10n.homeNewDonor
                     : '${badge.level} · ${badge.name}',
-                badgeColor: badge == null
-                    ? AppColors.softMint
-                    : _tierColor(badge.name),
+                // The same tier colours as the badge dots on posts.
+                badgeColor: DonorBadgeDot.colorFor(badge?.name),
                 editLabel: l10n.profileEditProfile,
                 onEdit: _openEditProfile,
               ),
@@ -315,14 +315,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 }
-
-/// Brand color for each badge tier.
-Color _tierColor(String badgeName) => switch (badgeName) {
-  'Bronze' => AppColors.bronze,
-  'Silver' => AppColors.silver,
-  'Gold' => AppColors.amber,
-  _ => AppColors.textSecondary,
-};
 
 /// White rounded card with a soft shadow; clips ink ripples to its shape.
 class _SectionCard extends StatelessWidget {
@@ -714,7 +706,7 @@ class _TierLegend extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final color = _tierColor(name);
+    final color = DonorBadgeDot.colorFor(name);
     return Row(
       mainAxisSize: MainAxisSize.min,
       children: [

@@ -6,6 +6,7 @@ import '../core/localization/generated/app_localizations.dart';
 import '../core/theme/app_theme.dart';
 import '../services/notification_permission_service.dart';
 import 'app_icon.dart';
+import 'app_snack_bar.dart';
 import 'pill_button.dart';
 
 /// Shows the "Allow ShareLoop to send you notifications?" card. Allow asks
@@ -36,7 +37,7 @@ Future<void> manageNotifications(BuildContext context) async {
   final messenger = ScaffoldMessenger.of(context);
   final l10n = AppLocalizations.of(context);
   if (service == null || !service.isSupported) {
-    _show(messenger, l10n.profileNotificationsUnavailable);
+    showAppSnackBar(messenger, l10n.profileNotificationsUnavailable);
     return;
   }
   final status = await service.status();
@@ -55,12 +56,12 @@ void _reportResult(
 ) {
   switch (result) {
     case NotificationPermission.granted:
-      _show(messenger, l10n.notifEnabled);
+      showAppSnackBar(messenger, l10n.notifEnabled);
     case NotificationPermission.denied:
-      _show(messenger, l10n.notifDenied);
+      showAppSnackBar(messenger, l10n.notifDenied);
     case NotificationPermission.permanentlyDenied:
       // A browser has no app settings page to open.
-      _show(
+      showAppSnackBar(
         messenger,
         service.isBrowser ? l10n.notifBlockedBrowser : l10n.notifBlocked,
         action: service.isBrowser
@@ -71,18 +72,8 @@ void _reportResult(
               ),
       );
     case NotificationPermission.unsupported:
-      _show(messenger, l10n.profileNotificationsUnavailable);
+      showAppSnackBar(messenger, l10n.profileNotificationsUnavailable);
   }
-}
-
-void _show(
-  ScaffoldMessengerState messenger,
-  String message, {
-  SnackBarAction? action,
-}) {
-  messenger
-    ..hideCurrentSnackBar()
-    ..showSnackBar(SnackBar(content: Text(message), action: action));
 }
 
 /// The prompt card. Pops true for Allow Notifications, false for Maybe

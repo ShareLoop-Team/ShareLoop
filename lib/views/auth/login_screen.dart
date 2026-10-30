@@ -7,6 +7,7 @@ import '../../controllers/login_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/theme/app_theme.dart';
+import '../../widgets/app_snack_bar.dart';
 import '../../widgets/auth_form_widgets.dart';
 import '../../widgets/pill_button.dart';
 
@@ -79,11 +80,10 @@ class _LoginViewState extends State<_LoginView> {
   }
 
   /// Social sign-in isn't wired to a provider yet.
-  void _socialSignIn(AppLocalizations l10n) {
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(SnackBar(content: Text(l10n.loginSocialUnavailable)));
-  }
+  void _socialSignIn(AppLocalizations l10n) => showAppSnackBar(
+        ScaffoldMessenger.of(context),
+        l10n.loginSocialUnavailable,
+      );
 
   @override
   Widget build(BuildContext context) {
