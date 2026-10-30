@@ -9,7 +9,7 @@ import 'package:shareloop/controllers/item_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/models/photo_upload.dart';
 import 'package:shareloop/services/mock_data_service.dart';
-import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/sl/sl_item_card.dart';
 
 void main() {
   testWidgets('a published post shows its photo on the Home card', (
@@ -58,7 +58,7 @@ void main() {
           body: SizedBox(
             width: 180,
             height: 260,
-            child: ItemGridCard(post: post, donorBadge: null, onTap: () {}),
+            child: SLItemCard(post: post, donorBadge: null, onTap: () {}),
           ),
         ),
       ),

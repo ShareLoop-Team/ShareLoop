@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Mint box with a small icon, for reassuring notes such as how contact
 /// details are kept private.
@@ -20,19 +20,20 @@ class InfoNote extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.paleMint.withValues(alpha: 0.6),
+        color: sl.accentSoft,
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: AppColors.softMint),
+        border: Border.all(color: sl.divider),
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
             padding: const EdgeInsets.only(top: 2),
-            child: Icon(icon, size: 16, color: AppColors.deepGreen),
+            child: Icon(icon, size: 16, color: sl.accentText),
           ),
           const SizedBox(width: 10),
           Expanded(
@@ -47,10 +48,8 @@ class InfoNote extends StatelessWidget {
                   TextSpan(text: text),
                 ],
               ),
-              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                color: AppColors.ink,
-                height: 1.5,
-              ),
+              style: Theme.of(context).textTheme.bodyMedium
+                  ?.copyWith(color: sl.ink, height: 1.5),
             ),
           ),
         ],

@@ -8,6 +8,7 @@ import 'package:shareloop/controllers/item_controller.dart';
 import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/views/requests/create_request_screen.dart';
+import 'package:shareloop/widgets/sl/sl_button.dart';
 
 Future<RequestController> _pumpRequest(
   WidgetTester tester, {
@@ -133,7 +134,7 @@ void main() {
         size: const Size(320, 568),
         locale: Locale(code),
       );
-      await tester.tap(find.byType(ElevatedButton));
+      await tester.tap(find.byType(SLButton));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
     });

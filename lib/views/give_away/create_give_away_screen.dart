@@ -6,10 +6,10 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/item_controller.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
+import '../../core/localization/data_labels.dart';
 import '../../core/localization/generated/app_localizations.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../models/item_post_model.dart';
 import '../../models/item_request_model.dart';
 import '../../models/photo_upload.dart';
@@ -19,6 +19,8 @@ import '../../widgets/camera_capture.dart';
 import '../../widgets/item_photo.dart';
 import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/post_form_widgets.dart';
+import '../../widgets/sl/sl_input.dart';
+import '../../widgets/sl/sl_chip.dart';
 import '../../widgets/unsaved_changes_guard.dart';
 
 /// View: form to publish a new Give Away post (photos, details, category,
@@ -27,7 +29,7 @@ import '../../widgets/unsaved_changes_guard.dart';
 /// which pre-fills the item name and category. With [editPost] it edits
 /// the donor's own post instead, starting from its current details.
 ///
-/// Always uses the light brand theme, like the home shell it opens from.
+/// Follows the app's light or dark theme.
 class CreateGiveAwayScreen extends StatelessWidget {
   const CreateGiveAwayScreen({
     super.key,
@@ -50,14 +52,11 @@ class CreateGiveAwayScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: AppTheme.lightTheme,
-      child: _GiveForm(
-        forRequest: forRequest,
-        editPost: editPost,
-        onClose: onClose,
-        hasUnsavedInput: hasUnsavedInput,
-      ),
+    return _GiveForm(
+      forRequest: forRequest,
+      editPost: editPost,
+      onClose: onClose,
+      hasUnsavedInput: hasUnsavedInput,
     );
   }
 }
@@ -341,12 +340,17 @@ class _GiveFormState extends State<_GiveForm> {
         (value == null || value.trim().isEmpty) ? message : null;
 
     final page = Scaffold(
-      backgroundColor: AppColors.canvas,
+      backgroundColor: context.sl.ground,
       body: SafeArea(
         bottom: false,
         // Not a ListView: lazily built fields would skip validation.
         child: SingleChildScrollView(
-          padding: const EdgeInsets.fromLTRB(20, 12, 20, 24),
+          padding: const EdgeInsets.fromLTRB(
+            SLSpace.screen,
+            SLSpace.m,
+            SLSpace.screen,
+            SLSpace.section,
+          ),
           child: Form(
             key: _formKey,
             autovalidateMode: _attemptedSubmit
@@ -360,8 +364,8 @@ class _GiveFormState extends State<_GiveForm> {
                   subtitle: editing ? l10n.giveEditSubtitle : l10n.giveSubtitle,
                   onBack: widget.onClose,
                 ),
-                const SizedBox(height: 24),
-                PostFieldLabel(
+                const SizedBox(height: SLSpace.section),
+                SLFieldLabel(
                   l10n.givePhotos,
                   trailing: '${_photos.length}/$_maxPhotos',
                 ),
@@ -375,46 +379,52 @@ class _GiveFormState extends State<_GiveForm> {
                     _updateHasInput();
                   },
                 ),
-                const SizedBox(height: 20),
-                PostFieldLabel(l10n.giveItemTitle),
+                const SizedBox(height: SLSpace.section),
+                SLFieldLabel(l10n.giveItemTitle),
                 TextFormField(
                   controller: _titleController,
                   maxLength: _titleMaxLength,
                   textCapitalization: TextCapitalization.sentences,
                   textInputAction: TextInputAction.next,
-                  decoration: postInputDecoration(hint: l10n.giveItemTitleHint)
-                      .copyWith(counterText: ''),
+                  style: context.slType.body,
+                  decoration: slInputDecoration(
+                    context,
+                    hint: l10n.giveItemTitleHint,
+                  ).copyWith(counterText: ''),
                   validator: (v) => required(v, l10n.giveItemTitleRequired),
                 ),
-                const SizedBox(height: 20),
-                PostFieldLabel(l10n.giveDescription),
+                const SizedBox(height: SLSpace.xl),
+                SLFieldLabel(l10n.giveDescription),
                 TextFormField(
                   controller: _descriptionController,
                   maxLength: _descriptionMaxLength,
                   minLines: 3,
                   maxLines: 5,
                   textCapitalization: TextCapitalization.sentences,
-                  decoration: postInputDecoration(
+                  style: context.slType.body,
+                  decoration: slInputDecoration(
+                    context,
                     hint: l10n.giveDescriptionHint,
                   ),
                   validator: (v) => required(v, l10n.giveDescriptionRequired),
                 ),
-                const SizedBox(height: 12),
-                PostFieldLabel(l10n.giveCategory),
+                const SizedBox(height: SLSpace.m),
+                SLFieldLabel(l10n.giveCategory),
                 PostDropdownField(
                   value: _category,
                   hint: l10n.giveCategoryHint,
                   options: AppConstants.itemCategories,
+                  labelOf: l10n.category,
                   onChanged: (value) => setState(() => _category = value),
                   validator: (v) => required(v, l10n.giveCategoryRequired),
                 ),
-                const SizedBox(height: 20),
-                PostFieldLabel(l10n.giveCondition),
+                const SizedBox(height: SLSpace.xl),
+                SLFieldLabel(l10n.giveCondition),
                 _ConditionSelector(
                   selected: _condition,
                   onChanged: (value) => setState(() => _condition = value),
                 ),
-                const SizedBox(height: 20),
+                const SizedBox(height: SLSpace.xl),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -422,7 +432,7 @@ class _GiveFormState extends State<_GiveForm> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          PostFieldLabel(l10n.district),
+                          SLFieldLabel(l10n.district),
                           PostDropdownField(
                             value: _district,
                             hint: l10n.giveDistrictHint,
@@ -436,17 +446,19 @@ class _GiveFormState extends State<_GiveForm> {
                         ],
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    const SizedBox(width: SLSpace.m),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
-                          PostFieldLabel(l10n.cityTown),
+                          SLFieldLabel(l10n.cityTown),
                           TextFormField(
                             controller: _cityController,
                             textCapitalization: TextCapitalization.words,
                             textInputAction: TextInputAction.done,
-                            decoration: postInputDecoration(
+                            style: context.slType.body,
+                            decoration: slInputDecoration(
+                              context,
                               hint: l10n.giveCityHint,
                             ),
                             validator: (v) =>
@@ -529,7 +541,7 @@ class _PhotoPicker extends StatelessWidget {
     return Row(
       children: [
         for (var i = 0; i < maxPhotos; i++) ...[
-          if (i > 0) const SizedBox(width: 10),
+          if (i > 0) const SizedBox(width: SLSpace.m),
           Expanded(
             child: AspectRatio(
               aspectRatio: 1,
@@ -570,56 +582,54 @@ class _EmptyPhotoZone extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     return CustomPaint(
-      foregroundPainter: const _DashedBorderPainter(radius: 16),
+      foregroundPainter: _DashedBorderPainter(
+        radius: SLRadius.card,
+        color: sl.accent,
+      ),
       child: Material(
-        color: AppColors.paleMint,
-        borderRadius: BorderRadius.circular(16),
+        color: sl.accentSoft,
+        borderRadius: BorderRadius.circular(SLRadius.card),
         clipBehavior: Clip.antiAlias,
         child: InkWell(
           onTap: onTap,
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 24),
+            padding: const EdgeInsets.symmetric(
+              horizontal: SLSpace.l,
+              vertical: SLSpace.xl,
+            ),
             child: Column(
               children: [
                 Container(
                   width: 52,
                   height: 52,
-                  decoration: const BoxDecoration(
-                    color: AppColors.white,
+                  decoration: BoxDecoration(
+                    color: sl.surface,
                     shape: BoxShape.circle,
                   ),
                   child: checking
-                      ? const Padding(
-                          padding: EdgeInsets.all(14),
+                      ? Padding(
+                          padding: const EdgeInsets.all(14),
                           child: CircularProgressIndicator(
                             strokeWidth: 2.5,
-                            color: AppColors.deepGreen,
+                            color: sl.accentText,
                           ),
                         )
-                      : const Icon(
+                      : Icon(
                           Icons.photo_camera_outlined,
-                          color: AppColors.deepGreen,
+                          color: sl.accentText,
                         ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: SLSpace.m),
                 Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.deepGreen,
-                  ),
+                  style: type.cardTitle.copyWith(color: sl.accentText),
                 ),
-                const SizedBox(height: 4),
-                Text(
-                  hint,
-                  textAlign: TextAlign.center,
-                  style: textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
-                ),
+                const SizedBox(height: SLSpace.xs),
+                Text(hint, textAlign: TextAlign.center, style: type.small),
               ],
             ),
           ),
@@ -646,8 +656,9 @@ class _PhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return ClipRRect(
-      borderRadius: BorderRadius.circular(14),
+      borderRadius: BorderRadius.circular(SLRadius.control),
       child: Stack(
         fit: StackFit.expand,
         children: [
@@ -655,29 +666,33 @@ class _PhotoTile extends StatelessWidget {
             Image.memory(bytes, fit: BoxFit.cover)
           else
             ColoredBox(
-              color: AppColors.paleMint,
+              color: sl.surfaceMuted,
               child: ItemPhoto(
                 url: photo.existingUrl!,
-                placeholder: const Icon(
-                  Icons.image_outlined,
-                  color: AppColors.deepGreen,
-                ),
+                placeholder: Icon(Icons.image_outlined, color: sl.inkMuted),
               ),
             ),
+          // Dark scrim and white glyph: readable on any photo, either theme.
           Positioned(
-            top: 6,
-            right: 6,
+            top: 2,
+            right: 2,
             child: Tooltip(
               message: removeTooltip,
-              child: Material(
-                color: AppColors.ink.withValues(alpha: 0.75),
-                shape: const CircleBorder(),
-                clipBehavior: Clip.antiAlias,
-                child: InkWell(
-                  onTap: onRemove,
-                  child: const Padding(
-                    padding: EdgeInsets.all(5),
-                    child: Icon(Icons.close, size: 16, color: AppColors.white),
+              child: InkWell(
+                onTap: onRemove,
+                customBorder: const CircleBorder(),
+                // 40px touch area around the 26px visible button.
+                child: Padding(
+                  padding: const EdgeInsets.all(7),
+                  child: DecoratedBox(
+                    decoration: BoxDecoration(
+                      color: Colors.black.withValues(alpha: 0.6),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Padding(
+                      padding: EdgeInsets.all(5),
+                      child: Icon(Icons.close, size: 16, color: Colors.white),
+                    ),
                   ),
                 ),
               ),
@@ -688,16 +703,20 @@ class _PhotoTile extends StatelessWidget {
               left: 6,
               bottom: 6,
               child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: SLSpace.s,
+                  vertical: 3,
+                ),
                 decoration: BoxDecoration(
-                  color: AppColors.deepGreen,
-                  borderRadius: BorderRadius.circular(8),
+                  color: sl.action,
+                  borderRadius: BorderRadius.circular(SLSpace.s),
                 ),
                 child: Text(
                   coverLabel!,
-                  style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                    color: AppColors.white,
-                    fontWeight: FontWeight.w700,
+                  style: context.slType.small.copyWith(
+                    fontSize: 12,
+                    color: sl.onAction,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
               ),
@@ -723,26 +742,30 @@ class _AddPhotoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return Tooltip(
       message: tooltip,
       child: CustomPaint(
-        foregroundPainter: const _DashedBorderPainter(radius: 14),
+        foregroundPainter: _DashedBorderPainter(
+          radius: SLRadius.control,
+          color: sl.accent,
+        ),
         child: Material(
-          color: AppColors.white,
-          borderRadius: BorderRadius.circular(14),
+          color: sl.surface,
+          borderRadius: BorderRadius.circular(SLRadius.control),
           clipBehavior: Clip.antiAlias,
           child: InkWell(
             onTap: onTap,
             child: Center(
               child: checking
-                  ? const SizedBox.square(
+                  ? SizedBox.square(
                       dimension: 24,
                       child: CircularProgressIndicator(
                         strokeWidth: 2.5,
-                        color: AppColors.deepGreen,
+                        color: sl.accentText,
                       ),
                     )
-                  : const Icon(Icons.add, size: 28, color: AppColors.deepGreen),
+                  : Icon(Icons.add, size: 28, color: sl.accentText),
             ),
           ),
         ),
@@ -753,9 +776,10 @@ class _AddPhotoTile extends StatelessWidget {
 
 /// Dashed rounded-rectangle outline for the photo upload slots.
 class _DashedBorderPainter extends CustomPainter {
-  const _DashedBorderPainter({required this.radius});
+  const _DashedBorderPainter({required this.radius, required this.color});
 
   final double radius;
+  final Color color;
 
   static const double _dash = 6;
   static const double _gap = 4;
@@ -763,7 +787,7 @@ class _DashedBorderPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final paint = Paint()
-      ..color = AppColors.brightGreen
+      ..color = color
       ..style = PaintingStyle.stroke
       ..strokeWidth = 1.2;
     final outline = Path()
@@ -782,9 +806,11 @@ class _DashedBorderPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_DashedBorderPainter oldDelegate) =>
-      oldDelegate.radius != radius;
+      oldDelegate.radius != radius || oldDelegate.color != color;
 }
 
+/// One chip per condition; the stored value stays English, the label is
+/// translated.
 class _ConditionSelector extends StatelessWidget {
   const _ConditionSelector({required this.selected, required this.onChanged});
 
@@ -793,48 +819,15 @@ class _ConditionSelector extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final l10n = AppLocalizations.of(context);
     return Wrap(
-      spacing: 8,
-      runSpacing: 8,
+      spacing: SLSpace.s,
       children: [
         for (final condition in AppConstants.itemConditions)
-          Semantics(
-            button: true,
+          SLChip(
+            label: l10n.condition(condition),
             selected: condition == selected,
-            child: Material(
-              color: condition == selected
-                  ? AppColors.deepGreen
-                  : AppColors.white,
-              shape: StadiumBorder(
-                side: BorderSide(
-                  color: condition == selected
-                      ? AppColors.deepGreen
-                      : AppColors.softMint,
-                ),
-              ),
-              clipBehavior: Clip.antiAlias,
-              child: InkWell(
-                onTap: () => onChanged(condition),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 22,
-                    vertical: 11,
-                  ),
-                  child: Text(
-                    condition,
-                    style: textTheme.bodyMedium?.copyWith(
-                      color: condition == selected
-                          ? AppColors.white
-                          : AppColors.ink,
-                      fontWeight: condition == selected
-                          ? FontWeight.w700
-                          : FontWeight.w500,
-                    ),
-                  ),
-                ),
-              ),
-            ),
+            onTap: () => onChanged(condition),
           ),
       ],
     );

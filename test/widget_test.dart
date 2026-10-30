@@ -9,6 +9,7 @@ import 'package:shareloop/views/auth/login_screen.dart';
 import 'package:shareloop/views/onboarding/intro_screen.dart';
 import 'package:shareloop/views/onboarding/onboarding_screen.dart';
 import 'package:shareloop/views/splash/splash_screen.dart';
+import 'package:shareloop/widgets/sl/sl_button.dart';
 
 Future<void> _openOnboarding(
   WidgetTester tester, {
@@ -163,7 +164,7 @@ void main() {
     }
 
     Future<void> tapRegisterButton(WidgetTester tester) async {
-      final button = find.widgetWithText(ElevatedButton, 'Create Account');
+      final button = find.widgetWithText(SLButton, 'Create Account');
       await tester.ensureVisible(button);
       await tester.pumpAndSettle();
       await tester.tap(button);

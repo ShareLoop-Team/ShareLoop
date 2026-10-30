@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 import 'item_photo.dart';
 
 /// Round profile photo with a mint ring, or a person icon when there is no
@@ -26,10 +27,12 @@ class UserAvatar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Theme-aware, so the empty avatar doesn't glare in dark mode.
+    final sl = context.sl;
     final placeholder = Icon(
       Icons.person_outline,
       size: size * 0.46,
-      color: AppColors.deepGreen,
+      color: sl.accentText,
     );
     final Widget content;
     if (previewBytes case final bytes?) {
@@ -44,10 +47,15 @@ class UserAvatar extends StatelessWidget {
       height: size,
       clipBehavior: Clip.antiAlias,
       decoration: BoxDecoration(
-        color: AppColors.paleMint,
+        color: sl.accentSoft,
         shape: borderRadius == null ? BoxShape.circle : BoxShape.rectangle,
         borderRadius: borderRadius,
-        border: Border.all(color: AppColors.softMint, width: ringWidth),
+        border: Border.all(
+          color: Theme.of(context).brightness == Brightness.dark
+              ? sl.divider
+              : AppColors.softMint,
+          width: ringWidth,
+        ),
       ),
       child: ExcludeSemantics(child: content),
     );

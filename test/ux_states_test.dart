@@ -21,7 +21,7 @@ import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/views/profile/edit_profile_screen.dart';
 import 'package:shareloop/views/profile/profile_screen.dart';
 import 'package:shareloop/widgets/app_icon.dart';
-import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/sl/sl_item_card.dart';
 
 const _offline = 'No connection. Check your internet and try again.';
 
@@ -133,14 +133,14 @@ void main() {
 
       expect(find.text(_offline), findsOneWidget);
       expect(find.text('No items available right now.'), findsNothing);
-      expect(find.byType(ItemGridCard), findsNothing);
+      expect(find.byType(SLItemCard), findsNothing);
 
       posts.failing = false;
       await _tapButton(tester, 'Try again');
       await _settle(tester);
 
       expect(find.text(_offline), findsNothing);
-      expect(find.byType(ItemGridCard), findsWidgets);
+      expect(find.byType(SLItemCard), findsWidgets);
     });
 
     testWidgets('no matches offers Clear filters, which resets the search', (
@@ -156,7 +156,7 @@ void main() {
       await _tapButton(tester, 'Clear filters');
       await tester.pumpAndSettle();
 
-      expect(find.byType(ItemGridCard), findsWidgets);
+      expect(find.byType(SLItemCard), findsWidgets);
       expect(tester.widget<TextField>(_searchField).controller!.text, isEmpty);
     });
 

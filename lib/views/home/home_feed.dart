@@ -5,19 +5,22 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/item_controller.dart';
 import '../../controllers/profile_controller.dart';
 import '../../controllers/request_controller.dart';
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_constants.dart';
 import '../../core/constants/sri_lanka_locations.dart';
+import '../../core/localization/data_labels.dart';
 import '../../core/localization/generated/app_localizations.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_snack_bar.dart';
-import '../../widgets/category_circle.dart';
+import '../../widgets/sl/sl_chip.dart';
+import '../../widgets/sl/sl_panel.dart';
 import '../../widgets/use_my_location.dart';
 import '../../widgets/user_avatar.dart';
 import 'give_away_tab.dart';
 
-/// View: the Home tab — greeting, search, photo category circles, and the
-/// matching Give Away items near you. Filters live in [ItemController].
+/// View: the Home tab — the wordmark and profile photo, search, one row of
+/// category chips, and the matching Give Away items near you (filtered to
+/// the user's city). Filters live in [ItemController].
 class HomeFeed extends StatefulWidget {
   const HomeFeed({super.key, required this.onOpenProfile});
 
@@ -57,9 +60,9 @@ class _HomeFeedState extends State<HomeFeed> {
   }
 
   Future<void> _refresh() => Future.wait([
-        context.read<ItemController>().loadPosts(),
-        context.read<RequestController>().loadRequests(),
-      ]);
+    context.read<ItemController>().loadPosts(),
+    context.read<RequestController>().loadRequests(),
+  ]);
 
   /// Lets the user pick their city (saved to their profile, so Home and
   /// Edit Profile agree), detect it, or see items from all areas for now.
@@ -72,14 +75,15 @@ class _HomeFeedState extends State<HomeFeed> {
   }) async {
     final itemController = context.read<ItemController>();
     final profileDistrict = SriLankaLocations.validDistrict(user?.district);
-    final profileCity =
-        SriLankaLocations.validCity(profileDistrict, user?.city);
+    final profileCity = SriLankaLocations.validCity(
+      profileDistrict,
+      user?.city,
+    );
 
     final choice = await showModalBottomSheet<_CityChoice>(
       context: context,
       isScrollControlled: true,
       showDragHandle: true,
-      backgroundColor: AppColors.white,
       builder: (_) => _CityPickerSheet(
         initialDistrict: district ?? profileDistrict,
         selectedCity: itemController.cityFilter,
@@ -153,8 +157,12 @@ class _HomeFeedState extends State<HomeFeed> {
       context.read<ItemController>().setCityFilter(city);
       return;
     }
-    final saved =
-        await _saveCity(l10n, user, district: match.district, city: city);
+    final saved = await _saveCity(
+      l10n,
+      user,
+      district: match.district,
+      city: city,
+    );
     if (!saved || !mounted) return;
     showAppSnackBar(messenger, l10n.locationDetected(city, match.district));
   }
@@ -162,10 +170,8 @@ class _HomeFeedState extends State<HomeFeed> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final textTheme = Theme.of(context).textTheme;
     final itemController = context.watch<ItemController>();
     final user = context.watch<AuthController>().currentUser;
-    final firstName = user?.name.trim().split(' ').first ?? '';
 
     // Never a district shown as if it were a city: only a listed city of
     // the user's district counts.
@@ -184,9 +190,11 @@ class _HomeFeedState extends State<HomeFeed> {
     if (!cityApplied) {
       cityLabel = profileCity ?? l10n.homeSelectCity;
     } else {
-      cityLabel = itemController.cityFilter ??
+      cityLabel =
+          itemController.cityFilter ??
           (profileCity == null ? l10n.homeSelectCity : l10n.homeAllAreas);
     }
+    final cityFiltered = cityApplied && itemController.cityFilter != null;
 
     return SafeArea(
       bottom: false,
@@ -197,17 +205,20 @@ class _HomeFeedState extends State<HomeFeed> {
           keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
           slivers: [
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 0),
+              padding: const EdgeInsets.fromLTRB(
+                SLSpace.screen,
+                SLSpace.m,
+                SLSpace.screen,
+                0,
+              ),
               sliver: SliverList.list(
                 children: [
                   _Header(
-                    greeting: firstName.isEmpty
-                        ? l10n.homeGreetingGuest
-                        : l10n.homeGreeting(firstName),
                     avatarUrl: user?.avatarUrl,
+                    profileLabel: l10n.profile,
                     onProfileTap: widget.onOpenProfile,
                   ),
-                  const SizedBox(height: 16),
+                  const SizedBox(height: SLSpace.l),
                   _SearchField(
                     controller: _searchController,
                     hint: l10n.homeSearchHint,
@@ -215,52 +226,38 @@ class _HomeFeedState extends State<HomeFeed> {
                     onChanged: itemController.setSearchQuery,
                     onClear: _clearSearch,
                   ),
-                  const SizedBox(height: 20),
-                  Text(
-                    l10n.homeCategories,
-                    style: textTheme.titleMedium?.copyWith(
-                      fontWeight: FontWeight.w700,
-                      color: AppColors.ink,
-                    ),
-                  ),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: SLSpace.s),
                 ],
               ),
             ),
             SliverToBoxAdapter(
-              child: CategoryCirclesRow(
+              child: _CategoryChips(
                 allLabel: l10n.homeAllCategories,
                 selected: itemController.categoryFilter,
                 onSelected: itemController.setCategoryFilter,
               ),
             ),
             SliverPadding(
-              padding: const EdgeInsets.fromLTRB(20, 16, 20, 14),
+              padding: const EdgeInsets.fromLTRB(
+                SLSpace.screen,
+                SLSpace.m,
+                SLSpace.screen,
+                SLSpace.m,
+              ),
               sliver: SliverToBoxAdapter(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        l10n.homeAvailableNearYou,
-                        style: textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.w700,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 12),
-                    // Long Sinhala/Tamil names shrink instead of overflowing.
-                    Flexible(
-                      child: _LocationButton(
-                        label: cityLabel,
-                        onTap: () => _showCityPicker(l10n, user),
-                      ),
-                    ),
-                  ],
+                child: SLSectionHeader(
+                  title: l10n.homeAvailableNearYou,
+                  trailing: SLChip(
+                    label: cityLabel,
+                    icon: Icons.location_on_outlined,
+                    selected: cityFiltered,
+                    onTap: () => _showCityPicker(l10n, user),
+                  ),
                 ),
               ),
             ),
             GiveAwayTab(onClearFilters: _clearFilters),
-            const SliverToBoxAdapter(child: SizedBox(height: 24)),
+            const SliverToBoxAdapter(child: SizedBox(height: SLSpace.xl)),
           ],
         ),
       ),
@@ -268,100 +265,110 @@ class _HomeFeedState extends State<HomeFeed> {
   }
 }
 
+/// "All" plus one chip per category, in one sideways-scrolling row.
+class _CategoryChips extends StatelessWidget {
+  const _CategoryChips({
+    required this.allLabel,
+    required this.selected,
+    required this.onSelected,
+  });
+
+  final String allLabel;
+  final String? selected;
+  final ValueChanged<String?> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context);
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(horizontal: SLSpace.screen),
+      child: Row(
+        children: [
+          SLChip(
+            label: allLabel,
+            selected: selected == null,
+            onTap: () => onSelected(null),
+          ),
+          for (final category in AppConstants.itemCategories) ...[
+            const SizedBox(width: SLSpace.s),
+            SLChip(
+              label: l10n.category(category),
+              selected: selected == category,
+              onTap: () => onSelected(category),
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+}
+
+/// The ShareLoop wordmark and the user's photo, which opens Profile.
 class _Header extends StatelessWidget {
   const _Header({
-    required this.greeting,
     required this.avatarUrl,
+    required this.profileLabel,
     required this.onProfileTap,
   });
 
-  final String greeting;
+  static const double _avatarSize = 44;
 
   /// The signed-in user's photo; a person icon is shown without one.
   final String? avatarUrl;
+  final String profileLabel;
   final VoidCallback onProfileTap;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
-    final avatarRadius = BorderRadius.circular(16);
+    final sl = context.sl;
     return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              // A large two-tone wordmark, no icon.
-              Semantics(
-                label: 'ShareLoop',
-                header: true,
-                excludeSemantics: true,
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
-                  child: Text.rich(
-                    const TextSpan(
-                      children: [
-                        TextSpan(text: 'Share'),
-                        TextSpan(
-                          text: 'Loop',
-                          style: TextStyle(color: AppColors.deepGreen),
-                        ),
-                      ],
-                    ),
-                    style: textTheme.headlineLarge?.copyWith(
-                      fontSize: 34,
-                      fontWeight: FontWeight.w800,
-                      letterSpacing: -0.8,
-                      height: 1.1,
-                      color: AppColors.ink,
-                    ),
+          child: Semantics(
+            label: 'ShareLoop',
+            header: true,
+            excludeSemantics: true,
+            child: Text.rich(
+              TextSpan(
+                children: [
+                  const TextSpan(text: 'Share'),
+                  TextSpan(
+                    text: 'Loop',
+                    style: TextStyle(color: sl.accentText),
                   ),
-                ),
+                ],
               ),
-              const SizedBox(height: 6),
-              Text(
-                greeting,
-                style: textTheme.bodyLarge?.copyWith(
-                  color: AppColors.textSecondary,
-                ),
+              maxLines: 1,
+              style: context.slType.title.copyWith(
+                fontSize: 24,
+                fontWeight: FontWeight.w800,
               ),
-            ],
+            ),
           ),
         ),
-        const SizedBox(width: 16),
         Tooltip(
-          message: AppLocalizations.of(context).profile,
+          message: profileLabel,
           child: Semantics(
             button: true,
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                onTap: onProfileTap,
-                borderRadius: avatarRadius,
-                child: (avatarUrl?.isNotEmpty ?? false)
-                    ? UserAvatar(
-                        url: avatarUrl,
-                        size: 60,
-                        ringWidth: 2,
-                        borderRadius: avatarRadius,
-                      )
-                    : Container(
-                        width: 60,
-                        height: 60,
-                        decoration: BoxDecoration(
-                          color: AppColors.white,
-                          borderRadius: avatarRadius,
-                          border: Border.all(color: AppColors.softMint),
-                        ),
-                        child: const Icon(
-                          Icons.person_outline,
-                          size: 28,
-                          color: AppColors.deepGreen,
-                        ),
+            child: InkResponse(
+              onTap: onProfileTap,
+              radius: _avatarSize / 2 + 4,
+              child: (avatarUrl?.isNotEmpty ?? false)
+                  ? UserAvatar(url: avatarUrl, size: _avatarSize, ringWidth: 2)
+                  : Container(
+                      width: _avatarSize,
+                      height: _avatarSize,
+                      decoration: BoxDecoration(
+                        color: sl.surface,
+                        shape: BoxShape.circle,
                       ),
-              ),
+                      child: Icon(
+                        Icons.person_outline,
+                        size: 24,
+                        color: sl.accentText,
+                      ),
+                    ),
             ),
           ),
         ),
@@ -370,6 +377,7 @@ class _Header extends StatelessWidget {
   }
 }
 
+/// Flat search field, one tone above the page; green edge when focused.
 class _SearchField extends StatelessWidget {
   const _SearchField({
     required this.controller,
@@ -387,19 +395,22 @@ class _SearchField extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
+    final type = context.slType;
     final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(14),
-      borderSide: const BorderSide(color: AppColors.border),
+      borderRadius: BorderRadius.circular(SLRadius.control),
+      borderSide: BorderSide.none,
     );
     return TextField(
       controller: controller,
       onChanged: onChanged,
       textInputAction: TextInputAction.search,
       onTapOutside: (_) => FocusScope.of(context).unfocus(),
+      style: type.body,
       decoration: InputDecoration(
         hintText: hint,
-        hintStyle: const TextStyle(color: AppColors.textSecondary),
-        prefixIcon: const Icon(Icons.search, color: AppColors.textSecondary),
+        hintStyle: type.body.copyWith(color: sl.inkMuted),
+        prefixIcon: Icon(Icons.search, color: sl.inkMuted),
         // The parent rebuilds on every search change, so this tracks the
         // text without its own listener.
         suffixIcon: controller.text.isEmpty
@@ -407,59 +418,15 @@ class _SearchField extends StatelessWidget {
             : IconButton(
                 onPressed: onClear,
                 tooltip: clearTooltip,
-                icon: const Icon(Icons.close, color: AppColors.textSecondary),
+                icon: Icon(Icons.close, color: sl.inkMuted),
               ),
         filled: true,
-        fillColor: AppColors.white,
-        contentPadding: const EdgeInsets.symmetric(vertical: 16),
+        fillColor: sl.surface,
+        contentPadding: const EdgeInsets.symmetric(vertical: 14),
         border: border,
         enabledBorder: border,
         focusedBorder: border.copyWith(
-          borderSide: const BorderSide(color: AppColors.deepGreen),
-        ),
-      ),
-    );
-  }
-}
-
-class _LocationButton extends StatelessWidget {
-  const _LocationButton({required this.label, required this.onTap});
-
-  final String label;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return Material(
-      color: AppColors.white,
-      shape: const StadiumBorder(side: BorderSide(color: AppColors.softMint)),
-      clipBehavior: Clip.antiAlias,
-      child: InkWell(
-        onTap: onTap,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 9),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              const Icon(
-                Icons.location_on_outlined,
-                size: 18,
-                color: AppColors.deepGreen,
-              ),
-              const SizedBox(width: 6),
-              Flexible(
-                child: Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: AppColors.deepGreen,
-                        fontWeight: FontWeight.w700,
-                      ),
-                ),
-              ),
-            ],
-          ),
+          borderSide: BorderSide(color: sl.accentText, width: 1.5),
         ),
       ),
     );
@@ -472,9 +439,9 @@ class _CityChoice {
   const _CityChoice({this.district, this.city}) : useMyLocation = false;
 
   const _CityChoice.useMyLocation()
-      : district = null,
-        city = null,
-        useMyLocation = true;
+    : district = null,
+      city = null,
+      useMyLocation = true;
 
   final String? district;
   final String? city;
@@ -510,7 +477,8 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     final district = _district;
     final navigator = Navigator.of(context);
 
@@ -520,42 +488,56 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.fromLTRB(20, 0, 20, 4),
+            padding: const EdgeInsets.fromLTRB(
+              SLSpace.screen,
+              0,
+              SLSpace.screen,
+              SLSpace.xs,
+            ),
             child: Text(
               district == null ? l10n.homeChooseDistrict : l10n.homeChooseCity,
-              style: textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: type.section,
             ),
           ),
           if (widget.note case final note?)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 2, 20, 4),
+              padding: const EdgeInsets.fromLTRB(
+                SLSpace.screen,
+                2,
+                SLSpace.screen,
+                SLSpace.xs,
+              ),
               child: Text(
                 note,
-                style: textTheme.bodyMedium?.copyWith(
-                  color: AppColors.deepGreen,
+                style: type.small.copyWith(
+                  color: sl.accentText,
                   fontWeight: FontWeight.w600,
                 ),
               ),
             ),
           if (district != null)
             Padding(
-              padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
+              padding: const EdgeInsets.fromLTRB(
+                SLSpace.screen,
+                0,
+                SLSpace.s,
+                0,
+              ),
               child: Row(
                 children: [
                   Expanded(
                     child: Text(
                       l10n.homeCityDistrict(district),
-                      style: textTheme.bodyMedium?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                      style: type.small,
                     ),
                   ),
                   TextButton(
                     onPressed: () => setState(() => _district = null),
                     style: TextButton.styleFrom(
-                      foregroundColor: AppColors.deepGreen,
+                      foregroundColor: sl.accentText,
+                      textStyle: type.small.copyWith(
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     child: Text(l10n.homeChangeDistrict),
                   ),
@@ -568,26 +550,27 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               key: ValueKey(district),
               children: [
                 ListTile(
-                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
-                  leading: const Icon(
+                  contentPadding: const EdgeInsets.symmetric(
+                    horizontal: SLSpace.screen,
+                  ),
+                  leading: Icon(
                     Icons.my_location_rounded,
-                    color: AppColors.deepGreen,
+                    color: sl.accentText,
                   ),
                   title: Text(
                     l10n.locationUseMine,
-                    style: const TextStyle(
-                      color: AppColors.deepGreen,
-                      fontWeight: FontWeight.w700,
+                    style: type.body.copyWith(
+                      color: sl.accentText,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  onTap: () =>
-                      navigator.pop(const _CityChoice.useMyLocation()),
+                  onTap: () => navigator.pop(const _CityChoice.useMyLocation()),
                 ),
-                const Divider(
+                Divider(
                   height: 1,
-                  indent: 20,
-                  endIndent: 20,
-                  color: AppColors.border,
+                  indent: SLSpace.screen,
+                  endIndent: SLSpace.screen,
+                  color: sl.divider,
                 ),
                 if (district == null)
                   for (final d in AppConstants.sriLankanDistricts)
@@ -634,18 +617,17 @@ class _PickerTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return ListTile(
-      contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+      contentPadding: const EdgeInsets.symmetric(horizontal: SLSpace.screen),
       title: Text(
         label,
-        style: TextStyle(
-          color: selected ? AppColors.deepGreen : AppColors.ink,
-          fontWeight: selected ? FontWeight.w700 : FontWeight.w400,
+        style: context.slType.body.copyWith(
+          color: selected ? sl.accentText : sl.ink,
+          fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
         ),
       ),
-      trailing: selected
-          ? const Icon(Icons.check, color: AppColors.deepGreen)
-          : null,
+      trailing: selected ? Icon(Icons.check, color: sl.accentText) : null,
       onTap: onTap,
     );
   }

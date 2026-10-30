@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Pill-shaped two-or-more option switch; the selected option is a raised
 /// white segment on a muted track.
@@ -19,10 +19,11 @@ class SegmentedToggle extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     return Container(
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.mutedSurface,
+        color: sl.surfaceMuted,
         borderRadius: BorderRadius.circular(26),
       ),
       child: Row(
@@ -39,12 +40,12 @@ class SegmentedToggle extends StatelessWidget {
                     duration: const Duration(milliseconds: 200),
                     padding: const EdgeInsets.symmetric(vertical: 12),
                     decoration: BoxDecoration(
-                      color: i == selectedIndex ? AppColors.white : null,
+                      color: i == selectedIndex ? sl.surface : null,
                       borderRadius: BorderRadius.circular(22),
                       boxShadow: i == selectedIndex
                           ? [
                               BoxShadow(
-                                color: AppColors.ink.withValues(alpha: 0.08),
+                                color: sl.ink.withValues(alpha: 0.08),
                                 blurRadius: 8,
                                 offset: const Offset(0, 2),
                               ),
@@ -58,9 +59,7 @@ class SegmentedToggle extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.titleSmall?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: i == selectedIndex
-                            ? AppColors.deepGreen
-                            : AppColors.textSecondary,
+                        color: i == selectedIndex ? sl.accentText : sl.inkMuted,
                       ),
                     ),
                   ),

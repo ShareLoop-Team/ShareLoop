@@ -17,7 +17,7 @@ import 'package:shareloop/services/location_service.dart';
 import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/views/profile/edit_profile_screen.dart';
-import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/sl/sl_item_card.dart';
 
 import 'support/fake_location_service.dart';
 
@@ -103,7 +103,7 @@ void main() {
       // The chip and the existing city filter follow at once.
       expect(find.text('Negombo'), findsOneWidget);
       expect(find.text('Leather School Backpack'), findsOneWidget);
-      expect(find.byType(ItemGridCard), findsNWidgets(2));
+      expect(find.byType(SLItemCard), findsNWidgets(2));
       // Saved through the profile flow, so the Profile tab shows it too.
       await tester.tap(find.text('Profile'));
       await _settle(tester);

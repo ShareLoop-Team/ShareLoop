@@ -16,6 +16,7 @@ import 'package:shareloop/services/notification_permission_service.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/app_icon.dart';
 import 'package:shareloop/widgets/notification_prompt.dart';
+import 'package:shareloop/widgets/sl/sl_button.dart';
 
 /// Stands in for the OS permission and the device's saved answer.
 class _FakePermissions implements NotificationPermissionService {
@@ -189,7 +190,7 @@ Future<void> _signIn(
     find.widgetWithText(TextFormField, 'Enter Password'),
     password,
   );
-  final button = find.widgetWithText(ElevatedButton, 'Sign In');
+  final button = find.widgetWithText(SLButton, 'Sign In');
   await tester.ensureVisible(button);
   await tester.pumpAndSettle();
   // The mock login is real async work.
