@@ -357,6 +357,83 @@ class AppLocalizationsSi extends AppLocalizations {
   String get locationCityNeedsDistrict => 'මුලින්ම දිස්ත්‍රික්කයක් තෝරන්න';
 
   @override
+  String get locationUseMine => 'මගේ ස්ථානය භාවිත කරන්න';
+
+  @override
+  String get locationDetecting => 'ඔබේ ස්ථානය සොයමින්…';
+
+  @override
+  String get locationExplainTitle => 'ඔබේ ස්ථානය භාවිත කරන්නද?';
+
+  @override
+  String get locationExplainBody =>
+      'ඔබේ දිස්ත්‍රික්කය සහ නගරය සොයා ගැනීමට ShareLoop ඔබේ ස්ථානය එක් වරක් පමණක් කියවයි. එය පසුබිමින් නිරීක්ෂණය නොකරන අතර කිසිවෙකු සමඟ බෙදා නොගනී.';
+
+  @override
+  String get locationExplainContinue => 'ඉදිරියට';
+
+  @override
+  String get locationNotNow => 'දැන් නොවේ';
+
+  @override
+  String locationDetected(String city, String district) {
+    return 'ස්ථානය $city, $district ලෙස සැකසුවා.';
+  }
+
+  @override
+  String locationFilled(String city, String district) {
+    return '$city, $district හමු විය. එය තබා ගැනීමට වෙනස්කම් සුරකින්න ඔබන්න.';
+  }
+
+  @override
+  String locationDistrictOnly(String district) {
+    return 'ඔබ සිටින්නේ $district දිස්ත්‍රික්කයේ. කරුණාකර ඔබේ නගරය තෝරන්න.';
+  }
+
+  @override
+  String get locationOpenSettings => 'සැකසුම්';
+
+  @override
+  String get locationErrorUnsupported =>
+      'ස්ථානය සොයා ගැනීම Android සහ iPhone සඳහා වූ ShareLoop යෙදුමේ ක්‍රියා කරයි. කරුණාකර ඔබේ දිස්ත්‍රික්කය සහ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorServiceDisabled =>
+      'ස්ථාන සේවා අක්‍රියයි. ඒවා සක්‍රිය කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorDenied =>
+      'ස්ථාන අවසරය ලබා දුන්නේ නැත. ඒ වෙනුවට ඔබට නගරය තෝරා ගත හැක.';
+
+  @override
+  String get locationErrorBlocked =>
+      'ShareLoop සඳහා ස්ථාන ප්‍රවේශය අවහිර කර ඇත. සැකසුම් තුළ එයට ඉඩ දෙන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorTimeout =>
+      'ඔබේ ස්ථානය සොයා ගැනීමට වැඩි වේලාවක් ගත විය. නැවත උත්සාහ කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorInaccurate =>
+      'ඔබේ ස්ථානය ප්‍රමාණවත් තරම් නිවැරදි නැත. නිවැරදි ස්ථානය සක්‍රිය කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorOutside =>
+      'ඔබ ශ්‍රී ලංකාවෙන් පිටත සිටින බව පෙනේ. කරුණාකර ඔබේ දිස්ත්‍රික්කය සහ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorNotMatched =>
+      'ඔබේ ස්ථානය දිස්ත්‍රික්කයකට ගැළපීමට නොහැකි විය. කරුණාකර එය ඔබම තෝරන්න.';
+
+  @override
+  String get locationErrorFailed =>
+      'ඔබේ ස්ථානය සොයා ගත නොහැකි විය. නැවත උත්සාහ කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorLookup =>
+      'ඔබේ ප්‍රදේශය සොයා ගත නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
   String get homeGive => 'දෙන්න';
 
   @override

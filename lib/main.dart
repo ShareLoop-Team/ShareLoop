@@ -17,6 +17,7 @@ import 'core/theme/app_theme.dart';
 import 'core/theme/app_typography.dart';
 import 'models/item_request_model.dart';
 import 'services/auth_service.dart';
+import 'services/location_service.dart';
 import 'services/notification_permission_service.dart';
 import 'views/admin/manage_categories_screen.dart';
 import 'views/admin/manage_users_screen.dart';
@@ -75,6 +76,7 @@ class ShareLoopApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AdminController()),
         ChangeNotifierProvider(create: (_) => LanguageController()),
         Provider(create: (_) => NotificationPermissionService()),
+        Provider(create: (_) => LocationService()),
       ],
       child: Consumer<LanguageController>(
         builder: (context, languageController, _) {

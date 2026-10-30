@@ -21,6 +21,7 @@ import '../../widgets/photo_source_sheet.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/subpage_header.dart';
 import '../../widgets/unsaved_changes_guard.dart';
+import '../../widgets/use_my_location.dart';
 import '../../widgets/user_avatar.dart';
 
 /// View: edit the signed-in user's photo, name, phone and location. Email
@@ -52,6 +53,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   String? _initialDistrict;
   String? _initialCity;
   bool _textEdited = false;
+
+  /// Bumped when detection fills the fields, so the dropdowns (which only
+  /// read their initial value) show it.
+  int _locationVersion = 0;
+  bool _detecting = false;
 
   /// Whether leaving now would lose edits to the saved [user].
   bool _hasChanges(UserModel user) =>
@@ -101,6 +107,34 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
           mimeType: 'image/png',
           name: 'avatar.png',
         ));
+  }
+
+  /// Fills District and City from the device location; Save keeps them.
+  /// With only a district found, the city is left for the user to pick.
+  Future<void> _useMyLocation() async {
+    final l10n = AppLocalizations.of(context);
+    final messenger = ScaffoldMessenger.of(context);
+    setState(() => _detecting = true);
+    final match = await detectMyLocation(context);
+    if (!mounted) return;
+    setState(() {
+      _detecting = false;
+      if (match == null) return;
+      _district = match.district;
+      _city = match.city;
+      _locationVersion++;
+    });
+    if (match == null) return;
+    final city = match.city;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(
+        content: Text(
+          city == null
+              ? l10n.locationDistrictOnly(match.district)
+              : l10n.locationFilled(city, match.district),
+        ),
+      ));
   }
 
   Future<void> _submit() async {
@@ -246,6 +280,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                             child: _Field(
                               label: l10n.registerDistrictLabel,
                               child: DropdownButtonFormField<String>(
+                                key: ValueKey('district-$_locationVersion'),
                                 initialValue: _district,
                                 decoration: _decoration(),
                                 hint: Text(l10n.registerDistrictHint),
@@ -284,17 +319,36 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           Expanded(
                             child: _Field(
                               label: l10n.registerCityLabel,
-                              child: CityDropdownField(
-                                district: _district,
-                                value: _city,
-                                decoration: _decoration(),
-                                iconColor: AppColors.ink,
-                                onChanged: (value) =>
-                                    setState(() => _city = value),
+                              child: KeyedSubtree(
+                                key: ValueKey('city-$_locationVersion'),
+                                child: CityDropdownField(
+                                  district: _district,
+                                  value: _city,
+                                  decoration: _decoration(),
+                                  iconColor: AppColors.ink,
+                                  onChanged: (value) =>
+                                      setState(() => _city = value),
+                                ),
                               ),
                             ),
                           ),
                         ],
+                      ),
+                      Align(
+                        alignment: AlignmentDirectional.centerStart,
+                        child: TextButton.icon(
+                          onPressed: _submitting || _detecting
+                              ? null
+                              : _useMyLocation,
+                          icon: const Icon(Icons.my_location_rounded, size: 20),
+                          label: Text(l10n.locationUseMine),
+                          style: TextButton.styleFrom(
+                            foregroundColor: AppColors.deepGreen,
+                            textStyle: textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
                       ),
                       const SizedBox(height: 4),
                       InfoNote(text: l10n.editProfilePhoneNote),

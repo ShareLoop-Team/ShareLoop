@@ -362,6 +362,83 @@ class AppLocalizationsTa extends AppLocalizations {
       'முதலில் மாவட்டத்தைத் தேர்ந்தெடுங்கள்';
 
   @override
+  String get locationUseMine => 'எனது இருப்பிடத்தைப் பயன்படுத்து';
+
+  @override
+  String get locationDetecting => 'உங்கள் இருப்பிடத்தைக் கண்டறிகிறது…';
+
+  @override
+  String get locationExplainTitle => 'உங்கள் இருப்பிடத்தைப் பயன்படுத்தவா?';
+
+  @override
+  String get locationExplainBody =>
+      'உங்கள் மாவட்டத்தையும் நகரத்தையும் கண்டறிய ShareLoop உங்கள் இருப்பிடத்தை ஒரு முறை மட்டுமே படிக்கும். இது பின்னணியில் கண்காணிக்கப்படாது, யாருடனும் பகிரப்படாது.';
+
+  @override
+  String get locationExplainContinue => 'தொடர்க';
+
+  @override
+  String get locationNotNow => 'இப்போது வேண்டாம்';
+
+  @override
+  String locationDetected(String city, String district) {
+    return 'இருப்பிடம் $city, $district என அமைக்கப்பட்டது.';
+  }
+
+  @override
+  String locationFilled(String city, String district) {
+    return '$city, $district கண்டறியப்பட்டது. இதை வைத்திருக்க மாற்றங்களைச் சேமி என்பதைத் தட்டவும்.';
+  }
+
+  @override
+  String locationDistrictOnly(String district) {
+    return 'நீங்கள் $district மாவட்டத்தில் உள்ளீர்கள். உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+  }
+
+  @override
+  String get locationOpenSettings => 'அமைப்புகள்';
+
+  @override
+  String get locationErrorUnsupported =>
+      'இருப்பிடத்தைக் கண்டறிதல் Android மற்றும் iPhone இல் உள்ள ShareLoop செயலியில் செயல்படும். உங்கள் மாவட்டத்தையும் நகரத்தையும் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorServiceDisabled =>
+      'இருப்பிடச் சேவைகள் முடக்கப்பட்டுள்ளன. அவற்றை இயக்குங்கள், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorDenied =>
+      'இருப்பிட அனுமதி வழங்கப்படவில்லை. அதற்குப் பதிலாக உங்கள் நகரத்தைத் தேர்ந்தெடுக்கலாம்.';
+
+  @override
+  String get locationErrorBlocked =>
+      'ShareLoop க்கான இருப்பிட அணுகல் தடுக்கப்பட்டுள்ளது. அமைப்புகளில் அனுமதியுங்கள், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorTimeout =>
+      'உங்கள் இருப்பிடத்தைக் கண்டறிய அதிக நேரம் ஆனது. மீண்டும் முயலுங்கள், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorInaccurate =>
+      'உங்கள் இருப்பிடம் போதுமான அளவு துல்லியமாக இல்லை. துல்லியமான இருப்பிடத்தை இயக்குங்கள், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorOutside =>
+      'நீங்கள் இலங்கைக்கு வெளியே இருப்பதாகத் தெரிகிறது. உங்கள் மாவட்டத்தையும் நகரத்தையும் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorNotMatched =>
+      'உங்கள் இருப்பிடத்தை ஒரு மாவட்டத்துடன் பொருத்த முடியவில்லை. அதை நீங்களே தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorFailed =>
+      'உங்கள் இருப்பிடத்தைக் கண்டறிய முடியவில்லை. மீண்டும் முயலுங்கள், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
+  String get locationErrorLookup =>
+      'உங்கள் பகுதியைக் கண்டறிய முடியவில்லை. இணைய இணைப்பைச் சரிபார்க்கவும், அல்லது உங்கள் நகரத்தைத் தேர்ந்தெடுங்கள்.';
+
+  @override
   String get homeGive => 'கொடு';
 
   @override

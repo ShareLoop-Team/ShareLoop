@@ -3,6 +3,10 @@
     <uses-permission android:name="android.permission.INTERNET"/>
     <!-- Android 13+: lets the app ask to show notifications. -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+    <!-- "Use my location": a one-off foreground fix to find the user's
+         district and city. No background location is requested. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <application
         android:label="shareloop"
         android:name="${applicationName}"

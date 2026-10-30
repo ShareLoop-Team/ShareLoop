@@ -11,6 +11,7 @@ import '../../core/constants/sri_lanka_locations.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../models/user_model.dart';
 import '../../widgets/category_circle.dart';
+import '../../widgets/use_my_location.dart';
 import '../../widgets/user_avatar.dart';
 import 'give_away_tab.dart';
 
@@ -60,14 +61,18 @@ class _HomeFeedState extends State<HomeFeed> {
       ]);
 
   /// Lets the user pick their city (saved to their profile, so Home and
-  /// Edit Profile agree) or see items from all areas for now.
-  Future<void> _showCityPicker(AppLocalizations l10n, UserModel? user) async {
+  /// Edit Profile agree), detect it, or see items from all areas for now.
+  /// [district] opens straight on that district's cities, with [note].
+  Future<void> _showCityPicker(
+    AppLocalizations l10n,
+    UserModel? user, {
+    String? district,
+    String? note,
+  }) async {
     final itemController = context.read<ItemController>();
-    final profile = context.read<ProfileController>();
-    final auth = context.read<AuthController>();
-    final messenger = ScaffoldMessenger.of(context);
-    final district = SriLankaLocations.validDistrict(user?.district);
-    final profileCity = SriLankaLocations.validCity(district, user?.city);
+    final profileDistrict = SriLankaLocations.validDistrict(user?.district);
+    final profileCity =
+        SriLankaLocations.validCity(profileDistrict, user?.city);
 
     final choice = await showModalBottomSheet<_CityChoice>(
       context: context,
@@ -75,31 +80,86 @@ class _HomeFeedState extends State<HomeFeed> {
       showDragHandle: true,
       backgroundColor: AppColors.white,
       builder: (_) => _CityPickerSheet(
-        initialDistrict: district,
+        initialDistrict: district ?? profileDistrict,
         selectedCity: itemController.cityFilter,
         offerAllAreas: profileCity != null,
+        note: note,
       ),
     );
     if (choice == null || !mounted) return;
+    if (choice.useMyLocation) {
+      await _useMyLocation(l10n, user);
+      return;
+    }
     final city = choice.city;
     if (city == null || user == null || city == profileCity) {
       itemController.setCityFilter(city);
       return;
     }
+    await _saveCity(l10n, user, district: choice.district!, city: city);
+  }
+
+  /// Saves [city] to [user]'s profile and filters Home to it. Returns
+  /// whether it was saved.
+  Future<bool> _saveCity(
+    AppLocalizations l10n,
+    UserModel user, {
+    required String district,
+    required String city,
+  }) async {
+    final itemController = context.read<ItemController>();
+    final profile = context.read<ProfileController>();
+    final auth = context.read<AuthController>();
+    final messenger = ScaffoldMessenger.of(context);
     final saved = await profile.updateLocation(
       user,
-      district: choice.district!,
+      district: district,
       city: city,
     );
-    if (!mounted) return;
+    if (!mounted) return false;
     if (saved == null) {
       messenger.showSnackBar(
         SnackBar(content: Text(profile.errorMessage ?? l10n.editProfileFailed)),
       );
-      return;
+      return false;
     }
     auth.updateCurrentUser(saved);
-    itemController.applyProfileCity(city);
+    itemController
+      ..applyProfileCity(city)
+      // Also when it was already the profile city but "All areas" was on.
+      ..setCityFilter(city);
+    return true;
+  }
+
+  /// Detects the district and city and saves them like a manual pick. With
+  /// only a district, its cities are offered; on failure the message says
+  /// why and the manual picker stays one tap away.
+  Future<void> _useMyLocation(AppLocalizations l10n, UserModel? user) async {
+    final messenger = ScaffoldMessenger.of(context);
+    final match = await detectMyLocation(context);
+    if (match == null || !mounted) return;
+    final city = match.city;
+    if (city == null) {
+      await _showCityPicker(
+        l10n,
+        user,
+        district: match.district,
+        note: l10n.locationDistrictOnly(match.district),
+      );
+      return;
+    }
+    if (user == null) {
+      context.read<ItemController>().setCityFilter(city);
+      return;
+    }
+    final saved =
+        await _saveCity(l10n, user, district: match.district, city: city);
+    if (!saved || !mounted) return;
+    messenger
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(l10n.locationDetected(city, match.district))),
+      );
   }
 
   @override
@@ -409,13 +469,19 @@ class _LocationButton extends StatelessWidget {
   }
 }
 
-/// What the city picker returns: a city with its district, or a null
-/// [city] for "all areas".
+/// What the city picker returns: a city with its district, a null [city]
+/// for "all areas", or a request to detect the location.
 class _CityChoice {
-  const _CityChoice({this.district, this.city});
+  const _CityChoice({this.district, this.city}) : useMyLocation = false;
+
+  const _CityChoice.useMyLocation()
+      : district = null,
+        city = null,
+        useMyLocation = true;
 
   final String? district;
   final String? city;
+  final bool useMyLocation;
 }
 
 /// Bottom sheet listing the cities of one district, with a step back to
@@ -425,6 +491,7 @@ class _CityPickerSheet extends StatefulWidget {
     required this.initialDistrict,
     required this.selectedCity,
     required this.offerAllAreas,
+    this.note,
   });
 
   final String? initialDistrict;
@@ -432,6 +499,9 @@ class _CityPickerSheet extends StatefulWidget {
 
   /// Only once the user has a city is there a narrower view to leave.
   final bool offerAllAreas;
+
+  /// Shown under the title, e.g. which district was detected.
+  final String? note;
 
   @override
   State<_CityPickerSheet> createState() => _CityPickerSheetState();
@@ -461,6 +531,17 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               ),
             ),
           ),
+          if (widget.note case final note?)
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 2, 20, 4),
+              child: Text(
+                note,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: AppColors.deepGreen,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
           if (district != null)
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 8, 0),
@@ -489,6 +570,28 @@ class _CityPickerSheetState extends State<_CityPickerSheet> {
               // Each district's cities start from the top.
               key: ValueKey(district),
               children: [
+                ListTile(
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 20),
+                  leading: const Icon(
+                    Icons.my_location_rounded,
+                    color: AppColors.deepGreen,
+                  ),
+                  title: Text(
+                    l10n.locationUseMine,
+                    style: const TextStyle(
+                      color: AppColors.deepGreen,
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                  onTap: () =>
+                      navigator.pop(const _CityChoice.useMyLocation()),
+                ),
+                const Divider(
+                  height: 1,
+                  indent: 20,
+                  endIndent: 20,
+                  color: AppColors.border,
+                ),
                 if (district == null)
                   for (final d in AppConstants.sriLankanDistricts)
                     _PickerTile(

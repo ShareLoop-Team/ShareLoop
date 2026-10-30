@@ -63,6 +63,10 @@ dependencies:
   google_mlkit_image_labeling: ^0.16.1
   google_mlkit_pose_detection: ^0.16.1
   google_mlkit_face_detection: ^0.15.1
+  # "Use my location": a one-off foreground GPS fix, turned into a district
+  # and city by the phone's own reverse geocoder (Android/iOS only).
+  geolocator: ^14.1.2
+  geocoding: ^5.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter

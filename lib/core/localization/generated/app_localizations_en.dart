@@ -355,6 +355,83 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationCityNeedsDistrict => 'Select a district first';
 
   @override
+  String get locationUseMine => 'Use my location';
+
+  @override
+  String get locationDetecting => 'Finding your location…';
+
+  @override
+  String get locationExplainTitle => 'Use your location?';
+
+  @override
+  String get locationExplainBody =>
+      'ShareLoop reads your location once to find your district and city. It isn\'t tracked in the background or shared with anyone.';
+
+  @override
+  String get locationExplainContinue => 'Continue';
+
+  @override
+  String get locationNotNow => 'Not now';
+
+  @override
+  String locationDetected(String city, String district) {
+    return 'Location set to $city, $district.';
+  }
+
+  @override
+  String locationFilled(String city, String district) {
+    return 'Found $city, $district. Tap Save Changes to keep it.';
+  }
+
+  @override
+  String locationDistrictOnly(String district) {
+    return 'You\'re in $district district. Please choose your city.';
+  }
+
+  @override
+  String get locationOpenSettings => 'Settings';
+
+  @override
+  String get locationErrorUnsupported =>
+      'Finding your location works in the ShareLoop app on Android and iPhone. Please choose your district and city.';
+
+  @override
+  String get locationErrorServiceDisabled =>
+      'Location services are turned off. Turn them on, or choose your city.';
+
+  @override
+  String get locationErrorDenied =>
+      'Location permission wasn\'t given. You can choose your city instead.';
+
+  @override
+  String get locationErrorBlocked =>
+      'Location access is blocked for ShareLoop. Allow it in Settings, or choose your city.';
+
+  @override
+  String get locationErrorTimeout =>
+      'Finding your location took too long. Try again, or choose your city.';
+
+  @override
+  String get locationErrorInaccurate =>
+      'Your location isn\'t precise enough. Turn on precise location, or choose your city.';
+
+  @override
+  String get locationErrorOutside =>
+      'You seem to be outside Sri Lanka. Please choose your district and city.';
+
+  @override
+  String get locationErrorNotMatched =>
+      'We couldn\'t match your location to a district. Please choose it yourself.';
+
+  @override
+  String get locationErrorFailed =>
+      'Couldn\'t find your location. Try again, or choose your city.';
+
+  @override
+  String get locationErrorLookup =>
+      'Couldn\'t look up your area. Check your internet connection, or choose your city.';
+
+  @override
   String get homeGive => 'Give';
 
   @override

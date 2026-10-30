@@ -754,6 +754,126 @@ abstract class AppLocalizations {
   /// **'Select a district first'**
   String get locationCityNeedsDistrict;
 
+  /// No description provided for @locationUseMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get locationUseMine;
+
+  /// No description provided for @locationDetecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location…'**
+  String get locationDetecting;
+
+  /// No description provided for @locationExplainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your location?'**
+  String get locationExplainTitle;
+
+  /// No description provided for @locationExplainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ShareLoop reads your location once to find your district and city. It isn\'t tracked in the background or shared with anyone.'**
+  String get locationExplainBody;
+
+  /// No description provided for @locationExplainContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get locationExplainContinue;
+
+  /// No description provided for @locationNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get locationNotNow;
+
+  /// No description provided for @locationDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Location set to {city}, {district}.'**
+  String locationDetected(String city, String district);
+
+  /// No description provided for @locationFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {city}, {district}. Tap Save Changes to keep it.'**
+  String locationFilled(String city, String district);
+
+  /// No description provided for @locationDistrictOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in {district} district. Please choose your city.'**
+  String locationDistrictOnly(String district);
+
+  /// No description provided for @locationOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get locationOpenSettings;
+
+  /// No description provided for @locationErrorUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location works in the ShareLoop app on Android and iPhone. Please choose your district and city.'**
+  String get locationErrorUnsupported;
+
+  /// No description provided for @locationErrorServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are turned off. Turn them on, or choose your city.'**
+  String get locationErrorServiceDisabled;
+
+  /// No description provided for @locationErrorDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission wasn\'t given. You can choose your city instead.'**
+  String get locationErrorDenied;
+
+  /// No description provided for @locationErrorBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is blocked for ShareLoop. Allow it in Settings, or choose your city.'**
+  String get locationErrorBlocked;
+
+  /// No description provided for @locationErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location took too long. Try again, or choose your city.'**
+  String get locationErrorTimeout;
+
+  /// No description provided for @locationErrorInaccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location isn\'t precise enough. Turn on precise location, or choose your city.'**
+  String get locationErrorInaccurate;
+
+  /// No description provided for @locationErrorOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'You seem to be outside Sri Lanka. Please choose your district and city.'**
+  String get locationErrorOutside;
+
+  /// No description provided for @locationErrorNotMatched.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t match your location to a district. Please choose it yourself.'**
+  String get locationErrorNotMatched;
+
+  /// No description provided for @locationErrorFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t find your location. Try again, or choose your city.'**
+  String get locationErrorFailed;
+
+  /// No description provided for @locationErrorLookup.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t look up your area. Check your internet connection, or choose your city.'**
+  String get locationErrorLookup;
+
   /// No description provided for @homeGive.
   ///
   /// In en, this message translates to:
