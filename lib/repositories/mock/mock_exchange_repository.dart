@@ -137,6 +137,7 @@ class MockExchangeRepository implements ExchangeRepository {
       district: post.district,
       city: post.city,
       photoPaths: post.photoPaths,
+      photoUrls: post.photoUrls,
       createdAt: post.createdAt,
     );
     if (exchange.requestId case final requestId?) {

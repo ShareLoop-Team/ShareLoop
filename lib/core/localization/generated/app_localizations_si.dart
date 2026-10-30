@@ -13,9 +13,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get appTitle => 'ShareLoop';
 
   @override
-  String get tagline => 'ඔබට අවශ්‍ය නැති දේ දෙන්න. ඔබට අවශ්‍ය දේ ලබා ගන්න.';
-
-  @override
   String get home => 'මුල් පිටුව';
 
   @override
@@ -23,9 +20,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get settings => 'සැකසුම්';
-
-  @override
-  String get giveAway => 'පරිත්‍යාග කරන්න';
 
   @override
   String get requests => 'ඉල්ලීම්';
@@ -44,12 +38,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get password => 'මුරපදය';
-
-  @override
-  String get fullName => 'සම්පූර්ණ නම';
-
-  @override
-  String get phoneNumber => 'දුරකථන අංකය';
 
   @override
   String get district => 'දිස්ත්‍රික්කය';
@@ -73,22 +61,7 @@ class AppLocalizationsSi extends AppLocalizations {
   String get myRequests => 'මගේ ඉල්ලීම්';
 
   @override
-  String get reviewsReceived => 'ලැබුණු විචාර';
-
-  @override
-  String get donations => 'පරිත්‍යාග';
-
-  @override
-  String get requestThisItem => 'මෙම අයිතමය ඉල්ලන්න';
-
-  @override
-  String get viewIncomingRequests => 'ලැබෙන ඉල්ලීම් බලන්න';
-
-  @override
   String get submitRequest => 'ඉල්ලීම ඉදිරිපත් කරන්න';
-
-  @override
-  String get publishPost => 'පළ කරන්න';
 
   @override
   String get language => 'භාෂාව';
@@ -127,10 +100,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get loginWelcomeBack => 'නැවත සාදරයෙන් පිළිගනිමු';
-
-  @override
-  String get loginSubtitle =>
-      'ඔබේ විස්තර ඇතුළත් කරන්න හෝ සමාජ මාධ්‍ය හරහා ඉදිරියට යන්න';
 
   @override
   String get loginEmailHint => 'ඔබේ ඊමේල් ලිපිනය ඇතුළත් කරන්න';
@@ -173,9 +142,6 @@ class AppLocalizationsSi extends AppLocalizations {
   String get loginSignIn => 'ඇතුල් වන්න';
 
   @override
-  String get loginOr => 'හෝ';
-
-  @override
   String get loginNoAccount => 'නව පරිශීලකයෙක්ද?';
 
   @override
@@ -214,9 +180,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get registerDistrictHint => 'ඔබේ දිස්ත්‍රික්කය තෝරන්න';
-
-  @override
-  String get registerCityHint => 'උදා. මීගමුව';
 
   @override
   String get registerConfirmPasswordHint => 'මුරපදය නැවත ඇතුළත් කරන්න';
@@ -304,31 +267,116 @@ class AppLocalizationsSi extends AppLocalizations {
   String get homeSearchHint => 'ඔබට අවශ්‍ය අයිතම සොයන්න...';
 
   @override
-  String get homeGiveItemTitle => 'අයිතමයක් දෙන්න';
-
-  @override
-  String get homeGiveItemSubtitle => 'ඔබට තවදුරටත් අවශ්‍ය නැති දේ නොමිලේ දෙන්න';
-
-  @override
-  String get homeRequestItemTitle => 'අයිතමයක් ඉල්ලන්න';
-
-  @override
-  String get homeRequestItemSubtitle => 'ඔබට අවශ්‍ය දේ ප්‍රජාවට කියන්න';
-
-  @override
   String get homeAllCategories => 'සියල්ල';
+
+  @override
+  String get homeCategories => 'කාණ්ඩ';
 
   @override
   String get homeAvailableNearYou => 'ඔබ අසල ලබාගත හැකි';
 
   @override
-  String get homeOpenRequests => 'විවෘත ඉල්ලීම්';
-
-  @override
-  String get homeAllDistricts => 'සියලු දිස්ත්‍රික්ක';
-
-  @override
   String get homeChooseDistrict => 'දිස්ත්‍රික්කයක් තෝරන්න';
+
+  @override
+  String get homeChooseCity => 'ඔබේ නගරය තෝරන්න';
+
+  @override
+  String get homeSelectCity => 'නගරය තෝරන්න';
+
+  @override
+  String get homeAllAreas => 'සියලු ප්‍රදේශ';
+
+  @override
+  String get homeChangeDistrict => 'වෙනස් කරන්න';
+
+  @override
+  String homeCityDistrict(String district) {
+    return 'දිස්ත්‍රික්කය: $district';
+  }
+
+  @override
+  String get locationCityHint => 'ඔබේ නගරය හෝ ප්‍රදේශය තෝරන්න';
+
+  @override
+  String get locationCityNeedsDistrict => 'මුලින්ම දිස්ත්‍රික්කයක් තෝරන්න';
+
+  @override
+  String get locationUseMine => 'මගේ ස්ථානය භාවිත කරන්න';
+
+  @override
+  String get locationDetecting => 'ඔබේ ස්ථානය සොයමින්…';
+
+  @override
+  String get locationExplainTitle => 'ඔබේ ස්ථානය භාවිත කරන්නද?';
+
+  @override
+  String get locationExplainBody =>
+      'ඔබේ දිස්ත්‍රික්කය සහ නගරය සොයා ගැනීමට ShareLoop ඔබේ ස්ථානය එක් වරක් පමණක් කියවයි. එය පසුබිමින් නිරීක්ෂණය නොකරන අතර කිසිවෙකු සමඟ බෙදා නොගනී.';
+
+  @override
+  String get locationExplainContinue => 'ඉදිරියට';
+
+  @override
+  String get locationNotNow => 'දැන් නොවේ';
+
+  @override
+  String locationDetected(String city, String district) {
+    return 'ස්ථානය $city, $district ලෙස සැකසුවා.';
+  }
+
+  @override
+  String locationFilled(String city, String district) {
+    return '$city, $district හමු විය. එය තබා ගැනීමට වෙනස්කම් සුරකින්න ඔබන්න.';
+  }
+
+  @override
+  String locationDistrictOnly(String district) {
+    return 'ඔබ සිටින්නේ $district දිස්ත්‍රික්කයේ. කරුණාකර ඔබේ නගරය තෝරන්න.';
+  }
+
+  @override
+  String get locationOpenSettings => 'සැකසුම්';
+
+  @override
+  String get locationErrorUnsupported =>
+      'ස්ථානය සොයා ගැනීම Android සහ iPhone සඳහා වූ ShareLoop යෙදුමේ ක්‍රියා කරයි. කරුණාකර ඔබේ දිස්ත්‍රික්කය සහ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorServiceDisabled =>
+      'ස්ථාන සේවා අක්‍රියයි. ඒවා සක්‍රිය කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorDenied =>
+      'ස්ථාන අවසරය ලබා දුන්නේ නැත. ඒ වෙනුවට ඔබට නගරය තෝරා ගත හැක.';
+
+  @override
+  String get locationErrorBlocked =>
+      'ShareLoop සඳහා ස්ථාන ප්‍රවේශය අවහිර කර ඇත. සැකසුම් තුළ එයට ඉඩ දෙන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorTimeout =>
+      'ඔබේ ස්ථානය සොයා ගැනීමට වැඩි වේලාවක් ගත විය. නැවත උත්සාහ කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorInaccurate =>
+      'ඔබේ ස්ථානය ප්‍රමාණවත් තරම් නිවැරදි නැත. නිවැරදි ස්ථානය සක්‍රිය කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorOutside =>
+      'ඔබ ශ්‍රී ලංකාවෙන් පිටත සිටින බව පෙනේ. කරුණාකර ඔබේ දිස්ත්‍රික්කය සහ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorNotMatched =>
+      'ඔබේ ස්ථානය දිස්ත්‍රික්කයකට ගැළපීමට නොහැකි විය. කරුණාකර එය ඔබම තෝරන්න.';
+
+  @override
+  String get locationErrorFailed =>
+      'ඔබේ ස්ථානය සොයා ගත නොහැකි විය. නැවත උත්සාහ කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
+
+  @override
+  String get locationErrorLookup =>
+      'ඔබේ ප්‍රදේශය සොයා ගත නොහැකි විය. අන්තර්ජාල සම්බන්ධතාවය පරීක්ෂා කරන්න, නැතහොත් ඔබේ නගරය තෝරන්න.';
 
   @override
   String get homeGive => 'දෙන්න';
@@ -340,11 +388,6 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get homeNewDonor => 'නව පරිත්‍යාගශීලී';
-
-  @override
-  String homeRequestedBy(String name) {
-    return 'ඉල්ලුවේ $name';
-  }
 
   @override
   String get giveTitle => 'අයිතමයක් දෙන්න';
@@ -359,8 +402,23 @@ class AppLocalizationsSi extends AppLocalizations {
   String get giveAddPhotos => 'ඔබේ අයිතමයේ ඡායාරූප එක් කරන්න';
 
   @override
-  String get giveAddPhotosHint =>
-      'පැහැදිලි ඡායාරූප අනෙක් අයට ඉක්මනින් තීරණය කිරීමට උදව් වේ';
+  String get givePhotosItemOnly =>
+      'පුද්ගලයන්, අත් හෝ මුහුණු නොමැතිව අයිතමය පමණක් ඡායාරූප ගන්න';
+
+  @override
+  String get photoChecking => 'ඡායාරූපය පරීක්ෂා කරමින්…';
+
+  @override
+  String get photoHasPerson =>
+      'මෙම ඡායාරූපයේ පුද්ගලයෙක් හෝ පෙනෙන ශරීර කොටසක් ඇත. කරුණාකර අයිතමයේ ඡායාරූපයක් පමණක් උඩුගත කරන්න.';
+
+  @override
+  String get photoCheckFailed =>
+      'මෙම ඡායාරූපය පරීක්ෂා කිරීමට නොහැකි වූ නිසා එය එක් කළේ නැත. කරුණාකර නැවත උත්සාහ කරන්න හෝ වෙනත් ඡායාරූපයක් තෝරන්න.';
+
+  @override
+  String get photoCheckUnsupported =>
+      'මෙම උපාංගයේ ඡායාරූප පරීක්ෂා කළ නොහැකි නිසා මෙහි ඡායාරූප එක් කළ නොහැක. කරුණාකර දුරකථන යෙදුම හෝ වෙබ් බ්‍රව්සරයක් භාවිත කරන්න.';
 
   @override
   String get giveAddPhoto => 'ඡායාරූපයක් එක් කරන්න';
@@ -399,6 +457,16 @@ class AppLocalizationsSi extends AppLocalizations {
   @override
   String get cameraFailed =>
       'කැමරාව ආරම්භ කළ නොහැකි විය. කරුණාකර නැවත උත්සාහ කරන්න.';
+
+  @override
+  String get cropTitle => 'ඡායාරූපය සකසන්න';
+
+  @override
+  String get cropHint =>
+      'ගෙන යාමට අදින්න. විශාලනය කිරීමට ඇඟිලි දෙකෙන් අදින්න, scroll කරන්න හෝ slider එක භාවිත කරන්න.';
+
+  @override
+  String get cropZoom => 'විශාලනය';
 
   @override
   String get giveItemTitle => 'අයිතමයේ නම';
@@ -466,6 +534,9 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get requestsDelete => 'ඉල්ලීම මකන්න';
+
+  @override
+  String get requestsEdit => 'ඉල්ලීම සංස්කරණය කරන්න';
 
   @override
   String get requestsDeleteConfirm => 'මෙම ඉල්ලීම මකන්නද?';
@@ -555,6 +626,16 @@ class AppLocalizationsSi extends AppLocalizations {
   String get requestSubmitted => 'ඔබේ ඉල්ලීම ඉදිරිපත් කර ඇත.';
 
   @override
+  String get requestUpdated => 'ඔබේ ඉල්ලීම යාවත්කාලීන කළා.';
+
+  @override
+  String get requestEditTitle => 'ඉල්ලීම සංස්කරණය';
+
+  @override
+  String get requestEditSubtitle =>
+      'පරිත්‍යාගශීලීන්ට පෙනෙන ඔබේ ඉල්ලීමේ විස්තර යාවත්කාලීන කරන්න';
+
+  @override
   String get profileTitle => 'මගේ පැතිකඩ';
 
   @override
@@ -593,6 +674,59 @@ class AppLocalizationsSi extends AppLocalizations {
 
   @override
   String get profileNotificationsUnavailable => 'දැනුම්දීම් තවම ලබා ගත නොහැක.';
+
+  @override
+  String get notifPromptTitle =>
+      'ShareLoop වෙතින් ඔබට දැනුම්දීම් එවීමට ඉඩ දෙන්නද?';
+
+  @override
+  String get notifPromptBody =>
+      'අයිතම ඉල්ලීම්, ප්‍රතිචාර සහ හුවමාරු යාවත්කාලීන ගැන දැනුවත්ව සිටින්න.';
+
+  @override
+  String get notifPromptAllow => 'දැනුම්දීම්වලට ඉඩ දෙන්න';
+
+  @override
+  String get notifPromptLater => 'පසුව බලමු';
+
+  @override
+  String get notifEnabled => 'දැනුම්දීම් ක්‍රියාත්මකයි.';
+
+  @override
+  String get notifDenied =>
+      'දැනුම්දීම් අක්‍රියයි. ඕනෑම වේලාවක පැතිකඩ → දැනුම්දීම් වෙතින් ඒවා ක්‍රියාත්මක කළ හැක.';
+
+  @override
+  String get notifBlocked =>
+      'ShareLoop සඳහා දැනුම්දීම් අවහිර කර ඇත. ඔබගේ දුරකථනයේ සැකසීම්වලින් ඒවා ක්‍රියාත්මක කරන්න.';
+
+  @override
+  String get notifBlockedBrowser =>
+      'මෙම බ්‍රවුසරයේ ShareLoop සඳහා දැනුම්දීම් අවහිර කර ඇත. ලිපින තීරුව අසල ඇති අඩවි සැකසීම්වලින් ඒවාට ඉඩ දෙන්න.';
+
+  @override
+  String get notifOpenSettings => 'සැකසීම් විවෘත කරන්න';
+
+  @override
+  String get stateRetry => 'නැවත උත්සාහ කරන්න';
+
+  @override
+  String get stateNoMatches => 'ඔබගේ සෙවුමට හෝ පෙරහන්වලට ගැළපෙන කිසිවක් නැත.';
+
+  @override
+  String get stateClearFilters => 'පෙරහන් ඉවත් කරන්න';
+
+  @override
+  String get searchClear => 'සෙවුම මකන්න';
+
+  @override
+  String get discardTitle => 'වෙනස්කම් ඉවත දමන්නද?';
+
+  @override
+  String get discardMessage => 'ඔබ ඇතුළත් කළ දේ නැති වේ.';
+
+  @override
+  String get discardAction => 'ඉවත දමන්න';
 
   @override
   String get profileAdmin => 'පරිපාලක';
@@ -703,19 +837,20 @@ class AppLocalizationsSi extends AppLocalizations {
   String get itemDetailsClosed => 'මෙම භාණ්ඩය සඳහා තවදුරටත් ඉල්ලීම් කළ නොහැක.';
 
   @override
-  String get itemDetailsShare => 'බෙදාගන්න';
+  String get itemDetailsEdit => 'භාණ්ඩය සංස්කරණය කරන්න';
 
   @override
   String get itemDetailsViewPhoto => 'ඡායාරූපය සම්පූර්ණ තිරයෙන් බලන්න';
 
   @override
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  ) {
-    return '$title ShareLoop හි නොමිලේ ලබා ගත හැක ($district). $description';
-  }
+  String get giveEditTitle => 'ඔබේ භාණ්ඩය සංස්කරණය කරන්න';
+
+  @override
+  String get giveEditSubtitle =>
+      'මෙම භාණ්ඩය ගැන අන් අය දකින දේ යාවත්කාලීන කරන්න';
+
+  @override
+  String get postUpdated => 'භාණ්ඩය යාවත්කාලීන කළා.';
 
   @override
   String get editProfileChangePhoto => 'ඡායාරූපය වෙනස් කරන්න';

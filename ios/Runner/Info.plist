@@ -24,6 +24,8 @@
 		<string>????</string>
 		<key>CFBundleVersion</key>
 		<string>$(FLUTTER_BUILD_NUMBER)</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>ShareLoop uses your location once, when you tap Use My Location, to find your district and city. It is not tracked in the background.</string>
 		<key>LSRequiresIPhoneOS</key>
 		<true/>
 		<key>UIApplicationSceneManifest</key>

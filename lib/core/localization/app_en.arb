@@ -1,19 +1,15 @@
 {
   "@@locale": "en",
   "appTitle": "ShareLoop",
-  "tagline": "Give What You Don't Need. Get What You Do.",
   "home": "Home",
   "profile": "Profile",
   "settings": "Settings",
-  "giveAway": "Give Away",
   "requests": "Requests",
   "login": "Log In",
   "register": "Register",
   "logout": "Log Out",
   "email": "Email",
   "password": "Password",
-  "fullName": "Full Name",
-  "phoneNumber": "Phone Number",
   "district": "District",
   "cityTown": "City / Town",
   "search": "Search items...",
@@ -21,12 +17,7 @@
   "noOpenRequests": "No open requests right now.",
   "myPosts": "My Posts",
   "myRequests": "My Requests",
-  "reviewsReceived": "Reviews Received",
-  "donations": "Donations",
-  "requestThisItem": "Request this item",
-  "viewIncomingRequests": "View Incoming Requests",
   "submitRequest": "Submit Request",
-  "publishPost": "Publish Post",
   "language": "Language",
   "onboardingDescription": "Give what you no longer need. Find what you do. Share items for free with your community across Sri Lanka.",
   "onboardingGetStarted": "Get started",
@@ -48,7 +39,6 @@
     }
   },
   "loginWelcomeBack": "Welcome back!",
-  "loginSubtitle": "Fill your details or continue with social media",
   "loginEmailHint": "Enter your Email",
   "loginPasswordHint": "Enter Password",
   "loginEmailRequired": "Email is required",
@@ -68,7 +58,6 @@
     }
   },
   "loginSignIn": "Sign In",
-  "loginOr": "or",
   "loginNoAccount": "New user?",
   "loginCreateAccount": "Create Account",
   "loginEmailLabel": "Email",
@@ -82,7 +71,6 @@
   "registerNameHint": "Enter your full name",
   "registerPhoneHint": "07X XXX XXXX",
   "registerDistrictHint": "Select your district",
-  "registerCityHint": "e.g. Negombo",
   "registerConfirmPasswordHint": "Re-enter your password",
   "registerNameRequired": "Name is required",
   "registerPhoneRequired": "Phone number is required",
@@ -133,15 +121,71 @@
   },
   "homeGreetingGuest": "Hello! What are you sharing today?",
   "homeSearchHint": "Find items you need...",
-  "homeGiveItemTitle": "Give an Item",
-  "homeGiveItemSubtitle": "Pass on what you no longer need, free",
-  "homeRequestItemTitle": "Request an Item",
-  "homeRequestItemSubtitle": "Tell the community what you need",
   "homeAllCategories": "All",
+  "homeCategories": "Categories",
   "homeAvailableNearYou": "Available near you",
-  "homeOpenRequests": "Open requests",
-  "homeAllDistricts": "All districts",
   "homeChooseDistrict": "Choose a district",
+  "homeChooseCity": "Choose your city",
+  "homeSelectCity": "Select city",
+  "homeAllAreas": "All areas",
+  "homeChangeDistrict": "Change",
+  "homeCityDistrict": "District: {district}",
+  "@homeCityDistrict": {
+    "placeholders": {
+      "district": {
+        "type": "String"
+      }
+    }
+  },
+  "locationCityHint": "Select your city or town",
+  "locationCityNeedsDistrict": "Select a district first",
+  "locationUseMine": "Use my location",
+  "locationDetecting": "Finding your location…",
+  "locationExplainTitle": "Use your location?",
+  "locationExplainBody": "ShareLoop reads your location once to find your district and city. It isn't tracked in the background or shared with anyone.",
+  "locationExplainContinue": "Continue",
+  "locationNotNow": "Not now",
+  "locationDetected": "Location set to {city}, {district}.",
+  "@locationDetected": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "district": {
+        "type": "String"
+      }
+    }
+  },
+  "locationFilled": "Found {city}, {district}. Tap Save Changes to keep it.",
+  "@locationFilled": {
+    "placeholders": {
+      "city": {
+        "type": "String"
+      },
+      "district": {
+        "type": "String"
+      }
+    }
+  },
+  "locationDistrictOnly": "You're in {district} district. Please choose your city.",
+  "@locationDistrictOnly": {
+    "placeholders": {
+      "district": {
+        "type": "String"
+      }
+    }
+  },
+  "locationOpenSettings": "Settings",
+  "locationErrorUnsupported": "Finding your location works in the ShareLoop app on Android and iPhone. Please choose your district and city.",
+  "locationErrorServiceDisabled": "Location services are turned off. Turn them on, or choose your city.",
+  "locationErrorDenied": "Location permission wasn't given. You can choose your city instead.",
+  "locationErrorBlocked": "Location access is blocked for ShareLoop. Allow it in Settings, or choose your city.",
+  "locationErrorTimeout": "Finding your location took too long. Try again, or choose your city.",
+  "locationErrorInaccurate": "Your location isn't precise enough. Turn on precise location, or choose your city.",
+  "locationErrorOutside": "You seem to be outside Sri Lanka. Please choose your district and city.",
+  "locationErrorNotMatched": "We couldn't match your location to a district. Please choose it yourself.",
+  "locationErrorFailed": "Couldn't find your location. Try again, or choose your city.",
+  "locationErrorLookup": "Couldn't look up your area. Check your internet connection, or choose your city.",
   "homeGive": "Give",
   "homeDonorBadge": "{badge} donor",
   "@homeDonorBadge": {
@@ -152,19 +196,15 @@
     }
   },
   "homeNewDonor": "New donor",
-  "homeRequestedBy": "Requested by {name}",
-  "@homeRequestedBy": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "giveTitle": "Give an Item",
   "giveSubtitle": "Share something useful with your community",
   "givePhotos": "Photos",
   "giveAddPhotos": "Add photos of your item",
-  "giveAddPhotosHint": "Clear photos help others decide faster",
+  "givePhotosItemOnly": "Photograph the item only, with no people, hands or faces",
+  "photoChecking": "Checking photo…",
+  "photoHasPerson": "This photo contains a person or a visible body part. Please upload a photo of the item only.",
+  "photoCheckFailed": "We couldn't check this photo, so it wasn't added. Please try again or choose another photo.",
+  "photoCheckUnsupported": "Photos can't be checked on this device, so they can't be added here. Please use the phone app or a web browser.",
   "giveAddPhoto": "Add photo",
   "giveRemovePhoto": "Remove photo",
   "giveCover": "Cover",
@@ -177,6 +217,9 @@
   "cameraNotFound": "No camera found on this device.",
   "cameraPermissionDenied": "Camera access is blocked. Allow it in your browser or system settings, then try again.",
   "cameraFailed": "Couldn't start the camera. Please try again.",
+  "cropTitle": "Adjust photo",
+  "cropHint": "Drag to move. Pinch, scroll or use the slider to zoom.",
+  "cropZoom": "Zoom",
   "giveItemTitle": "Item title",
   "giveItemTitleHint": "e.g. Grade 10 Science Textbook",
   "giveItemTitleRequired": "Please enter a title",
@@ -199,6 +242,7 @@
   "requestsMine": "My requests",
   "requestsICanHelp": "I can help",
   "requestsDelete": "Delete request",
+  "requestsEdit": "Edit request",
   "requestsDeleteConfirm": "Delete this request?",
   "requestsDeleteMessage": "Donors will no longer see it. This can't be undone.",
   "requestsDeleteAction": "Delete",
@@ -226,6 +270,9 @@
   "requestOptional": "(optional)",
   "requestNotesHint": "Anything else donors should know",
   "requestSubmitted": "Your request has been submitted.",
+  "requestUpdated": "Your request has been updated.",
+  "requestEditTitle": "Edit Request",
+  "requestEditSubtitle": "Update what donors see about your request",
   "profileTitle": "My Profile",
   "profileEditProfile": "Edit Profile",
   "profileItemsGiven": "Items given",
@@ -255,6 +302,22 @@
   "profileReviews": "Reviews",
   "profileNotifications": "Notifications",
   "profileNotificationsUnavailable": "Notifications aren't available yet.",
+  "notifPromptTitle": "Allow ShareLoop to send you notifications?",
+  "notifPromptBody": "Stay updated on item requests, responses, and exchange updates.",
+  "notifPromptAllow": "Allow Notifications",
+  "notifPromptLater": "Maybe Later",
+  "notifEnabled": "Notifications are on.",
+  "notifDenied": "Notifications are off. You can turn them on any time from Profile → Notifications.",
+  "notifBlocked": "Notifications are blocked for ShareLoop. Turn them on in your phone's settings.",
+  "notifBlockedBrowser": "Notifications are blocked for ShareLoop in this browser. Allow them from the site settings next to the address bar.",
+  "notifOpenSettings": "Open settings",
+  "stateRetry": "Try again",
+  "stateNoMatches": "Nothing matches your search or filters.",
+  "stateClearFilters": "Clear filters",
+  "searchClear": "Clear search",
+  "discardTitle": "Discard changes?",
+  "discardMessage": "What you've entered will be lost.",
+  "discardAction": "Discard",
   "profileAdmin": "Admin",
   "profileManageUsers": "Manage users",
   "profileModeratePosts": "Moderate posts",
@@ -320,22 +383,11 @@
   "itemDetailsArrangeHandover": "Arrange handover",
   "itemDetailsUnavailable": "This item is no longer available.",
   "itemDetailsClosed": "This item is no longer available for requests.",
-  "itemDetailsShare": "Share",
+  "itemDetailsEdit": "Edit item",
   "itemDetailsViewPhoto": "View photo full screen",
-  "itemDetailsShareText": "{title} is free to a good home on ShareLoop ({district}). {description}",
-  "@itemDetailsShareText": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      },
-      "district": {
-        "type": "String"
-      },
-      "description": {
-        "type": "String"
-      }
-    }
-  },
+  "giveEditTitle": "Edit your item",
+  "giveEditSubtitle": "Update what people see about this item",
+  "postUpdated": "Item updated.",
   "editProfileChangePhoto": "Change photo",
   "editProfileEmailLocked": "Your email cannot be changed",
   "editProfilePhoneNote": "Your phone number is shared only with the person you are matched with, after the donor selects a requester.",

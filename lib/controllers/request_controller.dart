@@ -61,6 +61,7 @@ class RequestController extends ChangeNotifier {
   Future<String?> createRequest({
     required String requesterId,
     required String requesterName,
+    String? requesterAvatarUrl,
     String? itemPostId,
     String itemName = '',
     required String description,
@@ -83,6 +84,7 @@ class RequestController extends ChangeNotifier {
       id: 'r${DateTime.now().microsecondsSinceEpoch}',
       requesterId: requesterId,
       requesterName: requesterName,
+      requesterAvatarUrl: requesterAvatarUrl,
       itemPostId: itemPostId,
       itemName: itemName.trim(),
       description: description.trim(),
@@ -99,6 +101,39 @@ class RequestController extends ChangeNotifier {
       return e.message;
     }
     await loadRequests();
+    return null;
+  }
+
+  /// Whether the requester may still edit [request]: only while it is open,
+  /// not once a donor has decided on it.
+  bool canEdit(ItemRequestModel request) =>
+      request.status == ItemRequestStatus.pending;
+
+  /// Saves the requester's changes to their own [request]. Returns an error
+  /// message, or null once saved.
+  Future<String?> updateRequest(ItemRequestModel request) async {
+    if ((request.itemPostId == null && request.itemName.trim().isEmpty) ||
+        request.description.trim().isEmpty ||
+        request.reason.trim().isEmpty) {
+      return 'Item name, description and reason are required.';
+    }
+    if (!canEdit(request)) return 'This request can no longer be edited.';
+    final updated = request.copyWith(
+      itemName: request.itemName.trim(),
+      description: request.description.trim(),
+      reason: request.reason.trim(),
+      notes: request.notes.trim(),
+      city: request.city.trim(),
+    );
+    try {
+      await _repository.updateRequest(updated);
+    } on AppException catch (e) {
+      return e.message;
+    }
+    allRequests = [
+      for (final r in allRequests) r.id == updated.id ? updated : r,
+    ];
+    notifyListeners();
     return null;
   }
 

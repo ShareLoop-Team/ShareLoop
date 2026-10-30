@@ -39,15 +39,4 @@ class BadgeController extends ChangeNotifier {
       level: AppConstants.badgeLevels[next.key]!,
     );
   }
-
-  int donationsToNextBadge(int donationCount) {
-    final sortedThresholds = AppConstants.badgeThresholds.values.toList()
-      ..sort();
-    for (final threshold in sortedThresholds) {
-      if (donationCount < threshold) {
-        return threshold - donationCount;
-      }
-    }
-    return 0;
-  }
 }

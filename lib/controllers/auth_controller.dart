@@ -33,7 +33,7 @@ class AuthController extends ChangeNotifier {
         errorMessage = 'No account found for that email.';
         return false;
       }
-      currentUser = user;
+      _completeSignIn(user);
       return true;
     } on AppException catch (e) {
       errorMessage = e.message;
@@ -66,13 +66,15 @@ class AuthController extends ChangeNotifier {
     notifyListeners();
 
     try {
-      currentUser = await _userRepository.register(
-        name: name.trim(),
-        email: email.trim(),
-        password: password,
-        phone: phone.trim(),
-        district: district,
-        city: city.trim(),
+      _completeSignIn(
+        await _userRepository.register(
+          name: name.trim(),
+          email: email.trim(),
+          password: password,
+          phone: phone.trim(),
+          district: district,
+          city: city.trim(),
+        ),
       );
       return true;
     } on AppException catch (e) {
@@ -82,6 +84,24 @@ class AuthController extends ChangeNotifier {
       isLoading = false;
       notifyListeners();
     }
+  }
+
+  bool _justSignedIn = false;
+
+  /// Every successful sign-in ends here (email login and registration
+  /// today; Google / Facebook sign-in should call it too once they exist),
+  /// so Home knows to run its after-sign-in steps.
+  void _completeSignIn(UserModel user) {
+    currentUser = user;
+    _justSignedIn = true;
+  }
+
+  /// True once after each sign-in, then false: lets Home show its
+  /// after-sign-in prompt exactly once, never for a restored session.
+  bool takeJustSignedIn() {
+    final value = _justSignedIn;
+    _justSignedIn = false;
+    return value;
   }
 
   /// Restores a signed-in session from a previous launch, if any.
@@ -113,6 +133,7 @@ class AuthController extends ChangeNotifier {
 
   Future<void> logout() async {
     currentUser = null;
+    _justSignedIn = false;
     notifyListeners();
     await _userRepository.logout();
   }

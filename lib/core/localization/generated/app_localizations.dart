@@ -106,12 +106,6 @@ abstract class AppLocalizations {
   /// **'ShareLoop'**
   String get appTitle;
 
-  /// No description provided for @tagline.
-  ///
-  /// In en, this message translates to:
-  /// **'Give What You Don\'t Need. Get What You Do.'**
-  String get tagline;
-
   /// No description provided for @home.
   ///
   /// In en, this message translates to:
@@ -129,12 +123,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Settings'**
   String get settings;
-
-  /// No description provided for @giveAway.
-  ///
-  /// In en, this message translates to:
-  /// **'Give Away'**
-  String get giveAway;
 
   /// No description provided for @requests.
   ///
@@ -171,18 +159,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Password'**
   String get password;
-
-  /// No description provided for @fullName.
-  ///
-  /// In en, this message translates to:
-  /// **'Full Name'**
-  String get fullName;
-
-  /// No description provided for @phoneNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Phone Number'**
-  String get phoneNumber;
 
   /// No description provided for @district.
   ///
@@ -226,41 +202,11 @@ abstract class AppLocalizations {
   /// **'My Requests'**
   String get myRequests;
 
-  /// No description provided for @reviewsReceived.
-  ///
-  /// In en, this message translates to:
-  /// **'Reviews Received'**
-  String get reviewsReceived;
-
-  /// No description provided for @donations.
-  ///
-  /// In en, this message translates to:
-  /// **'Donations'**
-  String get donations;
-
-  /// No description provided for @requestThisItem.
-  ///
-  /// In en, this message translates to:
-  /// **'Request this item'**
-  String get requestThisItem;
-
-  /// No description provided for @viewIncomingRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'View Incoming Requests'**
-  String get viewIncomingRequests;
-
   /// No description provided for @submitRequest.
   ///
   /// In en, this message translates to:
   /// **'Submit Request'**
   String get submitRequest;
-
-  /// No description provided for @publishPost.
-  ///
-  /// In en, this message translates to:
-  /// **'Publish Post'**
-  String get publishPost;
 
   /// No description provided for @language.
   ///
@@ -327,12 +273,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Welcome back!'**
   String get loginWelcomeBack;
-
-  /// No description provided for @loginSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Fill your details or continue with social media'**
-  String get loginSubtitle;
 
   /// No description provided for @loginEmailHint.
   ///
@@ -405,12 +345,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sign In'**
   String get loginSignIn;
-
-  /// No description provided for @loginOr.
-  ///
-  /// In en, this message translates to:
-  /// **'or'**
-  String get loginOr;
 
   /// No description provided for @loginNoAccount.
   ///
@@ -489,12 +423,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select your district'**
   String get registerDistrictHint;
-
-  /// No description provided for @registerCityHint.
-  ///
-  /// In en, this message translates to:
-  /// **'e.g. Negombo'**
-  String get registerCityHint;
 
   /// No description provided for @registerConfirmPasswordHint.
   ///
@@ -652,35 +580,17 @@ abstract class AppLocalizations {
   /// **'Find items you need...'**
   String get homeSearchHint;
 
-  /// No description provided for @homeGiveItemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Give an Item'**
-  String get homeGiveItemTitle;
-
-  /// No description provided for @homeGiveItemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Pass on what you no longer need, free'**
-  String get homeGiveItemSubtitle;
-
-  /// No description provided for @homeRequestItemTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Request an Item'**
-  String get homeRequestItemTitle;
-
-  /// No description provided for @homeRequestItemSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tell the community what you need'**
-  String get homeRequestItemSubtitle;
-
   /// No description provided for @homeAllCategories.
   ///
   /// In en, this message translates to:
   /// **'All'**
   String get homeAllCategories;
+
+  /// No description provided for @homeCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get homeCategories;
 
   /// No description provided for @homeAvailableNearYou.
   ///
@@ -688,23 +598,173 @@ abstract class AppLocalizations {
   /// **'Available near you'**
   String get homeAvailableNearYou;
 
-  /// No description provided for @homeOpenRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Open requests'**
-  String get homeOpenRequests;
-
-  /// No description provided for @homeAllDistricts.
-  ///
-  /// In en, this message translates to:
-  /// **'All districts'**
-  String get homeAllDistricts;
-
   /// No description provided for @homeChooseDistrict.
   ///
   /// In en, this message translates to:
   /// **'Choose a district'**
   String get homeChooseDistrict;
+
+  /// No description provided for @homeChooseCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose your city'**
+  String get homeChooseCity;
+
+  /// No description provided for @homeSelectCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Select city'**
+  String get homeSelectCity;
+
+  /// No description provided for @homeAllAreas.
+  ///
+  /// In en, this message translates to:
+  /// **'All areas'**
+  String get homeAllAreas;
+
+  /// No description provided for @homeChangeDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Change'**
+  String get homeChangeDistrict;
+
+  /// No description provided for @homeCityDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'District: {district}'**
+  String homeCityDistrict(String district);
+
+  /// No description provided for @locationCityHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your city or town'**
+  String get locationCityHint;
+
+  /// No description provided for @locationCityNeedsDistrict.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a district first'**
+  String get locationCityNeedsDistrict;
+
+  /// No description provided for @locationUseMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Use my location'**
+  String get locationUseMine;
+
+  /// No description provided for @locationDetecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location…'**
+  String get locationDetecting;
+
+  /// No description provided for @locationExplainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Use your location?'**
+  String get locationExplainTitle;
+
+  /// No description provided for @locationExplainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'ShareLoop reads your location once to find your district and city. It isn\'t tracked in the background or shared with anyone.'**
+  String get locationExplainBody;
+
+  /// No description provided for @locationExplainContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get locationExplainContinue;
+
+  /// No description provided for @locationNotNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get locationNotNow;
+
+  /// No description provided for @locationDetected.
+  ///
+  /// In en, this message translates to:
+  /// **'Location set to {city}, {district}.'**
+  String locationDetected(String city, String district);
+
+  /// No description provided for @locationFilled.
+  ///
+  /// In en, this message translates to:
+  /// **'Found {city}, {district}. Tap Save Changes to keep it.'**
+  String locationFilled(String city, String district);
+
+  /// No description provided for @locationDistrictOnly.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re in {district} district. Please choose your city.'**
+  String locationDistrictOnly(String district);
+
+  /// No description provided for @locationOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get locationOpenSettings;
+
+  /// No description provided for @locationErrorUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location works in the ShareLoop app on Android and iPhone. Please choose your district and city.'**
+  String get locationErrorUnsupported;
+
+  /// No description provided for @locationErrorServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are turned off. Turn them on, or choose your city.'**
+  String get locationErrorServiceDisabled;
+
+  /// No description provided for @locationErrorDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission wasn\'t given. You can choose your city instead.'**
+  String get locationErrorDenied;
+
+  /// No description provided for @locationErrorBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access is blocked for ShareLoop. Allow it in Settings, or choose your city.'**
+  String get locationErrorBlocked;
+
+  /// No description provided for @locationErrorTimeout.
+  ///
+  /// In en, this message translates to:
+  /// **'Finding your location took too long. Try again, or choose your city.'**
+  String get locationErrorTimeout;
+
+  /// No description provided for @locationErrorInaccurate.
+  ///
+  /// In en, this message translates to:
+  /// **'Your location isn\'t precise enough. Turn on precise location, or choose your city.'**
+  String get locationErrorInaccurate;
+
+  /// No description provided for @locationErrorOutside.
+  ///
+  /// In en, this message translates to:
+  /// **'You seem to be outside Sri Lanka. Please choose your district and city.'**
+  String get locationErrorOutside;
+
+  /// No description provided for @locationErrorNotMatched.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t match your location to a district. Please choose it yourself.'**
+  String get locationErrorNotMatched;
+
+  /// No description provided for @locationErrorFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t find your location. Try again, or choose your city.'**
+  String get locationErrorFailed;
+
+  /// No description provided for @locationErrorLookup.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t look up your area. Check your internet connection, or choose your city.'**
+  String get locationErrorLookup;
 
   /// No description provided for @homeGive.
   ///
@@ -723,12 +783,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New donor'**
   String get homeNewDonor;
-
-  /// No description provided for @homeRequestedBy.
-  ///
-  /// In en, this message translates to:
-  /// **'Requested by {name}'**
-  String homeRequestedBy(String name);
 
   /// No description provided for @giveTitle.
   ///
@@ -754,11 +808,35 @@ abstract class AppLocalizations {
   /// **'Add photos of your item'**
   String get giveAddPhotos;
 
-  /// No description provided for @giveAddPhotosHint.
+  /// No description provided for @givePhotosItemOnly.
   ///
   /// In en, this message translates to:
-  /// **'Clear photos help others decide faster'**
-  String get giveAddPhotosHint;
+  /// **'Photograph the item only, with no people, hands or faces'**
+  String get givePhotosItemOnly;
+
+  /// No description provided for @photoChecking.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking photo…'**
+  String get photoChecking;
+
+  /// No description provided for @photoHasPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo contains a person or a visible body part. Please upload a photo of the item only.'**
+  String get photoHasPerson;
+
+  /// No description provided for @photoCheckFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'We couldn\'t check this photo, so it wasn\'t added. Please try again or choose another photo.'**
+  String get photoCheckFailed;
+
+  /// No description provided for @photoCheckUnsupported.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos can\'t be checked on this device, so they can\'t be added here. Please use the phone app or a web browser.'**
+  String get photoCheckUnsupported;
 
   /// No description provided for @giveAddPhoto.
   ///
@@ -831,6 +909,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t start the camera. Please try again.'**
   String get cameraFailed;
+
+  /// No description provided for @cropTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Adjust photo'**
+  String get cropTitle;
+
+  /// No description provided for @cropHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to move. Pinch, scroll or use the slider to zoom.'**
+  String get cropHint;
+
+  /// No description provided for @cropZoom.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom'**
+  String get cropZoom;
 
   /// No description provided for @giveItemTitle.
   ///
@@ -963,6 +1059,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Delete request'**
   String get requestsDelete;
+
+  /// No description provided for @requestsEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit request'**
+  String get requestsEdit;
 
   /// No description provided for @requestsDeleteConfirm.
   ///
@@ -1126,6 +1228,24 @@ abstract class AppLocalizations {
   /// **'Your request has been submitted.'**
   String get requestSubmitted;
 
+  /// No description provided for @requestUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your request has been updated.'**
+  String get requestUpdated;
+
+  /// No description provided for @requestEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Request'**
+  String get requestEditTitle;
+
+  /// No description provided for @requestEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update what donors see about your request'**
+  String get requestEditSubtitle;
+
   /// No description provided for @profileTitle.
   ///
   /// In en, this message translates to:
@@ -1197,6 +1317,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Notifications aren\'t available yet.'**
   String get profileNotificationsUnavailable;
+
+  /// No description provided for @notifPromptTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow ShareLoop to send you notifications?'**
+  String get notifPromptTitle;
+
+  /// No description provided for @notifPromptBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated on item requests, responses, and exchange updates.'**
+  String get notifPromptBody;
+
+  /// No description provided for @notifPromptAllow.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow Notifications'**
+  String get notifPromptAllow;
+
+  /// No description provided for @notifPromptLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe Later'**
+  String get notifPromptLater;
+
+  /// No description provided for @notifEnabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are on.'**
+  String get notifEnabled;
+
+  /// No description provided for @notifDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are off. You can turn them on any time from Profile → Notifications.'**
+  String get notifDenied;
+
+  /// No description provided for @notifBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked for ShareLoop. Turn them on in your phone\'s settings.'**
+  String get notifBlocked;
+
+  /// No description provided for @notifBlockedBrowser.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications are blocked for ShareLoop in this browser. Allow them from the site settings next to the address bar.'**
+  String get notifBlockedBrowser;
+
+  /// No description provided for @notifOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get notifOpenSettings;
+
+  /// No description provided for @stateRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Try again'**
+  String get stateRetry;
+
+  /// No description provided for @stateNoMatches.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing matches your search or filters.'**
+  String get stateNoMatches;
+
+  /// No description provided for @stateClearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get stateClearFilters;
+
+  /// No description provided for @searchClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear search'**
+  String get searchClear;
+
+  /// No description provided for @discardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard changes?'**
+  String get discardTitle;
+
+  /// No description provided for @discardMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'What you\'ve entered will be lost.'**
+  String get discardMessage;
+
+  /// No description provided for @discardAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Discard'**
+  String get discardAction;
 
   /// No description provided for @profileAdmin.
   ///
@@ -1378,11 +1594,11 @@ abstract class AppLocalizations {
   /// **'This item is no longer available for requests.'**
   String get itemDetailsClosed;
 
-  /// No description provided for @itemDetailsShare.
+  /// No description provided for @itemDetailsEdit.
   ///
   /// In en, this message translates to:
-  /// **'Share'**
-  String get itemDetailsShare;
+  /// **'Edit item'**
+  String get itemDetailsEdit;
 
   /// No description provided for @itemDetailsViewPhoto.
   ///
@@ -1390,15 +1606,23 @@ abstract class AppLocalizations {
   /// **'View photo full screen'**
   String get itemDetailsViewPhoto;
 
-  /// No description provided for @itemDetailsShareText.
+  /// No description provided for @giveEditTitle.
   ///
   /// In en, this message translates to:
-  /// **'{title} is free to a good home on ShareLoop ({district}). {description}'**
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  );
+  /// **'Edit your item'**
+  String get giveEditTitle;
+
+  /// No description provided for @giveEditSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Update what people see about this item'**
+  String get giveEditSubtitle;
+
+  /// No description provided for @postUpdated.
+  ///
+  /// In en, this message translates to:
+  /// **'Item updated.'**
+  String get postUpdated;
 
   /// No description provided for @editProfileChangePhoto.
   ///

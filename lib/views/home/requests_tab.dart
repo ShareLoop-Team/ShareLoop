@@ -11,6 +11,8 @@ import '../../models/item_request_model.dart';
 import '../../widgets/confirm_dialog.dart';
 import '../../widgets/empty_state.dart';
 import '../../widgets/loading_indicator.dart';
+import '../../widgets/user_avatar.dart';
+import '../requests/create_request_screen.dart';
 
 /// View: item requests as cards, newest first. Shows standalone community
 /// requests narrowed by category/district/search, or with [onlyMine] the
@@ -23,12 +25,19 @@ class RequestsTab extends StatelessWidget {
     this.district,
     this.query = '',
     this.onlyMine = false,
+    this.onClearFilters,
   });
 
   final String? category;
   final String? district;
   final String query;
   final bool onlyMine;
+
+  /// Offered when the filters leave nothing to show.
+  final VoidCallback? onClearFilters;
+
+  bool get _filtered =>
+      category != null || district != null || query.trim().isNotEmpty;
 
   @override
   Widget build(BuildContext context) {
@@ -54,12 +63,28 @@ class RequestsTab extends StatelessWidget {
           ))
       ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     if (requests.isEmpty) {
-      return SliverFillRemaining(
-        hasScrollBody: false,
-        child: EmptyState(
+      final EmptyState state;
+      if (requestController.errorMessage case final error?) {
+        // A failed load is not "no requests": say so and offer a retry.
+        state = EmptyState(
+          icon: Icons.cloud_off_outlined,
+          message: error,
+          actionLabel: l10n.stateRetry,
+          onAction: requestController.loadRequests,
+        );
+      } else if (_filtered && onClearFilters != null) {
+        state = EmptyState(
+          icon: Icons.search_off,
+          message: l10n.stateNoMatches,
+          actionLabel: l10n.stateClearFilters,
+          onAction: onClearFilters,
+        );
+      } else {
+        state = EmptyState(
           message: onlyMine ? l10n.profileNoRequests : l10n.noOpenRequests,
-        ),
-      );
+        );
+      }
+      return SliverFillRemaining(hasScrollBody: false, child: state);
     }
     return SliverPadding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -91,6 +116,12 @@ class _RequestCard extends StatelessWidget {
         request.status == ItemRequestStatus.pending;
     // Once a donor has chosen this request, the handover depends on it.
     final canDelete = isMine && request.status != ItemRequestStatus.approved;
+    final canEdit =
+        isMine && context.read<RequestController>().canEdit(request);
+    // Your own requests follow your current name and photo.
+    final me = isMine ? context.watch<AuthController>().currentUser : null;
+    final name = me?.name ?? request.requesterName;
+    final avatarUrl = me != null ? me.avatarUrl : request.requesterAvatarUrl;
 
     return Container(
       padding: const EdgeInsets.all(16),
@@ -159,26 +190,27 @@ class _RequestCard extends StatelessWidget {
           ),
           Row(
             children: [
-              CircleAvatar(
-                radius: 18,
-                backgroundColor: AppColors.softMint,
-                child: Text(
-                  request.requesterName.isEmpty
-                      ? '?'
-                      : request.requesterName[0].toUpperCase(),
-                  style: textTheme.titleSmall?.copyWith(
-                    fontWeight: FontWeight.w700,
-                    color: AppColors.deepGreen,
+              if (avatarUrl case final url? when url.isNotEmpty)
+                UserAvatar(url: url, size: 36, ringWidth: 1.5)
+              else
+                CircleAvatar(
+                  radius: 18,
+                  backgroundColor: AppColors.softMint,
+                  child: Text(
+                    name.isEmpty ? '?' : name[0].toUpperCase(),
+                    style: textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: AppColors.deepGreen,
+                    ),
                   ),
                 ),
-              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      request.requesterName,
+                      name,
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodyMedium?.copyWith(
@@ -227,13 +259,27 @@ class _RequestCard extends StatelessWidget {
                     ),
                   ),
                 ),
-              ] else if (canDelete)
-                IconButton(
-                  onPressed: () => _confirmDelete(context),
-                  tooltip: l10n.requestsDelete,
-                  icon: const Icon(Icons.delete_outline),
-                  color: AppColors.error,
-                ),
+              ] else ...[
+                if (canEdit)
+                  IconButton(
+                    onPressed: () => Navigator.of(context).push(
+                      MaterialPageRoute<void>(
+                        builder: (_) =>
+                            CreateRequestScreen(editRequest: request),
+                      ),
+                    ),
+                    tooltip: l10n.requestsEdit,
+                    icon: const Icon(Icons.edit_outlined),
+                    color: AppColors.deepGreen,
+                  ),
+                if (canDelete)
+                  IconButton(
+                    onPressed: () => _confirmDelete(context),
+                    tooltip: l10n.requestsDelete,
+                    icon: const Icon(Icons.delete_outline),
+                    color: AppColors.error,
+                  ),
+              ],
             ],
           ),
         ],

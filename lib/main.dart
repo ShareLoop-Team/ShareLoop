@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:provider/provider.dart';
@@ -13,8 +14,11 @@ import 'controllers/request_controller.dart';
 import 'core/localization/generated/app_localizations.dart';
 import 'core/routes/app_routes.dart';
 import 'core/theme/app_theme.dart';
+import 'core/theme/app_typography.dart';
 import 'models/item_request_model.dart';
 import 'services/auth_service.dart';
+import 'services/location_service.dart';
+import 'services/notification_permission_service.dart';
 import 'views/admin/manage_categories_screen.dart';
 import 'views/admin/manage_users_screen.dart';
 import 'views/admin/moderate_posts_screen.dart';
@@ -41,8 +45,15 @@ import 'views/splash/splash_screen.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  AppTypography.registerLicenses();
   // Firebase Authentication for sign-in; app data is in-memory sample data.
   await AuthService.initialize();
+  // Development only: `flutter run --dart-define=RESET_NOTIFICATION_PROMPT=true`
+  // shows the after-sign-in notification prompt again. Release builds
+  // ignore it, so a real user's saved choice is never cleared.
+  if (kDebugMode && const bool.fromEnvironment('RESET_NOTIFICATION_PROMPT')) {
+    await NotificationPermissionService().resetPrompt();
+  }
   runApp(const ShareLoopApp());
 }
 
@@ -64,6 +75,8 @@ class ShareLoopApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => RatingController()),
         ChangeNotifierProvider(create: (_) => AdminController()),
         ChangeNotifierProvider(create: (_) => LanguageController()),
+        Provider(create: (_) => NotificationPermissionService()),
+        Provider(create: (_) => LocationService()),
       ],
       child: Consumer<LanguageController>(
         builder: (context, languageController, _) {

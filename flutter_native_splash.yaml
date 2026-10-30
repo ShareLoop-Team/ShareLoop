@@ -3,12 +3,12 @@ flutter_native_splash:
   # animated, only by the Flutter SplashScreen. Background matches
   # AppColors.canvas, and stays light when the device is in dark mode so there
   # is no dark-to-light flash before the Flutter splash.
-  color: "#F7FAF6"
-  color_dark: "#F7FAF6"
+  color: "#F0F6EC"
+  color_dark: "#F0F6EC"
 
   android_12:
-    color: "#F7FAF6"
-    color_dark: "#F7FAF6"
+    color: "#F0F6EC"
+    color_dark: "#F0F6EC"
     # Android 12+ always draws an icon on the system splash and falls back to
     # the launcher icon when none is set. This fully transparent icon keeps the
     # splash color-only. It is a placeholder, not brand artwork.

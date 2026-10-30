@@ -13,9 +13,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'ShareLoop';
 
   @override
-  String get tagline => 'Give What You Don\'t Need. Get What You Do.';
-
-  @override
   String get home => 'Home';
 
   @override
@@ -23,9 +20,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get settings => 'Settings';
-
-  @override
-  String get giveAway => 'Give Away';
 
   @override
   String get requests => 'Requests';
@@ -44,12 +38,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get password => 'Password';
-
-  @override
-  String get fullName => 'Full Name';
-
-  @override
-  String get phoneNumber => 'Phone Number';
 
   @override
   String get district => 'District';
@@ -73,22 +61,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myRequests => 'My Requests';
 
   @override
-  String get reviewsReceived => 'Reviews Received';
-
-  @override
-  String get donations => 'Donations';
-
-  @override
-  String get requestThisItem => 'Request this item';
-
-  @override
-  String get viewIncomingRequests => 'View Incoming Requests';
-
-  @override
   String get submitRequest => 'Submit Request';
-
-  @override
-  String get publishPost => 'Publish Post';
 
   @override
   String get language => 'Language';
@@ -127,9 +100,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get loginWelcomeBack => 'Welcome back!';
-
-  @override
-  String get loginSubtitle => 'Fill your details or continue with social media';
 
   @override
   String get loginEmailHint => 'Enter your Email';
@@ -172,9 +142,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get loginSignIn => 'Sign In';
 
   @override
-  String get loginOr => 'or';
-
-  @override
   String get loginNoAccount => 'New user?';
 
   @override
@@ -212,9 +179,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get registerDistrictHint => 'Select your district';
-
-  @override
-  String get registerCityHint => 'e.g. Negombo';
 
   @override
   String get registerConfirmPasswordHint => 'Re-enter your password';
@@ -302,31 +266,116 @@ class AppLocalizationsEn extends AppLocalizations {
   String get homeSearchHint => 'Find items you need...';
 
   @override
-  String get homeGiveItemTitle => 'Give an Item';
-
-  @override
-  String get homeGiveItemSubtitle => 'Pass on what you no longer need, free';
-
-  @override
-  String get homeRequestItemTitle => 'Request an Item';
-
-  @override
-  String get homeRequestItemSubtitle => 'Tell the community what you need';
-
-  @override
   String get homeAllCategories => 'All';
+
+  @override
+  String get homeCategories => 'Categories';
 
   @override
   String get homeAvailableNearYou => 'Available near you';
 
   @override
-  String get homeOpenRequests => 'Open requests';
-
-  @override
-  String get homeAllDistricts => 'All districts';
-
-  @override
   String get homeChooseDistrict => 'Choose a district';
+
+  @override
+  String get homeChooseCity => 'Choose your city';
+
+  @override
+  String get homeSelectCity => 'Select city';
+
+  @override
+  String get homeAllAreas => 'All areas';
+
+  @override
+  String get homeChangeDistrict => 'Change';
+
+  @override
+  String homeCityDistrict(String district) {
+    return 'District: $district';
+  }
+
+  @override
+  String get locationCityHint => 'Select your city or town';
+
+  @override
+  String get locationCityNeedsDistrict => 'Select a district first';
+
+  @override
+  String get locationUseMine => 'Use my location';
+
+  @override
+  String get locationDetecting => 'Finding your location…';
+
+  @override
+  String get locationExplainTitle => 'Use your location?';
+
+  @override
+  String get locationExplainBody =>
+      'ShareLoop reads your location once to find your district and city. It isn\'t tracked in the background or shared with anyone.';
+
+  @override
+  String get locationExplainContinue => 'Continue';
+
+  @override
+  String get locationNotNow => 'Not now';
+
+  @override
+  String locationDetected(String city, String district) {
+    return 'Location set to $city, $district.';
+  }
+
+  @override
+  String locationFilled(String city, String district) {
+    return 'Found $city, $district. Tap Save Changes to keep it.';
+  }
+
+  @override
+  String locationDistrictOnly(String district) {
+    return 'You\'re in $district district. Please choose your city.';
+  }
+
+  @override
+  String get locationOpenSettings => 'Settings';
+
+  @override
+  String get locationErrorUnsupported =>
+      'Finding your location works in the ShareLoop app on Android and iPhone. Please choose your district and city.';
+
+  @override
+  String get locationErrorServiceDisabled =>
+      'Location services are turned off. Turn them on, or choose your city.';
+
+  @override
+  String get locationErrorDenied =>
+      'Location permission wasn\'t given. You can choose your city instead.';
+
+  @override
+  String get locationErrorBlocked =>
+      'Location access is blocked for ShareLoop. Allow it in Settings, or choose your city.';
+
+  @override
+  String get locationErrorTimeout =>
+      'Finding your location took too long. Try again, or choose your city.';
+
+  @override
+  String get locationErrorInaccurate =>
+      'Your location isn\'t precise enough. Turn on precise location, or choose your city.';
+
+  @override
+  String get locationErrorOutside =>
+      'You seem to be outside Sri Lanka. Please choose your district and city.';
+
+  @override
+  String get locationErrorNotMatched =>
+      'We couldn\'t match your location to a district. Please choose it yourself.';
+
+  @override
+  String get locationErrorFailed =>
+      'Couldn\'t find your location. Try again, or choose your city.';
+
+  @override
+  String get locationErrorLookup =>
+      'Couldn\'t look up your area. Check your internet connection, or choose your city.';
 
   @override
   String get homeGive => 'Give';
@@ -338,11 +387,6 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get homeNewDonor => 'New donor';
-
-  @override
-  String homeRequestedBy(String name) {
-    return 'Requested by $name';
-  }
 
   @override
   String get giveTitle => 'Give an Item';
@@ -357,7 +401,23 @@ class AppLocalizationsEn extends AppLocalizations {
   String get giveAddPhotos => 'Add photos of your item';
 
   @override
-  String get giveAddPhotosHint => 'Clear photos help others decide faster';
+  String get givePhotosItemOnly =>
+      'Photograph the item only, with no people, hands or faces';
+
+  @override
+  String get photoChecking => 'Checking photo…';
+
+  @override
+  String get photoHasPerson =>
+      'This photo contains a person or a visible body part. Please upload a photo of the item only.';
+
+  @override
+  String get photoCheckFailed =>
+      'We couldn\'t check this photo, so it wasn\'t added. Please try again or choose another photo.';
+
+  @override
+  String get photoCheckUnsupported =>
+      'Photos can\'t be checked on this device, so they can\'t be added here. Please use the phone app or a web browser.';
 
   @override
   String get giveAddPhoto => 'Add photo';
@@ -395,6 +455,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cameraFailed => 'Couldn\'t start the camera. Please try again.';
+
+  @override
+  String get cropTitle => 'Adjust photo';
+
+  @override
+  String get cropHint =>
+      'Drag to move. Pinch, scroll or use the slider to zoom.';
+
+  @override
+  String get cropZoom => 'Zoom';
 
   @override
   String get giveItemTitle => 'Item title';
@@ -462,6 +532,9 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get requestsDelete => 'Delete request';
+
+  @override
+  String get requestsEdit => 'Edit request';
 
   @override
   String get requestsDeleteConfirm => 'Delete this request?';
@@ -549,6 +622,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get requestSubmitted => 'Your request has been submitted.';
 
   @override
+  String get requestUpdated => 'Your request has been updated.';
+
+  @override
+  String get requestEditTitle => 'Edit Request';
+
+  @override
+  String get requestEditSubtitle => 'Update what donors see about your request';
+
+  @override
   String get profileTitle => 'My Profile';
 
   @override
@@ -588,6 +670,58 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get profileNotificationsUnavailable =>
       'Notifications aren\'t available yet.';
+
+  @override
+  String get notifPromptTitle => 'Allow ShareLoop to send you notifications?';
+
+  @override
+  String get notifPromptBody =>
+      'Stay updated on item requests, responses, and exchange updates.';
+
+  @override
+  String get notifPromptAllow => 'Allow Notifications';
+
+  @override
+  String get notifPromptLater => 'Maybe Later';
+
+  @override
+  String get notifEnabled => 'Notifications are on.';
+
+  @override
+  String get notifDenied =>
+      'Notifications are off. You can turn them on any time from Profile → Notifications.';
+
+  @override
+  String get notifBlocked =>
+      'Notifications are blocked for ShareLoop. Turn them on in your phone\'s settings.';
+
+  @override
+  String get notifBlockedBrowser =>
+      'Notifications are blocked for ShareLoop in this browser. Allow them from the site settings next to the address bar.';
+
+  @override
+  String get notifOpenSettings => 'Open settings';
+
+  @override
+  String get stateRetry => 'Try again';
+
+  @override
+  String get stateNoMatches => 'Nothing matches your search or filters.';
+
+  @override
+  String get stateClearFilters => 'Clear filters';
+
+  @override
+  String get searchClear => 'Clear search';
+
+  @override
+  String get discardTitle => 'Discard changes?';
+
+  @override
+  String get discardMessage => 'What you\'ve entered will be lost.';
+
+  @override
+  String get discardAction => 'Discard';
 
   @override
   String get profileAdmin => 'Admin';
@@ -699,19 +833,19 @@ class AppLocalizationsEn extends AppLocalizations {
       'This item is no longer available for requests.';
 
   @override
-  String get itemDetailsShare => 'Share';
+  String get itemDetailsEdit => 'Edit item';
 
   @override
   String get itemDetailsViewPhoto => 'View photo full screen';
 
   @override
-  String itemDetailsShareText(
-    String title,
-    String district,
-    String description,
-  ) {
-    return '$title is free to a good home on ShareLoop ($district). $description';
-  }
+  String get giveEditTitle => 'Edit your item';
+
+  @override
+  String get giveEditSubtitle => 'Update what people see about this item';
+
+  @override
+  String get postUpdated => 'Item updated.';
 
   @override
   String get editProfileChangePhoto => 'Change photo';

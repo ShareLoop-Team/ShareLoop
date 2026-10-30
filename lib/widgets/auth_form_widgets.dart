@@ -26,6 +26,33 @@ InputDecoration authInputDecoration(String hint, {Widget? suffixIcon}) {
   );
 }
 
+/// Rounded, filled field with a leading icon and no label above it; the
+/// outline only appears on focus.
+InputDecoration authPillInputDecoration(
+  String hint, {
+  required IconData icon,
+  Widget? suffixIcon,
+}) {
+  OutlineInputBorder border(Color color, {double width = 1.5}) =>
+      OutlineInputBorder(
+        borderRadius: BorderRadius.circular(28),
+        borderSide: BorderSide(color: color, width: width),
+      );
+
+  return InputDecoration(
+    hintText: hint,
+    hintStyle: const TextStyle(color: AppColors.textSecondary),
+    prefixIcon: Icon(icon, color: AppColors.textSecondary, size: 22),
+    suffixIcon: suffixIcon,
+    contentPadding: const EdgeInsets.symmetric(vertical: 18),
+    border: border(Colors.transparent),
+    enabledBorder: border(Colors.transparent),
+    focusedBorder: border(AppColors.deepGreen),
+    errorBorder: border(AppColors.error),
+    focusedErrorBorder: border(AppColors.error),
+  );
+}
+
 /// Small label shown above an auth field.
 class AuthFieldLabel extends StatelessWidget {
   const AuthFieldLabel(this.text, {super.key});
@@ -343,6 +370,67 @@ class AuthSocialButton extends StatelessWidget {
           const SizedBox(width: 12),
           Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
         ],
+      ),
+    );
+  }
+}
+
+/// White outlined button showing a provider's logo and name, sized to sit
+/// two in a row. [semanticsLabel] is the full action ("Sign in with
+/// Google") for screen readers.
+class AuthSocialTile extends StatelessWidget {
+  const AuthSocialTile({
+    super.key,
+    required this.asset,
+    required this.provider,
+    required this.semanticsLabel,
+    required this.onPressed,
+  });
+
+  /// Brand icons from Icons8 (https://icons8.com).
+  static const String googleIcon = 'assets/images/icon_google.png';
+  static const String facebookIcon = 'assets/images/icon_facebook.png';
+
+  /// A PNG image asset of the provider's logo.
+  final String asset;
+  final String provider;
+  final String semanticsLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return Semantics(
+      button: true,
+      label: semanticsLabel,
+      excludeSemantics: true,
+      child: OutlinedButton(
+        onPressed: onPressed,
+        style: OutlinedButton.styleFrom(
+          backgroundColor: AppColors.white,
+          foregroundColor: AppColors.ink,
+          minimumSize: const Size.fromHeight(52),
+          side: const BorderSide(color: AppColors.border),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
+            fontWeight: FontWeight.w600,
+          ),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              asset,
+              width: 24,
+              height: 24,
+              filterQuality: FilterQuality.medium,
+            ),
+            const SizedBox(width: 10),
+            Flexible(child: Text(provider, overflow: TextOverflow.ellipsis)),
+          ],
+        ),
       ),
     );
   }

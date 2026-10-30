@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../../controllers/auth_controller.dart';
 import '../../controllers/request_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
 import '../../core/theme/app_theme.dart';
+import '../../services/notification_permission_service.dart';
 import '../../widgets/category_chip.dart';
+import '../../widgets/confirm_dialog.dart';
+import '../../widgets/notification_prompt.dart';
 import '../../widgets/app_icon.dart';
 import '../../widgets/segmented_toggle.dart';
 import '../give_away/create_give_away_screen.dart';
@@ -44,22 +48,56 @@ class _HomeShellState extends State<_HomeShell> {
 
   int _navIndex = _homeIndex;
 
-  void _onNavTap(int index) => setState(() => _navIndex = index);
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _afterSignIn());
+  }
+
+  /// Right after sign-in (not a restored session), once Home is on screen,
+  /// offer notifications unless this device already answered.
+  Future<void> _afterSignIn() async {
+    if (!mounted) return;
+    final service = context.read<NotificationPermissionService?>();
+    final justSignedIn = context.read<AuthController>().takeJustSignedIn();
+    if (service == null || !justSignedIn) return;
+    if (!await service.shouldPrompt() || !mounted) return;
+    await showNotificationPrompt(context, service);
+  }
+
+  /// Whether the Give tab's form holds input that leaving would discard.
+  final _giveHasInput = ValueNotifier<bool>(false);
+
+  @override
+  void dispose() {
+    _giveHasInput.dispose();
+    super.dispose();
+  }
+
+  /// Switches tabs, first asking before throwing away a half-filled Give
+  /// form (leaving the tab disposes it, so it starts fresh next time).
+  Future<void> _onNavTap(int index) async {
+    if (index == _navIndex) return;
+    if (_navIndex == _giveIndex && _giveHasInput.value) {
+      if (!await confirmDiscardChanges(context) || !mounted) return;
+      _giveHasInput.value = false;
+    }
+    setState(() => _navIndex = index);
+  }
 
   Widget _buildBody() {
     switch (_navIndex) {
       case _giveIndex:
-        // Leaving the tab disposes the form, so it starts fresh next time.
-        return CreateGiveAwayScreen(onClose: () => _onNavTap(_homeIndex));
+        return CreateGiveAwayScreen(
+          onClose: () => _onNavTap(_homeIndex),
+          hasUnsavedInput: _giveHasInput,
+        );
       case _requestsIndex:
         return const _RequestsPage();
       case _profileIndex:
         return const ProfileScreen();
       default:
-        return HomeFeed(
-          onOpenGive: () => _onNavTap(_giveIndex),
-          onOpenProfile: () => _onNavTap(_profileIndex),
-        );
+        return HomeFeed(onOpenProfile: () => _onNavTap(_profileIndex));
     }
   }
 
@@ -228,7 +266,11 @@ class _RequestsPageState extends State<_RequestsPage> {
               ),
             ),
             const SliverToBoxAdapter(child: SizedBox(height: 16)),
-            RequestsTab(category: _category, onlyMine: _showMine),
+            RequestsTab(
+              category: _category,
+              onlyMine: _showMine,
+              onClearFilters: () => setState(() => _category = null),
+            ),
             const SliverToBoxAdapter(child: SizedBox(height: 24)),
           ],
         ),

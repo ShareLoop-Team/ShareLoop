@@ -11,7 +11,8 @@ import '../user_repository.dart';
 /// [UserRepository] backed by Firebase Authentication for accounts,
 /// sessions and password reset. There is no app database, so the profile
 /// details Firebase doesn't hold (phone, district, city, photo) live in
-/// [MockDataService] for the current run only.
+/// [MockDataService] for the current run only — except district and city,
+/// which are also kept on this device (not in the cloud).
 class FirebaseUserRepository implements UserRepository {
   FirebaseUserRepository({FirebaseAuth? auth})
       : _auth = auth ?? AuthService.auth;
@@ -44,8 +45,11 @@ class FirebaseUserRepository implements UserRepository {
   }
 
   /// Makes [firebaseUser] the signed-in user, refusing suspended profiles.
+  /// The district and city come back from this device after a restart.
   Future<UserModel> _signIn(User firebaseUser) async {
-    final profile = _profileFor(firebaseUser);
+    final profile = await _profiles.withSavedLocation(
+      _profileFor(firebaseUser),
+    );
     if (profile.isSuspended) {
       await _auth.signOut();
       throw const AppException('This account has been suspended.');
@@ -104,6 +108,7 @@ class FirebaseUserRepository implements UserRepository {
         ..removeWhere((u) => u.id == user.id)
         ..add(user);
       _data.currentUserId = user.id;
+      await _profiles.rememberLocation(user);
       return user;
     });
   }

@@ -33,10 +33,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.8
-
   # State management: controllers (ChangeNotifier) notify views via Provider.
   provider: ^6.1.2
   # Photo selection for Give Away posts and profile photos.
@@ -53,7 +49,19 @@ dependencies:
   firebase_core: ^4.15.0
   firebase_auth: ^6.7.0
   flutter_svg: ^2.3.0
-  share_plus: ^13.3.1
+  # Asks for the OS notification permission after sign-in, and remembers
+  # the answer on the device so the prompt isn't repeated.
+  permission_handler: ^13.0.2
+  shared_preferences: ^2.5.6
+  # On-device check that donation photos show no people or body parts
+  # (Android/iOS; the web uses MediaPipe from web/photo_check.js).
+  google_mlkit_image_labeling: ^0.16.1
+  google_mlkit_pose_detection: ^0.16.1
+  google_mlkit_face_detection: ^0.15.1
+  # "Use my location": a one-off foreground GPS fix, turned into a district
+  # and city by the phone's own reverse geocoder (Android/iOS only).
+  geolocator: ^14.1.2
+  geocoding: ^5.0.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -66,6 +74,8 @@ dev_dependencies:
   # package. See that file for information about deactivating specific lint
   # rules and activating additional ones.
   flutter_lints: ^6.0.0
+  # Lets tests stand in a fake photo picker.
+  image_picker_platform_interface: ^2.11.2
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -86,6 +96,37 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    # Font licences (SIL OFL 1.1), shown on the app's licences page.
+    - assets/fonts/Inter-OFL.txt
+    - assets/fonts/NotoSansSinhala-OFL.txt
+
+  # Bundled so text never depends on downloading fonts at runtime. Inter is
+  # the primary font; Noto Sans Sinhala renders Sinhala (see AppTheme).
+  fonts:
+    - family: Inter
+      fonts:
+        - asset: assets/fonts/Inter-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/Inter-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/Inter-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/Inter-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/Inter-ExtraBold.ttf
+          weight: 800
+    - family: NotoSansSinhala
+      fonts:
+        - asset: assets/fonts/NotoSansSinhala-Regular.ttf
+          weight: 400
+        - asset: assets/fonts/NotoSansSinhala-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/NotoSansSinhala-SemiBold.ttf
+          weight: 600
+        - asset: assets/fonts/NotoSansSinhala-Bold.ttf
+          weight: 700
+        - asset: assets/fonts/NotoSansSinhala-ExtraBold.ttf
+          weight: 800
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

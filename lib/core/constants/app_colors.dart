@@ -8,7 +8,9 @@ class AppColors {
   static const Color brightGreen = Color(0xFF60BB46);
   static const Color deepGreen = Color(0xFF0F843D);
   static const Color softMint = Color(0xFFBCE2B3);
-  static const Color canvas = Color(0xFFF7FAF6);
+  // Main screen background: a soft green-tinted off-white, so the white
+  // cards and fields on top of it stand out.
+  static const Color canvas = Color(0xFFF0F6EC);
   // Background baked into the intro illustrations, so they blend seamlessly.
   static const Color introBackground = Color(0xFFF4F9F3);
   static const Color ink = Color(0xFF173126);
@@ -19,7 +21,8 @@ class AppColors {
   static const Color black = Color(0xFF000000);
   static const Color textSecondary = Color(0xFF6B7A72);
   static const Color border = Color(0xFFE1E8E2);
-  static const Color mutedSurface = Color(0xFFE9EEEA);
+  // Secondary surface: progress tracks, toggles, chips, locked fields.
+  static const Color mutedSurface = Color(0xFFE8F1E3);
   static const Color paleMint = Color(0xFFE3F2DD);
   static const Color silver = Color(0xFFA3A8A6);
   static const Color bronze = Color(0xFFB9805A);

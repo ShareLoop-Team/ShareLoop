@@ -1,3 +1,4 @@
+import '../../core/errors/app_exception.dart';
 import '../../models/item_request_model.dart';
 import '../../services/mock_data_service.dart';
 import '../item_request_repository.dart';
@@ -32,6 +33,17 @@ class MockItemRequestRepository implements ItemRequestRepository {
   Future<ItemRequestModel> createRequest(ItemRequestModel request) async {
     await Future.delayed(const Duration(milliseconds: 250));
     _data.itemRequests.add(request);
+    return request;
+  }
+
+  @override
+  Future<ItemRequestModel> updateRequest(ItemRequestModel request) async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    final index = _data.itemRequests.indexWhere((r) => r.id == request.id);
+    if (index == -1) {
+      throw const AppException('This request no longer exists.');
+    }
+    _data.itemRequests[index] = request;
     return request;
   }
 

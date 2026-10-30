@@ -6,6 +6,9 @@ class ItemRequestModel {
   final String id;
   final String requesterId;
   final String requesterName;
+
+  /// The requester's profile photo when they posted, if they had one.
+  final String? requesterAvatarUrl;
   final String? itemPostId;
   final String itemName; // empty on older requests; fall back to description
   final String description;
@@ -21,6 +24,7 @@ class ItemRequestModel {
     required this.id,
     required this.requesterId,
     required this.requesterName,
+    this.requesterAvatarUrl,
     this.itemPostId,
     this.itemName = '',
     required this.description,
@@ -33,19 +37,29 @@ class ItemRequestModel {
     this.status = ItemRequestStatus.pending,
   });
 
-  ItemRequestModel copyWith({ItemRequestStatus? status}) {
+  ItemRequestModel copyWith({
+    ItemRequestStatus? status,
+    String? itemName,
+    String? description,
+    String? reason,
+    String? notes,
+    String? category,
+    String? district,
+    String? city,
+  }) {
     return ItemRequestModel(
       id: id,
       requesterId: requesterId,
       requesterName: requesterName,
+      requesterAvatarUrl: requesterAvatarUrl,
       itemPostId: itemPostId,
-      itemName: itemName,
-      description: description,
-      reason: reason,
-      notes: notes,
-      category: category,
-      district: district,
-      city: city,
+      itemName: itemName ?? this.itemName,
+      description: description ?? this.description,
+      reason: reason ?? this.reason,
+      notes: notes ?? this.notes,
+      category: category ?? this.category,
+      district: district ?? this.district,
+      city: city ?? this.city,
       createdAt: createdAt,
       status: status ?? this.status,
     );

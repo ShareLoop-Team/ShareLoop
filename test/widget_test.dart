@@ -5,6 +5,7 @@ import 'package:provider/provider.dart';
 import 'package:shareloop/controllers/language_controller.dart';
 import 'package:shareloop/core/constants/app_colors.dart';
 import 'package:shareloop/main.dart';
+import 'package:shareloop/views/auth/login_screen.dart';
 import 'package:shareloop/views/onboarding/intro_screen.dart';
 import 'package:shareloop/views/onboarding/onboarding_screen.dart';
 import 'package:shareloop/views/splash/splash_screen.dart';
@@ -38,7 +39,7 @@ Future<void> _openLogin(
   await tester.ensureVisible(find.text('Get started'));
   await tester.tap(find.text('Get started'));
   await tester.pumpAndSettle();
-  expect(find.text('Welcome back!'), findsOneWidget);
+  expect(find.byType(LoginScreen), findsOneWidget);
 }
 
 void main() {
@@ -61,7 +62,7 @@ void main() {
 
     await tester.tap(find.text('Get started'));
     await tester.pumpAndSettle();
-    expect(find.text('Welcome back!'), findsOneWidget);
+    expect(find.byType(LoginScreen), findsOneWidget);
 
     // The design has no app bar, so go back with the system back action.
     await tester.binding.handlePopRoute();
@@ -136,7 +137,7 @@ void main() {
       await tester.tap(find.text('Create Account'));
       await tester.pumpAndSettle();
       expect(find.text('Create account'), findsOneWidget);
-      expect(find.text('Welcome back!'), findsNothing);
+      expect(find.byType(LoginScreen), findsNothing);
     });
 
     for (final size in const [Size(320, 480), Size(360, 800)]) {
@@ -219,7 +220,7 @@ void main() {
       await tester.tap(signIn);
       await tester.pumpAndSettle();
 
-      expect(find.text('Welcome back!'), findsOneWidget);
+      expect(find.byType(LoginScreen), findsOneWidget);
     });
 
     for (final size in const [Size(320, 480), Size(360, 800)]) {

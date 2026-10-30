@@ -6,6 +6,9 @@ class ItemPostModel {
   final String donorId;
   final String donorName;
 
+  /// The donor's current profile photo, if they have one.
+  final String? donorAvatarUrl;
+
   /// The donor's completed donations, for the badge shown on cards.
   final int donorDonationCount;
 
@@ -33,6 +36,7 @@ class ItemPostModel {
     required this.id,
     required this.donorId,
     required this.donorName,
+    this.donorAvatarUrl,
     this.donorDonationCount = 0,
     this.donorRating = 0,
     required this.title,
@@ -51,23 +55,34 @@ class ItemPostModel {
   ItemPostModel copyWith({
     ItemPostStatus? status,
     String? selectedRequesterId,
+    String? donorName,
+    String? donorAvatarUrl,
     int? donorDonationCount,
     double? donorRating,
+    String? title,
+    String? description,
+    String? condition,
+    String? category,
+    String? district,
+    String? city,
+    List<String>? photoPaths,
+    List<String>? photoUrls,
   }) {
     return ItemPostModel(
       id: id,
       donorId: donorId,
-      donorName: donorName,
+      donorName: donorName ?? this.donorName,
+      donorAvatarUrl: donorAvatarUrl ?? this.donorAvatarUrl,
       donorDonationCount: donorDonationCount ?? this.donorDonationCount,
       donorRating: donorRating ?? this.donorRating,
-      title: title,
-      description: description,
-      condition: condition,
-      category: category,
-      district: district,
-      city: city,
-      photoPaths: photoPaths,
-      photoUrls: photoUrls,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      condition: condition ?? this.condition,
+      category: category ?? this.category,
+      district: district ?? this.district,
+      city: city ?? this.city,
+      photoPaths: photoPaths ?? this.photoPaths,
+      photoUrls: photoUrls ?? this.photoUrls,
       createdAt: createdAt,
       status: status ?? this.status,
       selectedRequesterId: selectedRequesterId ?? this.selectedRequesterId,

@@ -13,8 +13,8 @@ class ItemController extends ChangeNotifier {
   ItemController({
     ItemPostRepository? repository,
     ExchangeRepository? exchangeRepository,
-  })  : _repository = repository ?? ItemPostRepository(),
-        _exchangeRepository = exchangeRepository ?? ExchangeRepository();
+  }) : _repository = repository ?? ItemPostRepository(),
+       _exchangeRepository = exchangeRepository ?? ExchangeRepository();
 
   final ItemPostRepository _repository;
   final ExchangeRepository _exchangeRepository;
@@ -26,7 +26,13 @@ class ItemController extends ChangeNotifier {
 
   String? categoryFilter;
   String? districtFilter;
+
+  /// Only posts in this city; Home sets it to the user's own city.
+  String? cityFilter;
   String searchQuery = '';
+
+  /// The profile city [applyProfileCity] last applied.
+  String? _profileCity;
 
   List<ItemPostModel> get posts {
     return _allPosts.where((p) {
@@ -34,12 +40,38 @@ class ItemController extends ChangeNotifier {
           categoryFilter == null || p.category == categoryFilter;
       final matchesDistrict =
           districtFilter == null || p.district == districtFilter;
-      final matchesSearch = searchQuery.isEmpty ||
+      final matchesCity = cityFilter == null || p.city == cityFilter;
+      final matchesSearch =
+          searchQuery.isEmpty ||
           p.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
           p.description.toLowerCase().contains(searchQuery.toLowerCase());
-      return matchesCategory && matchesDistrict && matchesSearch;
+      return matchesCategory && matchesDistrict && matchesCity && matchesSearch;
     }).toList();
   }
+
+  /// Whether a search, category, district or city is narrowing [posts].
+  bool get hasActiveFilters =>
+      categoryFilter != null ||
+      districtFilter != null ||
+      cityFilter != null ||
+      searchQuery.trim().isNotEmpty;
+
+  /// Whether [city] (the user's profile city) is already applied, so a
+  /// null [cityFilter] means they chose to see all areas.
+  bool hasAppliedProfileCity(String? city) => _profileCity == city;
+
+  /// Filters to the user's city when it is new or has changed, leaving any
+  /// "all areas" choice alone otherwise.
+  void applyProfileCity(String? city) {
+    if (_profileCity == city) return;
+    _profileCity = city;
+    cityFilter = city;
+    notifyListeners();
+  }
+
+  /// Any loaded post by id, regardless of the Home filters.
+  ItemPostModel? postById(String id) =>
+      _allPosts.where((p) => p.id == id).firstOrNull;
 
   Future<void> loadPosts() async {
     isLoading = true;
@@ -76,6 +108,11 @@ class ItemController extends ChangeNotifier {
     notifyListeners();
   }
 
+  void setCityFilter(String? city) {
+    cityFilter = city;
+    notifyListeners();
+  }
+
   void setSearchQuery(String query) {
     searchQuery = query;
     notifyListeners();
@@ -84,6 +121,7 @@ class ItemController extends ChangeNotifier {
   void clearFilters() {
     categoryFilter = null;
     districtFilter = null;
+    cityFilter = null;
     searchQuery = '';
     notifyListeners();
   }
@@ -119,6 +157,54 @@ class ItemController extends ChangeNotifier {
     );
     try {
       await _repository.createPost(post, photos: photos);
+    } on AppException catch (e) {
+      return e.message;
+    }
+    await loadPosts();
+    return null;
+  }
+
+  /// Whether the donor may still edit the post: only while it is available,
+  /// not once a requester is chosen or the item has been given away.
+  bool canEditPost(ItemPostModel post) => post.status == ItemPostStatus.active;
+
+  /// Saves the donor's edits. [keptPhotoUrls] are the existing photos left
+  /// in place (in order); [newPhotos] are added after them. Returns an
+  /// error message, or null once saved.
+  Future<String?> updatePost(
+    ItemPostModel post, {
+    required String title,
+    required String description,
+    required String condition,
+    required String category,
+    required String district,
+    required String city,
+    required List<String> keptPhotoUrls,
+    List<PhotoUpload> newPhotos = const [],
+  }) async {
+    if (!canEditPost(post)) return 'This item can no longer be edited.';
+    if (title.trim().isEmpty || description.trim().isEmpty) {
+      return 'Title and description are required.';
+    }
+    final kept = [
+      for (var i = 0; i < post.photoUrls.length; i++)
+        if (keptPhotoUrls.contains(post.photoUrls[i])) i,
+    ];
+    final edited = post.copyWith(
+      title: title.trim(),
+      description: description.trim(),
+      condition: condition,
+      category: category,
+      district: district,
+      city: city.trim(),
+      photoUrls: [for (final i in kept) post.photoUrls[i]],
+      photoPaths: [
+        for (final i in kept)
+          if (i < post.photoPaths.length) post.photoPaths[i],
+      ],
+    );
+    try {
+      await _repository.updatePost(edited, newPhotos: newPhotos);
     } on AppException catch (e) {
       return e.message;
     }
@@ -177,11 +263,15 @@ class ItemController extends ChangeNotifier {
 
   /// The signed-in party confirms the handover; the post completes once
   /// both parties have. Returns an error message, or null on success.
-  Future<String?> confirmHandover(String postId) =>
-      _runExchangeStep(postId, () => _exchangeRepository.confirmHandover(postId));
+  Future<String?> confirmHandover(String postId) => _runExchangeStep(
+    postId,
+    () => _exchangeRepository.confirmHandover(postId),
+  );
 
-  Future<String?> cancelExchange(String postId) =>
-      _runExchangeStep(postId, () => _exchangeRepository.cancelExchange(postId));
+  Future<String?> cancelExchange(String postId) => _runExchangeStep(
+    postId,
+    () => _exchangeRepository.cancelExchange(postId),
+  );
 
   Future<String?> _runExchangeStep(
     String postId,

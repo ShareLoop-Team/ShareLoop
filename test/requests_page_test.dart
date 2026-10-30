@@ -16,9 +16,10 @@ import 'package:shareloop/views/give_away/create_give_away_screen.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/category_chip.dart';
 import 'package:shareloop/widgets/app_icon.dart';
+import 'package:shareloop/widgets/user_avatar.dart';
 
 /// Pumps the home shell and switches to the Requests tab.
-Future<void> _pumpRequestsPage(
+Future<AuthController> _pumpRequestsPage(
   WidgetTester tester, {
   Size size = const Size(390, 844),
   Locale locale = const Locale('en'),
@@ -67,6 +68,7 @@ Future<void> _pumpRequestsPage(
     ),
   );
   await tester.pumpAndSettle();
+  return auth;
 }
 
 void main() {
@@ -151,6 +153,116 @@ void main() {
     expect(find.text('Phone charger'), findsNothing);
     expect(find.text('Grade 5 A/L notes for Maths'), findsOneWidget);
     expect(find.text('Request deleted.'), findsOneWidget);
+  });
+
+  testWidgets('your requests show your profile photo', (tester) async {
+    final auth = await _pumpRequestsPage(tester);
+    // No photo yet: the initial stands in.
+    expect(find.byType(UserAvatar), findsNothing);
+
+    auth.updateCurrentUser(
+      auth.currentUser!.copyWith(avatarUrl: 'assets/images/item_grey_cap.jpg'),
+    );
+    await tester.pumpAndSettle();
+
+    final avatar = find.byWidgetPredicate(
+      (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
+    );
+    // Only on Nimal's own card, not on other people's.
+    expect(avatar, findsOneWidget);
+  });
+
+  testWidgets('a new request keeps the requester\'s photo', (tester) async {
+    final controller = RequestController();
+    await tester.runAsync(() async {
+      final error = await controller.createRequest(
+        requesterId: 'u-photo-test',
+        requesterName: 'Photo Tester',
+        requesterAvatarUrl: 'assets/images/item_grey_cap.jpg',
+        itemName: 'Pencils',
+        description: 'A box of pencils',
+        reason: 'For school',
+        category: 'School Supplies',
+        district: 'Kandy',
+        city: 'Kandy',
+      );
+      expect(error, isNull);
+    });
+    final saved = controller.requestsByUser('u-photo-test').single;
+    expect(saved.requesterAvatarUrl, 'assets/images/item_grey_cap.jpg');
+    MockDataService.instance.itemRequests.removeWhere(
+      (r) => r.requesterId == 'u-photo-test',
+    );
+  });
+
+  testWidgets('editing your own request saves the changes', (tester) async {
+    // Its own request, so other tests' seed data stays untouched.
+    MockDataService.instance.itemRequests.add(
+      ItemRequestModel(
+        id: 'r-edit-test',
+        requesterId: 'u1',
+        requesterName: 'Nimal Perera',
+        itemName: 'Phone charger',
+        description: 'Any USB-C charger',
+        reason: 'Mine stopped working.',
+        category: 'Electronics',
+        district: 'Colombo',
+        city: 'Nugegoda',
+        createdAt: DateTime.now(),
+      ),
+    );
+    addTearDown(
+      () => MockDataService.instance.itemRequests.removeWhere(
+        (r) => r.id == 'r-edit-test',
+      ),
+    );
+    await _pumpRequestsPage(tester);
+    await tester.tap(find.text('My requests'));
+    await tester.pumpAndSettle();
+
+    // Newest first, so the test request's edit button comes first.
+    await tester.tap(find.byTooltip('Edit request').first);
+    await tester.pumpAndSettle();
+    expect(find.text('Edit Request'), findsOneWidget);
+    expect(find.widgetWithText(TextFormField, 'Phone charger'), findsOneWidget);
+    expect(
+      find.widgetWithText(TextFormField, 'Mine stopped working.'),
+      findsOneWidget,
+    );
+
+    await tester.enterText(
+      find.widgetWithText(TextFormField, 'Phone charger'),
+      'Laptop charger',
+    );
+    await tester.ensureVisible(find.text('Save Changes'));
+    await tester.runAsync(() async {
+      await tester.tap(find.text('Save Changes'));
+      await Future<void>.delayed(const Duration(milliseconds: 300));
+    });
+    await tester.pumpAndSettle();
+
+    expect(find.text('Edit Request'), findsNothing);
+    expect(find.text('Your request has been updated.'), findsOneWidget);
+    expect(find.text('Laptop charger'), findsOneWidget);
+    expect(find.text('Phone charger'), findsNothing);
+    final stored = MockDataService.instance.itemRequests
+        .singleWhere((r) => r.id == 'r-edit-test');
+    expect(stored.itemName, 'Laptop charger');
+    expect(stored.reason, 'Mine stopped working.');
+  });
+
+  testWidgets('only your own open requests can be edited', (tester) async {
+    await _pumpRequestsPage(tester);
+    // Nimal's one open request in the community list.
+    expect(find.byTooltip('Edit request'), findsOneWidget);
+    expect(
+      RequestController().canEdit(
+        MockDataService.instance.itemRequests
+            .first
+            .copyWith(status: ItemRequestStatus.approved),
+      ),
+      isFalse,
+    );
   });
 
   testWidgets('other people\'s requests have no delete button',

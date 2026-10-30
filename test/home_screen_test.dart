@@ -13,18 +13,20 @@ import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/views/home/home_screen.dart';
 import 'package:shareloop/widgets/item_grid_card.dart';
 import 'package:shareloop/widgets/app_icon.dart';
+import 'package:shareloop/widgets/category_circle.dart';
 import 'package:shareloop/widgets/user_avatar.dart';
 
 Future<AuthController> _pumpHome(
   WidgetTester tester, {
   Size size = const Size(390, 844),
+  String email = 'nimal@example.com',
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
   addTearDown(tester.view.reset);
 
   final auth = AuthController();
-  await tester.runAsync(() => auth.login('nimal@example.com', 'x'));
+  await tester.runAsync(() => auth.login(email, 'x'));
 
   await tester.pumpWidget(
     MultiProvider(
@@ -52,20 +54,61 @@ Future<AuthController> _pumpHome(
   return auth;
 }
 
+/// Home starts filtered to the user's city; this widens it to every area.
+Future<void> _showAllAreas(WidgetTester tester) async {
+  await tester.tap(find.byIcon(Icons.location_on_outlined).first);
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('All areas'));
+  await tester.pumpAndSettle();
+}
+
+/// Scrolls the city picker sheet's list to [label] and taps it, letting a
+/// resulting profile save finish.
+Future<void> _pickInSheet(WidgetTester tester, String label) async {
+  final item = find.descendant(
+    of: find.byType(BottomSheet),
+    matching: find.text(label),
+  );
+  await tester.scrollUntilVisible(
+    item,
+    150,
+    scrollable: find
+        .descendant(
+          of: find.byType(BottomSheet),
+          matching: find.byType(Scrollable),
+        )
+        .first,
+  );
+  await tester.pumpAndSettle();
+  await tester.runAsync(() async {
+    await tester.tap(item);
+    await Future<void>.delayed(const Duration(milliseconds: 400));
+  });
+  await tester.pumpAndSettle();
+}
+
 void main() {
-  testWidgets('shows greeting, shortcuts and the item grid', (tester) async {
+  testWidgets('shows greeting, category circles and the item grid', (
+    tester,
+  ) async {
     await _pumpHome(tester);
 
     expect(find.text('Hello, Nimal. What are you sharing today?'),
         findsOneWidget);
-    expect(find.text('Give an Item'), findsOneWidget);
-    expect(find.text('Request an Item'), findsOneWidget);
+    // The Give/Request shortcuts and the Give Away/Requests switch are gone;
+    // both live in the bottom navigation.
+    expect(find.text('Give an Item'), findsNothing);
+    expect(find.text('Request an Item'), findsNothing);
+    expect(find.text('Categories'), findsOneWidget);
+    expect(find.byType(CategoryCircle), findsNWidgets(8));
     expect(find.text('Available near you'), findsOneWidget);
-    expect(find.text('All districts'), findsOneWidget);
+    // Nimal lives in Nugegoda, so Home starts with items there.
+    expect(find.text('All districts'), findsNothing);
+    expect(find.text('Nugegoda'), findsOneWidget);
     expect(find.byType(ItemGridCard), findsWidgets);
     // The grid builds lazily, so scroll until a Silver donor's card exists.
     await tester.scrollUntilVisible(
-      find.textContaining('Silver donor'),
+      find.textContaining('Silver donor').first,
       300,
       scrollable: find.byType(Scrollable).first,
     );
@@ -87,21 +130,32 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Hello, Kavidu. What are you sharing today?'),
-        findsOneWidget);
     expect(
-      find.byWidgetPredicate(
-        (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
-      ),
+      find.text('Hello, Kavidu. What are you sharing today?'),
       findsOneWidget,
     );
-    await tester.tap(find.byType(UserAvatar));
+    final newPhoto = find.byWidgetPredicate(
+      (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
+    );
+    // The header photo (the bottom bar's Profile tab shares the tooltip).
+    final headerPhoto = find.descendant(
+      of: find.byWidgetPredicate((w) => w is Tooltip && w.message == 'Profile'),
+      matching: newPhoto,
+    );
+    expect(headerPhoto, findsOneWidget);
+    // Nimal's own posts in the grid show the new photo too.
+    expect(
+      find.descendant(of: find.byType(ItemGridCard), matching: newPhoto),
+      findsWidgets,
+    );
+    await tester.tap(headerPhoto);
     await tester.pumpAndSettle();
     expect(find.text('My Profile'), findsOneWidget);
   });
 
   testWidgets('sample posts show their bundled photos', (tester) async {
     await _pumpHome(tester);
+    await _showAllAreas(tester);
 
     Finder assetImage(String name) => find.byWidgetPredicate(
       (w) =>
@@ -127,41 +181,117 @@ void main() {
     );
   });
 
-  testWidgets('category chip filters the grid', (tester) async {
+  testWidgets('category circle filters the grid', (tester) async {
     await _pumpHome(tester);
+    await _showAllAreas(tester);
+    final shoes = find.widgetWithText(CategoryCircle, 'Shoes');
 
-    await tester.ensureVisible(find.text('Shoes'));
+    await tester.ensureVisible(shoes);
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Shoes'));
+    await tester.tap(shoes);
     await tester.pumpAndSettle();
 
     expect(find.byType(ItemGridCard), findsNWidgets(2));
     expect(find.text('Leather Wingtip Brogues (Size 9)'), findsOneWidget);
     expect(find.text('Slip-On Knit Sneakers (Size 8)'), findsOneWidget);
+    expect(tester.widget<CategoryCircle>(shoes).selected, isTrue);
+
+    final all = find.widgetWithText(CategoryCircle, 'All');
+    await tester.ensureVisible(all);
+    await tester.pumpAndSettle();
+    await tester.tap(all);
+    await tester.pumpAndSettle();
+    expect(tester.widget<CategoryCircle>(shoes).selected, isFalse);
   });
 
-  testWidgets('district picker filters the grid', (tester) async {
-    await _pumpHome(tester);
+  group('location chip', () {
+    testWidgets('shows the profile city and only items there', (tester) async {
+      // Kamani's profile: Gampaha district, Negombo.
+      await _pumpHome(tester, email: 'kamani@example.com');
 
-    await tester.tap(find.text('All districts'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Galle'));
-    await tester.pumpAndSettle();
+      expect(find.text('Negombo'), findsOneWidget);
+      expect(find.text('Gampaha'), findsNothing);
+      expect(find.text('All districts'), findsNothing);
+      expect(find.text('Leather School Backpack'), findsOneWidget);
+      expect(find.text('Slip-On Knit Sneakers (Size 8)'), findsOneWidget);
+      expect(find.byType(ItemGridCard), findsNWidgets(2));
+    });
 
-    expect(find.text('Electric Pressure Cooker'), findsOneWidget);
-    expect(find.text('Smartphone'), findsOneWidget);
-    expect(find.byType(ItemGridCard), findsNWidgets(2));
-  });
+    testWidgets('follows a profile change at once', (tester) async {
+      final auth = await _pumpHome(tester);
+      expect(find.text('Nugegoda'), findsOneWidget);
 
-  testWidgets('switches to community requests', (tester) async {
-    await _pumpHome(tester);
+      // What Edit Profile does after saving.
+      auth.updateCurrentUser(
+        auth.currentUser!.copyWith(district: 'Galle', city: 'Hikkaduwa'),
+      );
+      await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Requests').first);
-    await tester.pumpAndSettle();
+      expect(find.text('Hikkaduwa'), findsOneWidget);
+      expect(find.text('Electric Pressure Cooker'), findsOneWidget);
+      expect(find.text('Smartphone'), findsOneWidget);
+      expect(find.byType(ItemGridCard), findsNWidgets(2));
+    });
 
-    expect(find.text('Open requests'), findsOneWidget);
-    expect(find.byType(ItemGridCard), findsNothing);
-    expect(find.text('Grade 5 A/L notes for Maths'), findsOneWidget);
+    testWidgets('without a city says "Select city", not the district', (
+      tester,
+    ) async {
+      final auth = await _pumpHome(tester);
+      auth.updateCurrentUser(auth.currentUser!.copyWith(city: ''));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Select city'), findsOneWidget);
+      expect(find.text('Colombo'), findsNothing);
+      // No city, no city filter: every area's items show.
+      expect(find.text('Washed Grey Baseball Cap'), findsOneWidget);
+
+      // Picking one from the chip saves it to the profile.
+      await tester.tap(find.text('Select city'));
+      await tester.pumpAndSettle();
+      expect(find.text('Choose your city'), findsOneWidget);
+      expect(find.text('District: Colombo'), findsOneWidget);
+      expect(find.text('All areas'), findsNothing);
+      expect(find.text('Negombo'), findsNothing); // Gampaha, not Colombo
+      await _pickInSheet(tester, 'Nugegoda');
+
+      expect(auth.currentUser!.city, 'Nugegoda');
+      expect(auth.currentUser!.district, 'Colombo');
+      expect(find.text('Nugegoda'), findsOneWidget);
+      expect(find.text('Washed Grey Baseball Cap'), findsNothing);
+    });
+
+    testWidgets('a city in another district updates both on the profile', (
+      tester,
+    ) async {
+      final auth = await _pumpHome(tester);
+
+      await tester.tap(find.text('Nugegoda'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Change'));
+      await tester.pumpAndSettle();
+      expect(find.text('Choose a district'), findsOneWidget);
+      await _pickInSheet(tester, 'Gampaha');
+      expect(find.text('District: Gampaha'), findsOneWidget);
+      expect(find.text('Ja-Ela'), findsOneWidget);
+      await _pickInSheet(tester, 'Negombo');
+
+      expect(auth.currentUser!.district, 'Gampaha');
+      expect(auth.currentUser!.city, 'Negombo');
+      expect(find.text('Negombo'), findsOneWidget);
+      expect(find.byType(ItemGridCard), findsNWidgets(2));
+    });
+
+    testWidgets('"All areas" shows every item until the city changes', (
+      tester,
+    ) async {
+      await _pumpHome(tester);
+      expect(find.text('Washed Grey Baseball Cap'), findsNothing);
+
+      await _showAllAreas(tester);
+
+      expect(find.text('All areas'), findsOneWidget);
+      expect(find.text('Washed Grey Baseball Cap'), findsOneWidget);
+    });
   });
 
   testWidgets('Give tab shows the form above the nav bar', (tester) async {
@@ -185,16 +315,6 @@ void main() {
     await tester.tap(find.byTooltip('Back'));
     await tester.pumpAndSettle();
     expect(find.text('Available near you'), findsOneWidget);
-  });
-
-  testWidgets('Give an Item card opens the Give tab', (tester) async {
-    await _pumpHome(tester);
-
-    await tester.tap(find.text('Give an Item'));
-    await tester.pumpAndSettle();
-
-    expect(find.text('Publish Item'), findsOneWidget);
-    expect(find.byType(NavigationBar), findsOneWidget);
   });
 
   for (final size in const [Size(320, 568), Size(360, 800)]) {
