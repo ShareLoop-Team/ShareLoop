@@ -1083,6 +1083,11 @@ class AppLocalizationsTa extends AppLocalizations {
   }
 
   @override
+  String verifySentToIfAccount(String email) {
+    return '$email க்கு ஒரு கணக்கு இருந்தால், அதற்கு 6 இலக்கக் குறியீட்டை மின்னஞ்சல் செய்துள்ளோம். இது 10 நிமிடங்களில் காலாவதியாகும்.';
+  }
+
+  @override
   String get verifyCheckSpam =>
       'கிடைக்கவில்லையா? உங்கள் spam கோப்புறையைச் சரிபார்க்கவும்.';
 

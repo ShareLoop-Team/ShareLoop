@@ -1068,6 +1068,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String verifySentToIfAccount(String email) {
+    return 'If an account exists for $email, we\'ve emailed it a 6-digit code. It expires in 10 minutes.';
+  }
+
+  @override
   String get verifyCheckSpam => 'Can\'t find it? Check your spam folder.';
 
   @override

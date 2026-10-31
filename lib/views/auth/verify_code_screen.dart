@@ -70,6 +70,13 @@ class _VerifyCodeViewState extends State<_VerifyCodeView> {
         EmailCodePurpose.reset => l10n.verifyTitleReset,
       };
 
+  /// Sign-in and reset codes only go to existing accounts, and the server
+  /// doesn't say whether one exists, so don't promise an email was sent.
+  String _sentTo(AppLocalizations l10n, String email) =>
+      _purpose == EmailCodePurpose.register
+          ? l10n.verifySentTo(email)
+          : l10n.verifySentToIfAccount(email);
+
   String _buttonLabel(AppLocalizations l10n) => switch (_purpose) {
         EmailCodePurpose.register => l10n.registerButton,
         EmailCodePurpose.login => l10n.loginSignIn,
@@ -158,7 +165,7 @@ class _VerifyCodeViewState extends State<_VerifyCodeView> {
                             AuthAccentTitle(text: _title(l10n)),
                             const SizedBox(height: 8),
                             Text(
-                              l10n.verifySentTo(_controller.ticket.email),
+                              _sentTo(l10n, _controller.ticket.email),
                               textAlign: TextAlign.center,
                               style: textTheme.bodyMedium?.copyWith(
                                 color: AppColors.textSecondary,

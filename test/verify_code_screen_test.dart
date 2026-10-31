@@ -104,6 +104,34 @@ void main() {
     expect(auth.currentUser?.email, 'code.tester@example.com');
   });
 
+  testWidgets('only sign-up promises the code was emailed', (tester) async {
+    await open(
+      tester,
+      const VerifyCodeArgs(
+        ticket: EmailCodeTicket(
+          email: 'someone@example.com',
+          purpose: EmailCodePurpose.register,
+        ),
+      ),
+    );
+    expect(find.textContaining('We emailed a 6-digit code'), findsOneWidget);
+
+    for (final purpose in [EmailCodePurpose.login, EmailCodePurpose.reset]) {
+      await tester.pumpWidget(const SizedBox()); // drop the previous screen
+      await open(
+        tester,
+        VerifyCodeArgs(
+          ticket: EmailCodeTicket(email: 'someone@example.com', purpose: purpose),
+        ),
+      );
+      expect(
+        find.textContaining('If an account exists for someone@example.com'),
+        findsOneWidget,
+      );
+      expect(find.textContaining('We emailed a 6-digit code'), findsNothing);
+    }
+  });
+
   testWidgets('sign in with a code', (tester) async {
     await open(
       tester,

@@ -2002,6 +2002,12 @@ abstract class AppLocalizations {
   /// **'We emailed a 6-digit code to {email}. It expires in 10 minutes.'**
   String verifySentTo(String email);
 
+  /// Sign-in and reset codes: only sent when the account exists, which the app is not told.
+  ///
+  /// In en, this message translates to:
+  /// **'If an account exists for {email}, we\'ve emailed it a 6-digit code. It expires in 10 minutes.'**
+  String verifySentToIfAccount(String email);
+
   /// No description provided for @verifyCheckSpam.
   ///
   /// In en, this message translates to:
