@@ -1,75 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
-/// Shared look for the login and register screens.
-
-/// Underlined field that sits under an [AuthFieldLabel].
-InputDecoration authInputDecoration(String hint, {Widget? suffixIcon}) {
-  UnderlineInputBorder border(Color color, {double width = 1}) =>
-      UnderlineInputBorder(
-        borderSide: BorderSide(color: color, width: width),
-      );
-
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: const TextStyle(color: AppColors.textSecondary),
-    isDense: true,
-    contentPadding: const EdgeInsets.symmetric(vertical: 12),
-    suffixIcon: suffixIcon,
-    border: border(AppColors.ink.withValues(alpha: 0.5)),
-    enabledBorder: border(AppColors.ink.withValues(alpha: 0.5)),
-    focusedBorder: border(AppColors.deepGreen, width: 2),
-    errorBorder: border(AppColors.error),
-    focusedErrorBorder: border(AppColors.error, width: 2),
-  );
-}
-
-/// Rounded, filled field with a leading icon and no label above it; the
-/// outline only appears on focus.
-InputDecoration authPillInputDecoration(
-  String hint, {
-  required IconData icon,
-  Widget? suffixIcon,
-}) {
-  OutlineInputBorder border(Color color, {double width = 1.5}) =>
-      OutlineInputBorder(
-        borderRadius: BorderRadius.circular(28),
-        borderSide: BorderSide(color: color, width: width),
-      );
-
-  return InputDecoration(
-    hintText: hint,
-    hintStyle: const TextStyle(color: AppColors.textSecondary),
-    prefixIcon: Icon(icon, color: AppColors.textSecondary, size: 22),
-    suffixIcon: suffixIcon,
-    contentPadding: const EdgeInsets.symmetric(vertical: 18),
-    border: border(Colors.transparent),
-    enabledBorder: border(Colors.transparent),
-    focusedBorder: border(AppColors.deepGreen),
-    errorBorder: border(AppColors.error),
-    focusedErrorBorder: border(AppColors.error),
-  );
-}
-
-/// Small label shown above an auth field.
-class AuthFieldLabel extends StatelessWidget {
-  const AuthFieldLabel(this.text, {super.key});
-
-  final String text;
-
-  @override
-  Widget build(BuildContext context) {
-    return Text(
-      text,
-      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-        color: AppColors.ink,
-        fontWeight: FontWeight.w500,
-      ),
-    );
-  }
-}
+/// Shared look for the login and register screens. Fields use
+/// `slInputDecoration` and `SLFieldLabel` from `sl/sl_input.dart`.
 
 /// Eye icon that shows or hides a password field.
 class PasswordVisibilityButton extends StatelessWidget {
@@ -93,47 +28,62 @@ class PasswordVisibilityButton extends StatelessWidget {
       tooltip: obscured ? showTooltip : hideTooltip,
       icon: Icon(
         obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
-        color: AppColors.textSecondary,
+        color: context.sl.inkMuted,
       ),
     );
   }
 }
 
-/// Green header with the hand-over illustration and a curved bottom edge.
-/// [leading] sits in the top-start corner (logo or back button).
-class AuthHeader extends StatelessWidget {
-  const AuthHeader({super.key, this.leading});
+/// The illustration at the top of the login and register screens: a
+/// rounded card inset by the page margin. The whole illustration is shown,
+/// never cropped, on its own background colour so its edges never show.
+/// Its height follows the screen: up to [maxHeight] on tall phones, down to
+/// [minHeight] on small ones, so the form starts higher where space is
+/// short. [leading] sits in the card's top-start corner (e.g. a back
+/// button).
+class AuthHeroImage extends StatelessWidget {
+  const AuthHeroImage({
+    super.key,
+    required this.asset,
+    required this.background,
+    this.maxHeight = 280,
+    this.minHeight = 150,
+    this.screenFraction = 0.3,
+    this.leading,
+  });
 
-  static const String _illustrationAsset =
-      'assets/images/login_illustration.svg';
-  static const double _height = 240;
-  static const double _curveDepth = 52;
+  final String asset;
 
+  /// The illustration's own background colour.
+  final Color background;
+  final double maxHeight;
+  final double minHeight;
+
+  /// Share of the screen height the card aims for, within the limits.
+  final double screenFraction;
   final Widget? leading;
 
   @override
   Widget build(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top;
-    return ClipPath(
-      clipper: const _ArcClipper(depth: _curveDepth),
-      child: Container(
-        height: _height + topInset,
-        color: AppColors.deepGreen,
-        padding: EdgeInsets.only(top: topInset),
+    final screenHeight = MediaQuery.sizeOf(context).height;
+    final height = (screenHeight * screenFraction).clamp(minHeight, maxHeight);
+    return SizedBox(
+      height: height,
+      child: ClipRRect(
+        borderRadius: BorderRadius.circular(SLRadius.sheet),
         child: Stack(
+          fit: StackFit.expand,
           children: [
-            Align(
-              alignment: const Alignment(0, 0.15),
-              child: ExcludeSemantics(
-                child: SvgPicture.asset(
-                  _illustrationAsset,
-                  width: 300,
-                  height: 170,
-                ),
-              ),
+            ColoredBox(color: background),
+            ExcludeSemantics(
+              child: Image(image: AssetImage(asset), fit: BoxFit.contain),
             ),
             if (leading != null)
-              PositionedDirectional(start: 14, top: 10, child: leading!),
+              PositionedDirectional(
+                start: SLSpace.s,
+                top: SLSpace.s,
+                child: leading!,
+              ),
           ],
         ),
       ),
@@ -141,31 +91,8 @@ class AuthHeader extends StatelessWidget {
   }
 }
 
-/// Cuts a dome out of the bottom edge so the page rises into the header.
-class _ArcClipper extends CustomClipper<Path> {
-  const _ArcClipper({required this.depth});
-
-  final double depth;
-
-  @override
-  Path getClip(Size size) {
-    return Path()
-      ..lineTo(size.width, 0)
-      ..lineTo(size.width, size.height)
-      ..quadraticBezierTo(
-        size.width / 2,
-        size.height - depth * 2,
-        0,
-        size.height,
-      )
-      ..close();
-  }
-
-  @override
-  bool shouldReclip(_ArcClipper oldClipper) => oldClipper.depth != depth;
-}
-
-/// Round translucent back button for the [AuthHeader].
+/// Round back button that sits on an [AuthHeroImage]. The illustration is
+/// light in both themes, so the button stays white with dark ink.
 class AuthBackButton extends StatelessWidget {
   const AuthBackButton({super.key, required this.onPressed});
 
@@ -173,102 +100,193 @@ class AuthBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: onPressed,
-      tooltip: MaterialLocalizations.of(context).backButtonTooltip,
-      style: IconButton.styleFrom(
-        backgroundColor: AppColors.white.withValues(alpha: 0.2),
-        foregroundColor: AppColors.white,
-        fixedSize: const Size.square(56),
+    return Material(
+      color: SLColors.light.surface,
+      shape: const CircleBorder(),
+      child: IconButton(
+        onPressed: onPressed,
+        tooltip: MaterialLocalizations.of(context).backButtonTooltip,
+        icon: Icon(Icons.arrow_back, size: 22, color: SLColors.light.ink),
+        constraints: const BoxConstraints.tightFor(width: 44, height: 44),
       ),
-      icon: const Icon(Icons.arrow_back_ios_new, size: 22),
     );
   }
 }
 
-/// Screen title with the first word in brand green ("Welcome back!").
+/// "or continue with" divider above a row of Google and Facebook buttons.
+/// [onPressed] runs for either one; Firebase has no social provider set up
+/// yet, so the screens use it to say so.
+class AuthSocialButtons extends StatelessWidget {
+  const AuthSocialButtons({
+    super.key,
+    required this.dividerLabel,
+    required this.googleLabel,
+    required this.facebookLabel,
+    required this.onPressed,
+  });
+
+  /// Brand icons from Icons8 (https://icons8.com).
+  static const String googleIcon = 'assets/images/icon_google.png';
+  static const String facebookIcon = 'assets/images/icon_facebook.png';
+
+  final String dividerLabel;
+
+  /// The full actions ("Sign in with Google") for screen readers.
+  final String googleLabel;
+  final String facebookLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    final sl = context.sl;
+    final line = Expanded(child: Divider(color: sl.divider, thickness: 1));
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            line,
+            // Long translations wrap rather than push the lines away.
+            Flexible(
+              flex: 3,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: SLSpace.m),
+                child: Text(
+                  dividerLabel,
+                  textAlign: TextAlign.center,
+                  style: context.slType.small,
+                ),
+              ),
+            ),
+            line,
+          ],
+        ),
+        const SizedBox(height: SLSpace.l),
+        Row(
+          children: [
+            Expanded(
+              child: _SocialTile(
+                asset: googleIcon,
+                provider: 'Google',
+                semanticsLabel: googleLabel,
+                onPressed: onPressed,
+              ),
+            ),
+            const SizedBox(width: SLSpace.m),
+            Expanded(
+              child: _SocialTile(
+                asset: facebookIcon,
+                provider: 'Facebook',
+                semanticsLabel: facebookLabel,
+                onPressed: onPressed,
+              ),
+            ),
+          ],
+        ),
+      ],
+    );
+  }
+}
+
+/// Divider used above individual provider buttons.
+class AuthOrDivider extends StatelessWidget {
+  const AuthOrDivider({super.key, required this.label});
+
+  final String label;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        const Expanded(child: Divider()),
+        Flexible(
+          flex: 3,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: SLSpace.m),
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: context.slType.small,
+            ),
+          ),
+        ),
+        const Expanded(child: Divider()),
+      ],
+    );
+  }
+}
+
+/// Compatibility widgets used by the OTP and social-profile screens added
+/// with the API backend. They share the same auth form primitives as the
+/// redesigned password screens.
+class AuthHeader extends StatelessWidget {
+  const AuthHeader({super.key, this.leading});
+
+  final Widget? leading;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.fromLTRB(
+      SLSpace.screen,
+      SLSpace.m,
+      SLSpace.screen,
+      SLSpace.l,
+    ),
+    child: AuthHeroImage(
+      asset: 'assets/images/login_hero.jpg',
+      background: AppColors.introBackground,
+      leading: leading,
+    ),
+  );
+}
+
 class AuthAccentTitle extends StatelessWidget {
   const AuthAccentTitle({super.key, required this.text});
 
   final String text;
 
   @override
-  Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.headlineMedium?.copyWith(
-      fontWeight: FontWeight.w800,
-      color: AppColors.ink,
-    );
-    final split = text.indexOf(' ');
-    final accent = split < 0 ? text : text.substring(0, split);
-    final rest = split < 0 ? '' : text.substring(split);
-    return Semantics(
-      header: true,
-      child: Text.rich(
-        TextSpan(
-          children: [
-            TextSpan(
-              text: accent,
-              style: const TextStyle(color: AppColors.deepGreen),
-            ),
-            TextSpan(text: rest),
-          ],
-        ),
-        textAlign: TextAlign.center,
-        style: style,
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Text(
+    text,
+    textAlign: TextAlign.center,
+    style: Theme.of(context).textTheme.headlineSmall
+        ?.copyWith(color: AppColors.deepGreen, fontWeight: FontWeight.w700),
+  );
 }
 
-/// Full-width bright-green primary button with a loading spinner.
-class AuthPrimaryButton extends StatelessWidget {
-  const AuthPrimaryButton({
-    super.key,
-    required this.label,
-    required this.isLoading,
-    required this.onPressed,
-    this.color = AppColors.brightGreen,
-    this.radius = 8,
-  });
+class AuthFieldLabel extends StatelessWidget {
+  const AuthFieldLabel(this.text, {super.key});
 
-  final String label;
-  final bool isLoading;
-  final VoidCallback onPressed;
-  final Color color;
-  final double radius;
+  final String text;
 
   @override
-  Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: isLoading ? null : onPressed,
-      style: ElevatedButton.styleFrom(
-        backgroundColor: color,
-        foregroundColor: AppColors.white,
-        disabledBackgroundColor: color.withValues(alpha: 0.6),
-        elevation: 0,
-        minimumSize: const Size.fromHeight(56),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(radius),
-        ),
-        textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-          fontWeight: FontWeight.w700,
-          fontSize: 18,
-        ),
-      ),
-      child: isLoading
-          ? const SizedBox.square(
-              dimension: 22,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: AppColors.white,
-              ),
-            )
-          : Text(label),
-    );
-  }
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(bottom: SLSpace.xs),
+    child: Text(text, style: Theme.of(context).textTheme.labelLarge),
+  );
 }
 
-/// Deep-green [AuthPrimaryButton] with a soft shadow, as on the auth designs.
+InputDecoration authInputDecoration(String hint, {Widget? suffixIcon}) =>
+    InputDecoration(
+      hintText: hint,
+      suffixIcon: suffixIcon,
+      filled: true,
+      fillColor: AppColors.white,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      enabledBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.border),
+      ),
+      focusedBorder: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(16),
+        borderSide: const BorderSide(color: AppColors.deepGreen, width: 1.5),
+      ),
+      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+    );
+
 class AuthSubmitButton extends StatelessWidget {
   const AuthSubmitButton({
     super.key,
@@ -282,102 +300,25 @@ class AuthSubmitButton extends StatelessWidget {
   final VoidCallback onPressed;
 
   @override
-  Widget build(BuildContext context) {
-    return DecoratedBox(
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.deepGreen.withValues(alpha: 0.25),
-            blurRadius: 16,
-            offset: const Offset(0, 6),
-          ),
-        ],
+  Widget build(BuildContext context) => SizedBox(
+    height: 52,
+    child: ElevatedButton(
+      onPressed: isLoading ? null : onPressed,
+      style: FilledButton.styleFrom(
+        backgroundColor: AppColors.deepGreen,
+        foregroundColor: AppColors.white,
+        shape: const StadiumBorder(),
       ),
-      child: AuthPrimaryButton(
-        label: label,
-        isLoading: isLoading,
-        onPressed: onPressed,
-        color: AppColors.deepGreen,
-        radius: 14,
-      ),
-    );
-  }
+      child: isLoading
+          ? const SizedBox.square(
+              dimension: 22,
+              child: CircularProgressIndicator(strokeWidth: 2),
+            )
+          : Text(label),
+    ),
+  );
 }
 
-/// Thin line – label – thin line.
-class AuthOrDivider extends StatelessWidget {
-  const AuthOrDivider({super.key, required this.label});
-
-  final String label;
-
-  @override
-  Widget build(BuildContext context) {
-    final line = Expanded(
-      child: Divider(color: AppColors.textSecondary.withValues(alpha: 0.2)),
-    );
-    return Row(
-      children: [
-        line,
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          child: Text(
-            label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-              color: AppColors.textSecondary,
-            ),
-          ),
-        ),
-        line,
-      ],
-    );
-  }
-}
-
-/// Grey full-width button with a provider logo (Google, Facebook).
-class AuthSocialButton extends StatelessWidget {
-  const AuthSocialButton({
-    super.key,
-    required this.asset,
-    required this.label,
-    required this.onPressed,
-  });
-
-  static const String googleLogo = 'assets/images/google_logo.svg';
-  static const String facebookLogo = 'assets/images/facebook_logo.svg';
-
-  final String asset;
-  final String label;
-  final VoidCallback onPressed;
-
-  @override
-  Widget build(BuildContext context) {
-    return TextButton(
-      onPressed: onPressed,
-      style: TextButton.styleFrom(
-        backgroundColor: AppColors.mutedSurface,
-        foregroundColor: AppColors.ink,
-        minimumSize: const Size.fromHeight(52),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
-        textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
-          fontWeight: FontWeight.w700,
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          SvgPicture.asset(asset, width: 22, height: 22),
-          const SizedBox(width: 12),
-          Flexible(child: Text(label, overflow: TextOverflow.ellipsis)),
-        ],
-      ),
-    );
-  }
-}
-
-/// White outlined button showing a provider's logo and name, sized to sit
-/// two in a row. [semanticsLabel] is the full action ("Sign in with
-/// Google") for screen readers.
 class AuthSocialTile extends StatelessWidget {
   const AuthSocialTile({
     super.key,
@@ -387,11 +328,49 @@ class AuthSocialTile extends StatelessWidget {
     required this.onPressed,
   });
 
-  /// Brand icons from Icons8 (https://icons8.com).
-  static const String googleIcon = 'assets/images/icon_google.png';
-  static const String facebookIcon = 'assets/images/icon_facebook.png';
+  static const googleIcon = AuthSocialButtons.googleIcon;
+  static const facebookIcon = AuthSocialButtons.facebookIcon;
 
-  /// A PNG image asset of the provider's logo.
+  final String asset;
+  final String provider;
+  final String semanticsLabel;
+  final VoidCallback onPressed;
+
+  @override
+  Widget build(BuildContext context) => Semantics(
+    button: true,
+    label: semanticsLabel,
+    excludeSemantics: true,
+    child: OutlinedButton(
+      onPressed: onPressed,
+      style: OutlinedButton.styleFrom(
+        foregroundColor: AppColors.ink,
+        minimumSize: const Size.fromHeight(48),
+        shape: const StadiumBorder(),
+        side: const BorderSide(color: AppColors.border),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Image.asset(asset, width: 22, height: 22),
+          const SizedBox(width: 8),
+          Flexible(child: Text(provider, overflow: TextOverflow.ellipsis)),
+        ],
+      ),
+    ),
+  );
+}
+
+/// Surface button with a provider's logo and name, in the shape of the
+/// secondary [SLButton].
+class _SocialTile extends StatelessWidget {
+  const _SocialTile({
+    required this.asset,
+    required this.provider,
+    required this.semanticsLabel,
+    required this.onPressed,
+  });
+
   final String asset;
   final String provider;
   final String semanticsLabel;
@@ -399,35 +378,31 @@ class AuthSocialTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return Semantics(
       button: true,
       label: semanticsLabel,
       excludeSemantics: true,
-      child: OutlinedButton(
+      child: TextButton(
         onPressed: onPressed,
-        style: OutlinedButton.styleFrom(
-          backgroundColor: AppColors.white,
-          foregroundColor: AppColors.ink,
-          minimumSize: const Size.fromHeight(52),
-          side: const BorderSide(color: AppColors.border),
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(14),
-          ),
-          padding: const EdgeInsets.symmetric(horizontal: 12),
-          textStyle: Theme.of(context).textTheme.titleSmall?.copyWith(
-            fontWeight: FontWeight.w600,
-          ),
+        style: TextButton.styleFrom(
+          backgroundColor: sl.surface,
+          foregroundColor: sl.ink,
+          minimumSize: const Size.fromHeight(48),
+          shape: StadiumBorder(side: BorderSide(color: sl.divider)),
+          padding: const EdgeInsets.symmetric(horizontal: SLSpace.m),
+          textStyle: context.slType.body.copyWith(fontWeight: FontWeight.w600),
         ),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
               asset,
-              width: 24,
-              height: 24,
+              width: 22,
+              height: 22,
               filterQuality: FilterQuality.medium,
             ),
-            const SizedBox(width: 10),
+            const SizedBox(width: SLSpace.s),
             Flexible(child: Text(provider, overflow: TextOverflow.ellipsis)),
           ],
         ),
@@ -443,34 +418,61 @@ class AuthSwitchPrompt extends StatelessWidget {
     required this.question,
     required this.actionLabel,
     required this.onPressed,
-    this.actionColor = AppColors.deepGreen,
   });
 
   final String question;
   final String actionLabel;
   final VoidCallback onPressed;
-  final Color actionColor;
 
   @override
   Widget build(BuildContext context) {
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     return Wrap(
       alignment: WrapAlignment.center,
       crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Text(question, style: textTheme.bodyLarge),
+        Text(question, style: type.body.copyWith(color: sl.inkMuted)),
         TextButton(
           onPressed: onPressed,
           style: TextButton.styleFrom(
-            foregroundColor: actionColor,
-            padding: const EdgeInsets.symmetric(horizontal: 6),
-            textStyle: textTheme.bodyLarge?.copyWith(
-              fontWeight: FontWeight.w700,
-            ),
+            foregroundColor: sl.accentText,
+            minimumSize: const Size(0, 44),
+            padding: const EdgeInsets.symmetric(horizontal: SLSpace.s),
+            textStyle: type.body.copyWith(fontWeight: FontWeight.w600),
           ),
           child: Text(actionLabel),
         ),
       ],
+    );
+  }
+}
+
+/// Error from the auth service (e.g. wrong password), shown above the
+/// submit button and announced to screen readers.
+class AuthErrorText extends StatelessWidget {
+  const AuthErrorText(this.message, {super.key});
+
+  final String message;
+
+  @override
+  Widget build(BuildContext context) {
+    final sl = context.sl;
+    return Semantics(
+      liveRegion: true,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Icon(Icons.error_outline, size: 20, color: sl.danger),
+          const SizedBox(width: SLSpace.s),
+          Expanded(
+            child: Text(
+              message,
+              style: context.slType.small.copyWith(color: sl.danger),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

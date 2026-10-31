@@ -14,7 +14,7 @@ import 'package:shareloop/models/item_post_model.dart';
 import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/views/give_away/item_details_screen.dart';
 import 'package:shareloop/views/home/home_screen.dart';
-import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/sl/sl_item_card.dart';
 
 /// The mock store is shared by every test, so each test deletes a post
 /// made just for it rather than seed data other tests rely on.
@@ -73,8 +73,22 @@ Future<void> _pumpHome(WidgetTester tester) async {
   await tester.pumpAndSettle();
 }
 
-Finder _cardFor(String title) =>
-    find.ancestor(of: find.text(title), matching: find.byType(ItemGridCard));
+/// Opens [title]'s details from the feed and taps "Delete post".
+Future<void> _deleteFromDetails(WidgetTester tester, String title) async {
+  await tester.scrollUntilVisible(
+    find.text(title),
+    300,
+    scrollable: find.byType(Scrollable).first,
+  );
+  await tester.ensureVisible(find.text(title));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text(title));
+  await tester.pumpAndSettle();
+  await tester.ensureVisible(find.text('Delete post'));
+  await tester.pumpAndSettle();
+  await tester.tap(find.text('Delete post'));
+  await tester.pumpAndSettle();
+}
 
 Future<void> _confirmDelete(WidgetTester tester) async {
   expect(find.text('Delete this post?'), findsOneWidget);
@@ -86,50 +100,27 @@ Future<void> _confirmDelete(WidgetTester tester) async {
 }
 
 void main() {
-  testWidgets('only your own posts have a delete button', (tester) async {
-    await _pumpHome(tester);
-
-    for (final card in tester.widgetList<ItemGridCard>(
-      find.byType(ItemGridCard),
-    )) {
-      expect(
-        card.onDelete != null,
-        card.post.donorId == 'u1',
-        reason: card.post.title,
-      );
-    }
-  });
-
-  testWidgets('deleting from the feed asks first, then removes the post', (
+  testWidgets('the feed has no delete buttons, even on your own posts', (
     tester,
   ) async {
-    _addOwnPost('p-delete-grid', 'Old desk lamp');
+    _addOwnPost('p-delete-none', 'Old desk lamp');
     await _pumpHome(tester);
 
-    await tester.scrollUntilVisible(
-      find.text('Old desk lamp'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    final deleteButton = find.descendant(
-      of: _cardFor('Old desk lamp'),
-      matching: find.byTooltip('Delete post'),
-    );
-    // The button sits on the photo above the title, so scroll to it.
-    await tester.ensureVisible(deleteButton);
-    await tester.pumpAndSettle();
-    await tester.tap(deleteButton);
-    await tester.pumpAndSettle();
+    expect(find.byType(SLItemCard), findsWidgets);
+    expect(find.byTooltip('Delete post'), findsNothing);
+  });
+
+  testWidgets('cancelling the delete keeps the post', (tester) async {
+    _addOwnPost('p-delete-cancel', 'Folding chair');
+    await _pumpHome(tester);
+
+    await _deleteFromDetails(tester, 'Folding chair');
+    expect(find.text('Delete this post?'), findsOneWidget);
     await tester.tap(find.text('Cancel'));
     await tester.pumpAndSettle();
-    expect(find.text('Old desk lamp'), findsOneWidget);
 
-    await tester.tap(deleteButton);
-    await tester.pumpAndSettle();
-    await _confirmDelete(tester);
-
-    expect(find.text('Old desk lamp'), findsNothing);
-    expect(find.text('Post deleted.'), findsOneWidget);
+    expect(find.byType(ItemDetailsScreen), findsOneWidget);
+    expect(find.text('Folding chair'), findsWidgets);
   });
 
   testWidgets('deleting from item details goes back to the feed', (
@@ -138,19 +129,7 @@ void main() {
     _addOwnPost('p-delete-details', 'Spare kettle');
     await _pumpHome(tester);
 
-    await tester.scrollUntilVisible(
-      find.text('Spare kettle'),
-      300,
-      scrollable: find.byType(Scrollable).first,
-    );
-    await tester.ensureVisible(find.text('Spare kettle'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Spare kettle'));
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.text('Delete post'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Delete post'));
-    await tester.pumpAndSettle();
+    await _deleteFromDetails(tester, 'Spare kettle');
     await _confirmDelete(tester);
 
     expect(find.byType(ItemDetailsScreen), findsNothing);

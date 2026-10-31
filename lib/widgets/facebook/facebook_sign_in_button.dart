@@ -18,10 +18,12 @@ class FacebookSignInButton extends StatefulWidget {
     super.key,
     required this.label,
     required this.onUnavailable,
+    this.visualLabel,
   });
 
   final String label;
   final VoidCallback onUnavailable;
+  final String? visualLabel;
 
   @override
   State<FacebookSignInButton> createState() => _FacebookSignInButtonState();
@@ -77,7 +79,7 @@ class _FacebookSignInButtonState extends State<FacebookSignInButton> {
     }
     return AuthSocialTile(
       asset: AuthSocialTile.facebookIcon,
-      provider: widget.label,
+      provider: widget.visualLabel ?? widget.label,
       semanticsLabel: widget.label,
       onPressed: _enabled ? _signIn : widget.onUnavailable,
     );

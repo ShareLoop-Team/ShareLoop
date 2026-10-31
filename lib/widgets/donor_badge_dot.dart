@@ -19,7 +19,7 @@ class DonorBadgeDot extends StatelessWidget {
       case 'Gold':
         return AppColors.amber;
       case 'Platinum':
-        return AppColors.ink;
+        return AppColors.platinum;
       default:
         return AppColors.softMint;
     }

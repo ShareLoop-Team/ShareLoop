@@ -6,26 +6,25 @@ import '../../controllers/auth_controller.dart';
 import '../../controllers/login_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
-import '../../core/theme/app_theme.dart';
 import '../../models/email_code.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../widgets/app_snack_bar.dart';
 import '../../widgets/auth_form_widgets.dart';
 import '../../widgets/facebook/facebook_sign_in_button.dart';
 import '../../widgets/google/google_sign_in_button.dart';
-import '../../widgets/pill_button.dart';
+import '../../widgets/sl/sl_button.dart';
+import '../../widgets/sl/sl_input.dart';
 
 /// View: login form. Validation of empty fields happens in the form; the
 /// login action and navigation are delegated to [LoginController].
 ///
-/// Always uses the light brand theme so it matches the design even when the
-/// device is in dark mode (same as the onboarding screen).
+/// Follows the app's light or dark theme and supports password, email-code,
+/// Google, and Facebook sign-in.
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return Theme(data: AppTheme.lightTheme, child: const _LoginView());
-  }
+  Widget build(BuildContext context) => const _LoginView();
 }
 
 class _LoginView extends StatefulWidget {
@@ -59,8 +58,7 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  /// Emails a sign-in or reset code to the address typed in the email
-  /// field and opens the code screen.
+  /// Emails a sign-in or reset code to the address typed in the email field.
   void _requestCode(
     AppLocalizations l10n,
     AuthController auth,
@@ -70,11 +68,15 @@ class _LoginViewState extends State<_LoginView> {
     if (email.isEmpty) {
       ScaffoldMessenger.of(context)
         ..hideCurrentSnackBar()
-        ..showSnackBar(SnackBar(
-          content: Text(purpose == EmailCodePurpose.reset
-              ? l10n.loginResetEnterEmail
-              : l10n.loginCodeEnterEmail),
-        ));
+        ..showSnackBar(
+          SnackBar(
+            content: Text(
+              purpose == EmailCodePurpose.reset
+                  ? l10n.loginResetEnterEmail
+                  : l10n.loginCodeEnterEmail,
+            ),
+          ),
+        );
       return;
     }
     _controller.requestCode(
@@ -85,309 +87,182 @@ class _LoginViewState extends State<_LoginView> {
     );
   }
 
-  /// Shown when a social provider isn't configured (no client/app ID).
-  void _socialSignIn(AppLocalizations l10n) => showAppSnackBar(
-        ScaffoldMessenger.of(context),
-        l10n.loginSocialUnavailable,
-      );
+  /// Shown when a social provider isn't configured.
+  void _socialUnavailable(AppLocalizations l10n) => showAppSnackBar(
+    ScaffoldMessenger.of(context),
+    l10n.loginSocialUnavailable,
+  );
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
-    final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
+    final type = context.slType;
     final auth = context.watch<AuthController>();
+    final dark = Theme.of(context).brightness == Brightness.dark;
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
-      // Dark status bar icons on the light illustration.
-      value: SystemUiOverlayStyle.dark,
+      // Status bar icons that contrast with the page.
+      value: dark ? SystemUiOverlayStyle.light : SystemUiOverlayStyle.dark,
       child: Scaffold(
-        backgroundColor: AppColors.canvas,
-        body: CustomScrollView(
-          slivers: [
-            const SliverToBoxAdapter(child: _LoginHero()),
-            SliverFillRemaining(
-              hasScrollBody: false,
-              child: Center(
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(maxWidth: 480),
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(28, 0, 28, 16),
-                    child: ListenableBuilder(
-                      listenable: _controller,
-                      builder: (context, _) => Form(
-                        key: _formKey,
-                        child: AutofillGroup(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                            children: [
-                              // No visible title in this design; screen
-                              // readers still announce the page.
-                              Semantics(
-                                header: true,
-                                label: l10n.loginWelcomeBack,
-                                child: const SizedBox(height: 12),
-                              ),
-                              TextFormField(
-                                controller: _emailController,
-                                decoration: authPillInputDecoration(
-                                  l10n.loginEmailHint,
-                                  icon: Icons.mail_outline,
+        backgroundColor: sl.ground,
+        body: SafeArea(
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 480),
+                    child: Padding(
+                      padding: const EdgeInsets.fromLTRB(
+                        SLSpace.screen,
+                        SLSpace.m,
+                        SLSpace.screen,
+                        SLSpace.l,
+                      ),
+                      child: ListenableBuilder(
+                        listenable: _controller,
+                        builder: (context, _) => Form(
+                          key: _formKey,
+                          child: AutofillGroup(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                const AuthHeroImage(
+                                  asset: 'assets/images/login_hero.jpg',
+                                  background: AppColors.introBackground,
                                 ),
-                                keyboardType: TextInputType.emailAddress,
-                                textInputAction: TextInputAction.next,
-                                autofillHints: const [AutofillHints.email],
-                                validator: (value) =>
-                                    (value == null || value.trim().isEmpty)
-                                    ? l10n.loginEmailRequired
-                                    : null,
-                              ),
-                              const SizedBox(height: 14),
-                              TextFormField(
-                                controller: _passwordController,
-                                obscureText: _controller.obscurePassword,
-                                textInputAction: TextInputAction.done,
-                                autofillHints: const [AutofillHints.password],
-                                onFieldSubmitted: (_) => _submit(auth),
-                                decoration: authPillInputDecoration(
-                                  l10n.loginPasswordHint,
-                                  icon: Icons.lock_outline,
-                                  suffixIcon: PasswordVisibilityButton(
-                                    obscured: _controller.obscurePassword,
-                                    onPressed:
-                                        _controller.togglePasswordVisibility,
-                                    showTooltip: l10n.loginShowPassword,
-                                    hideTooltip: l10n.loginHidePassword,
+                                const SizedBox(height: SLSpace.section),
+                                Semantics(
+                                  header: true,
+                                  child: Text(
+                                    l10n.loginWelcomeBack,
+                                    style: type.title,
                                   ),
                                 ),
-                                validator: (value) =>
-                                    (value == null || value.isEmpty)
-                                    ? l10n.loginPasswordRequired
-                                    : null,
-                              ),
-                              const SizedBox(height: 12),
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: _RememberMe(
-                                      label: l10n.loginRememberMe,
-                                      value: _controller.rememberMe,
-                                      onChanged: _controller.setRememberMe,
+                                const SizedBox(height: SLSpace.xl),
+                                SLFieldLabel(l10n.loginEmailLabel),
+                                TextFormField(
+                                  controller: _emailController,
+                                  style: type.body,
+                                  decoration: slInputDecoration(
+                                    context,
+                                    hint: l10n.loginEmailHint,
+                                    prefixIcon: Icons.mail_outline,
+                                  ),
+                                  keyboardType: TextInputType.emailAddress,
+                                  textInputAction: TextInputAction.next,
+                                  autofillHints: const [AutofillHints.email],
+                                  validator: (value) =>
+                                      (value == null || value.trim().isEmpty)
+                                      ? l10n.loginEmailRequired
+                                      : null,
+                                ),
+                                const SizedBox(height: SLSpace.l),
+                                SLFieldLabel(l10n.loginPasswordLabel),
+                                TextFormField(
+                                  controller: _passwordController,
+                                  obscureText: _controller.obscurePassword,
+                                  style: type.body,
+                                  textInputAction: TextInputAction.done,
+                                  autofillHints: const [AutofillHints.password],
+                                  onFieldSubmitted: (_) => _submit(auth),
+                                  decoration: slInputDecoration(
+                                    context,
+                                    hint: l10n.loginPasswordHint,
+                                    prefixIcon: Icons.lock_outline,
+                                    suffixIcon: PasswordVisibilityButton(
+                                      obscured: _controller.obscurePassword,
+                                      onPressed:
+                                          _controller.togglePasswordVisibility,
+                                      showTooltip: l10n.loginShowPassword,
+                                      hideTooltip: l10n.loginHidePassword,
                                     ),
                                   ),
-                                  const SizedBox(width: 8),
-                                  Flexible(
-                                    child: Align(
-                                      alignment:
-                                          AlignmentDirectional.centerEnd,
-                                      child: TextButton(
-                                        onPressed: () => _requestCode(
-                                          l10n,
-                                          auth,
-                                          EmailCodePurpose.reset,
-                                        ),
-                                        style: TextButton.styleFrom(
-                                          foregroundColor: AppColors.deepGreen,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 4,
-                                          ),
-                                          textStyle: textTheme.bodySmall
-                                              ?.copyWith(
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                        ),
-                                        child: Text(
-                                          l10n.loginForgotPassword,
-                                          textAlign: TextAlign.end,
-                                        ),
+                                  validator: (value) =>
+                                      (value == null || value.isEmpty)
+                                      ? l10n.loginPasswordRequired
+                                      : null,
+                                ),
+                                Align(
+                                  alignment: AlignmentDirectional.centerEnd,
+                                  child: TextButton(
+                                    onPressed: () => _requestCode(
+                                      l10n,
+                                      auth,
+                                      EmailCodePurpose.reset,
+                                    ),
+                                    style: TextButton.styleFrom(
+                                      foregroundColor: sl.accentText,
+                                      minimumSize: const Size(0, 44),
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: SLSpace.xs,
+                                      ),
+                                      textStyle: type.small.copyWith(
+                                        fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                  ),
-                                ],
-                              ),
-                              if (auth.errorMessage != null) ...[
-                                const SizedBox(height: 8),
-                                Text(
-                                  auth.errorMessage!,
-                                  textAlign: TextAlign.center,
-                                  style: textTheme.bodySmall?.copyWith(
-                                    color: AppColors.error,
+                                    child: Text(
+                                      l10n.loginForgotPassword,
+                                      textAlign: TextAlign.end,
+                                    ),
                                   ),
                                 ),
-                              ],
-                              const SizedBox(height: 16),
-                              PillButton(
-                                label: l10n.loginSignIn,
-                                isLoading: auth.isLoading,
-                                onPressed: () => _submit(auth),
-                              ),
-                              const SizedBox(height: 4),
-                              TextButton(
-                                onPressed: auth.isLoading
-                                    ? null
-                                    : () => _requestCode(
+                                if (auth.errorMessage != null) ...[
+                                  const SizedBox(height: SLSpace.s),
+                                  AuthErrorText(auth.errorMessage!),
+                                ],
+                                const SizedBox(height: SLSpace.l),
+                                SLButton(
+                                  label: l10n.loginSignIn,
+                                  expand: true,
+                                  isLoading: auth.isLoading,
+                                  onPressed: () => _submit(auth),
+                                ),
+                                const SizedBox(height: SLSpace.s),
+                                TextButton(
+                                  onPressed: auth.isLoading
+                                      ? null
+                                      : () => _requestCode(
                                           l10n,
                                           auth,
                                           EmailCodePurpose.login,
                                         ),
-                                style: TextButton.styleFrom(
-                                  foregroundColor: AppColors.deepGreen,
+                                  style: TextButton.styleFrom(
+                                    foregroundColor: sl.accentText,
+                                  ),
+                                  child: Text(l10n.loginWithEmailCode),
                                 ),
-                                child: Text(l10n.loginWithEmailCode),
-                              ),
-                              const SizedBox(height: 8),
-                              AuthOrDivider(label: l10n.loginOrContinueWith),
-                              const SizedBox(height: 16),
-                              GoogleSignInButton(
-                                label: l10n.loginWithGoogle,
-                                onUnavailable: () => _socialSignIn(l10n),
-                              ),
-                              const SizedBox(height: 12),
-                              FacebookSignInButton(
-                                label: l10n.loginWithFacebook,
-                                onUnavailable: () => _socialSignIn(l10n),
-                              ),
-                              const Spacer(),
-                              const SizedBox(height: 20),
-                              AuthSwitchPrompt(
-                                question: l10n.loginNoAccount,
-                                actionLabel: l10n.loginCreateAccount,
-                                onPressed: () => _controller.openRegister(
-                                  Navigator.of(context),
+                                const SizedBox(height: SLSpace.xl),
+                                AuthOrDivider(label: l10n.loginOrContinueWith),
+                                const SizedBox(height: SLSpace.l),
+                                GoogleSignInButton(
+                                  label: l10n.loginWithGoogle,
+                                  visualLabel: 'Google',
+                                  onUnavailable: () => _socialUnavailable(l10n),
                                 ),
-                              ),
-                            ],
+                                const SizedBox(height: SLSpace.s),
+                                FacebookSignInButton(
+                                  label: l10n.loginWithFacebook,
+                                  visualLabel: 'Facebook',
+                                  onUnavailable: () => _socialUnavailable(l10n),
+                                ),
+                                const Spacer(),
+                                const SizedBox(height: SLSpace.xl),
+                                AuthSwitchPrompt(
+                                  question: l10n.loginNoAccount,
+                                  actionLabel: l10n.loginCreateAccount,
+                                  onPressed: () => _controller.openRegister(
+                                    Navigator.of(context),
+                                  ),
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
                     ),
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-/// Full-width illustration with the form's sheet rising over its bottom
-/// edge: rounded top corners, a soft shadow and a small handle.
-class _LoginHero extends StatelessWidget {
-  const _LoginHero();
-
-  static const String _asset = 'assets/images/login_hero.jpg';
-  static const double _height = 340;
-  static const double _sheetOverlap = 28;
-
-  @override
-  Widget build(BuildContext context) {
-    final topInset = MediaQuery.paddingOf(context).top;
-    // Phones: the illustration fills the header edge to edge. Wide windows
-    // (web, tablets) show it whole instead of cropping to a thin band.
-    final fill = MediaQuery.sizeOf(context).width <= 600;
-    return SizedBox(
-      height: _height + topInset,
-      child: Stack(
-        children: [
-          // The illustration's own background, so its edges never show.
-          const Positioned.fill(
-            child: ColoredBox(color: AppColors.introBackground),
-          ),
-          Positioned.fill(
-            bottom: fill ? 0 : _sheetOverlap - 6,
-            child: ExcludeSemantics(
-              child: Image(
-                image: const AssetImage(_asset),
-                fit: fill ? BoxFit.cover : BoxFit.contain,
-                alignment: const Alignment(0, 0.35),
-              ),
-            ),
-          ),
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            height: _sheetOverlap,
-            child: DecoratedBox(
-              decoration: BoxDecoration(
-                color: AppColors.canvas,
-                borderRadius: const BorderRadius.vertical(
-                  top: Radius.circular(_sheetOverlap),
-                ),
-                boxShadow: [
-                  BoxShadow(
-                    color: AppColors.ink.withValues(alpha: 0.08),
-                    blurRadius: 18,
-                    offset: const Offset(0, -4),
-                  ),
-                ],
-              ),
-              child: Align(
-                alignment: const Alignment(0, -0.1),
-                child: Container(
-                  width: 40,
-                  height: 4,
-                  decoration: BoxDecoration(
-                    color: AppColors.border,
-                    borderRadius: BorderRadius.circular(2),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-}
-
-/// Checkbox with a tappable label.
-class _RememberMe extends StatelessWidget {
-  const _RememberMe({
-    required this.label,
-    required this.value,
-    required this.onChanged,
-  });
-
-  final String label;
-  final bool value;
-  final ValueChanged<bool> onChanged;
-
-  @override
-  Widget build(BuildContext context) {
-    return MergeSemantics(
-      child: InkWell(
-        onTap: () => onChanged(!value),
-        borderRadius: BorderRadius.circular(6),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox.square(
-                dimension: 18,
-                child: Checkbox(
-                  value: value,
-                  onChanged: (checked) => onChanged(checked ?? false),
-                  activeColor: AppColors.brightGreen,
-                  side: const BorderSide(
-                    color: AppColors.brightGreen,
-                    width: 1.5,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(3),
-                  ),
-                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                  visualDensity: VisualDensity.compact,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Flexible(
-                child: Text(
-                  label,
-                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                    color: AppColors.textSecondary,
                   ),
                 ),
               ),

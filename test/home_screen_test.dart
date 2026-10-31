@@ -11,9 +11,9 @@ import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/views/home/home_screen.dart';
-import 'package:shareloop/widgets/item_grid_card.dart';
+import 'package:shareloop/widgets/sl/sl_item_card.dart';
 import 'package:shareloop/widgets/app_icon.dart';
-import 'package:shareloop/widgets/category_circle.dart';
+import 'package:shareloop/widgets/sl/sl_chip.dart';
 import 'package:shareloop/widgets/user_avatar.dart';
 
 Future<AuthController> _pumpHome(
@@ -88,31 +88,39 @@ Future<void> _pickInSheet(WidgetTester tester, String label) async {
 }
 
 void main() {
-  testWidgets('shows greeting, category circles and the item grid', (
+  testWidgets('shows the compact header, category chips and the item grid', (
     tester,
   ) async {
     await _pumpHome(tester);
 
-    expect(find.text('Hello, Nimal. What are you sharing today?'),
-        findsOneWidget);
+    // A compact header: the wordmark and the photo, no greeting.
+    expect(find.bySemanticsLabel('ShareLoop'), findsOneWidget);
+    expect(find.textContaining('Hello'), findsNothing);
     // The Give/Request shortcuts and the Give Away/Requests switch are gone;
     // both live in the bottom navigation.
     expect(find.text('Give an Item'), findsNothing);
     expect(find.text('Request an Item'), findsNothing);
-    expect(find.text('Categories'), findsOneWidget);
-    expect(find.byType(CategoryCircle), findsNWidgets(8));
+    // "All" plus one chip per category, then the city chip.
+    expect(find.widgetWithText(SLChip, 'All'), findsOneWidget);
+    expect(find.widgetWithText(SLChip, 'Household Items'), findsOneWidget);
+    expect(find.byType(SLChip), findsNWidgets(9));
     expect(find.text('Available near you'), findsOneWidget);
+    // Cards only open the post: no delete buttons in the feed.
+    expect(find.byTooltip('Delete post'), findsNothing);
     // Nimal lives in Nugegoda, so Home starts with items there.
     expect(find.text('All districts'), findsNothing);
     expect(find.text('Nugegoda'), findsOneWidget);
-    expect(find.byType(ItemGridCard), findsWidgets);
-    // The grid builds lazily, so scroll until a Silver donor's card exists.
-    await tester.scrollUntilVisible(
-      find.textContaining('Silver donor').first,
-      300,
-      scrollable: find.byType(Scrollable).first,
+    expect(find.byType(SLItemCard), findsWidgets);
+    // Cards show the donor's first name; their badge is the dot on the
+    // photo, and screen readers hear it.
+    expect(find.textContaining('Nimal · '), findsWidgets);
+    final semantics = tester.ensureSemantics();
+    expect(
+      // The card merges its texts into one label for screen readers.
+      find.bySemanticsLabel(RegExp('Nimal, Silver donor, ')),
+      findsWidgets,
     );
-    expect(find.textContaining('Silver donor'), findsWidgets);
+    semantics.dispose();
   });
 
   testWidgets('header follows profile edits: new photo and name', (
@@ -130,10 +138,6 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(
-      find.text('Hello, Kavidu. What are you sharing today?'),
-      findsOneWidget,
-    );
     final newPhoto = find.byWidgetPredicate(
       (w) => w is UserAvatar && w.url == 'assets/images/item_grey_cap.jpg',
     );
@@ -145,7 +149,7 @@ void main() {
     expect(headerPhoto, findsOneWidget);
     // Nimal's own posts in the grid show the new photo too.
     expect(
-      find.descendant(of: find.byType(ItemGridCard), matching: newPhoto),
+      find.descendant(of: find.byType(SLItemCard), matching: newPhoto),
       findsWidgets,
     );
     await tester.tap(headerPhoto);
@@ -181,27 +185,27 @@ void main() {
     );
   });
 
-  testWidgets('category circle filters the grid', (tester) async {
+  testWidgets('a category chip filters the grid', (tester) async {
     await _pumpHome(tester);
     await _showAllAreas(tester);
-    final shoes = find.widgetWithText(CategoryCircle, 'Shoes');
+    final shoes = find.widgetWithText(SLChip, 'Shoes');
 
     await tester.ensureVisible(shoes);
     await tester.pumpAndSettle();
     await tester.tap(shoes);
     await tester.pumpAndSettle();
 
-    expect(find.byType(ItemGridCard), findsNWidgets(2));
+    expect(find.byType(SLItemCard), findsNWidgets(2));
     expect(find.text('Leather Wingtip Brogues (Size 9)'), findsOneWidget);
     expect(find.text('Slip-On Knit Sneakers (Size 8)'), findsOneWidget);
-    expect(tester.widget<CategoryCircle>(shoes).selected, isTrue);
+    expect(tester.widget<SLChip>(shoes).selected, isTrue);
 
-    final all = find.widgetWithText(CategoryCircle, 'All');
+    final all = find.widgetWithText(SLChip, 'All');
     await tester.ensureVisible(all);
     await tester.pumpAndSettle();
     await tester.tap(all);
     await tester.pumpAndSettle();
-    expect(tester.widget<CategoryCircle>(shoes).selected, isFalse);
+    expect(tester.widget<SLChip>(shoes).selected, isFalse);
   });
 
   group('location chip', () {
@@ -214,7 +218,7 @@ void main() {
       expect(find.text('All districts'), findsNothing);
       expect(find.text('Leather School Backpack'), findsOneWidget);
       expect(find.text('Slip-On Knit Sneakers (Size 8)'), findsOneWidget);
-      expect(find.byType(ItemGridCard), findsNWidgets(2));
+      expect(find.byType(SLItemCard), findsNWidgets(2));
     });
 
     testWidgets('follows a profile change at once', (tester) async {
@@ -230,7 +234,7 @@ void main() {
       expect(find.text('Hikkaduwa'), findsOneWidget);
       expect(find.text('Electric Pressure Cooker'), findsOneWidget);
       expect(find.text('Smartphone'), findsOneWidget);
-      expect(find.byType(ItemGridCard), findsNWidgets(2));
+      expect(find.byType(SLItemCard), findsNWidgets(2));
     });
 
     testWidgets('without a city says "Select city", not the district', (
@@ -278,7 +282,7 @@ void main() {
       expect(auth.currentUser!.district, 'Gampaha');
       expect(auth.currentUser!.city, 'Negombo');
       expect(find.text('Negombo'), findsOneWidget);
-      expect(find.byType(ItemGridCard), findsNWidgets(2));
+      expect(find.byType(SLItemCard), findsNWidgets(2));
     });
 
     testWidgets('"All areas" shows every item until the city changes', (

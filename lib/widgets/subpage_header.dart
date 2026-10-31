@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// White circular back button with a light border.
 class CircleBackButton extends StatelessWidget {
@@ -11,15 +11,16 @@ class CircleBackButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     return IconButton(
       onPressed: onPressed ?? () => Navigator.of(context).maybePop(),
       tooltip: MaterialLocalizations.of(context).backButtonTooltip,
       icon: const Icon(Icons.arrow_back_ios_new, size: 20),
       style: IconButton.styleFrom(
-        backgroundColor: AppColors.white,
-        foregroundColor: AppColors.ink,
+        backgroundColor: sl.surface,
+        foregroundColor: sl.ink,
         fixedSize: const Size.square(44),
-        side: const BorderSide(color: AppColors.border),
+        side: BorderSide(color: sl.divider),
       ),
     );
   }
@@ -36,6 +37,7 @@ class SubpageHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -50,7 +52,7 @@ class SubpageHeader extends StatelessWidget {
                 child: Text(
                   title,
                   style: textTheme.headlineSmall?.copyWith(
-                    color: AppColors.ink,
+                    color: sl.ink,
                     fontWeight: FontWeight.w800,
                   ),
                 ),
@@ -59,9 +61,7 @@ class SubpageHeader extends StatelessWidget {
                 const SizedBox(height: 2),
                 Text(
                   subtitle!,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: AppColors.textSecondary,
-                  ),
+                  style: textTheme.bodyMedium?.copyWith(color: sl.inkMuted),
                 ),
               ],
             ],

@@ -10,6 +10,7 @@ import 'package:shareloop/controllers/profile_controller.dart';
 import 'package:shareloop/controllers/request_controller.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/core/routes/app_routes.dart';
+import 'package:shareloop/core/theme/app_theme.dart';
 import 'package:shareloop/models/item_request_model.dart';
 import 'package:shareloop/services/mock_data_service.dart';
 import 'package:shareloop/views/give_away/create_give_away_screen.dart';
@@ -23,6 +24,7 @@ Future<AuthController> _pumpRequestsPage(
   WidgetTester tester, {
   Size size = const Size(390, 844),
   Locale locale = const Locale('en'),
+  bool darkTheme = false,
 }) async {
   tester.view.physicalSize = size;
   tester.view.devicePixelRatio = 1.0;
@@ -41,6 +43,9 @@ Future<AuthController> _pumpRequestsPage(
         ChangeNotifierProvider(create: (_) => BadgeController()),
       ],
       child: MaterialApp(
+        theme: AppTheme.lightTheme,
+        darkTheme: AppTheme.darkTheme,
+        themeMode: darkTheme ? ThemeMode.dark : ThemeMode.light,
         locale: locale,
         localizationsDelegates: const [
           AppLocalizations.delegate,
@@ -50,8 +55,7 @@ Future<AuthController> _pumpRequestsPage(
         ],
         supportedLocales: const [Locale('en'), Locale('si'), Locale('ta')],
         home: const HomeScreen(),
-        onGenerateRoute: (settings) => settings.name ==
-                AppRoutes.createGiveAway
+        onGenerateRoute: (settings) => settings.name == AppRoutes.createGiveAway
             ? MaterialPageRoute(
                 builder: (_) => CreateGiveAwayScreen(
                   forRequest: settings.arguments as ItemRequestModel?,
@@ -63,17 +67,16 @@ Future<AuthController> _pumpRequestsPage(
   );
   await tester.pumpAndSettle();
   await tester.tap(
-    find.byWidgetPredicate(
-      (w) => w is AppIcon && w.glyph == AppGlyph.requests,
-    ),
+    find.byWidgetPredicate((w) => w is AppIcon && w.glyph == AppGlyph.requests),
   );
   await tester.pumpAndSettle();
   return auth;
 }
 
 void main() {
-  testWidgets('lists community requests with status and help button',
-      (tester) async {
+  testWidgets('lists community requests with status and help button', (
+    tester,
+  ) async {
     await _pumpRequestsPage(tester);
 
     expect(find.text('People near you who need an item'), findsOneWidget);
@@ -110,8 +113,9 @@ void main() {
     expect(find.text('I can help'), findsNothing);
   });
 
-  testWidgets('deleting your own request asks first, then removes it',
-      (tester) async {
+  testWidgets('deleting your own request asks first, then removes it', (
+    tester,
+  ) async {
     // The mock store is shared by every test, so delete a request made
     // just for this test rather than seed data other tests rely on.
     MockDataService.instance.itemRequests.add(
@@ -245,8 +249,9 @@ void main() {
     expect(find.text('Your request has been updated.'), findsOneWidget);
     expect(find.text('Laptop charger'), findsOneWidget);
     expect(find.text('Phone charger'), findsNothing);
-    final stored = MockDataService.instance.itemRequests
-        .singleWhere((r) => r.id == 'r-edit-test');
+    final stored = MockDataService.instance.itemRequests.singleWhere(
+      (r) => r.id == 'r-edit-test',
+    );
     expect(stored.itemName, 'Laptop charger');
     expect(stored.reason, 'Mine stopped working.');
   });
@@ -257,16 +262,15 @@ void main() {
     expect(find.byTooltip('Edit request'), findsOneWidget);
     expect(
       RequestController().canEdit(
-        MockDataService.instance.itemRequests
-            .first
-            .copyWith(status: ItemRequestStatus.approved),
+        MockDataService.instance.itemRequests.first.copyWith(
+          status: ItemRequestStatus.approved,
+        ),
       ),
       isFalse,
     );
   });
 
-  testWidgets('other people\'s requests have no delete button',
-      (tester) async {
+  testWidgets('other people\'s requests have no delete button', (tester) async {
     await _pumpRequestsPage(tester);
 
     expect(find.text('School shoes, size 4'), findsOneWidget);
@@ -283,6 +287,12 @@ void main() {
     expect(find.text('Give an Item'), findsOneWidget);
     expect(find.text('School shoes, size 4'), findsOneWidget);
     expect(find.text('Shoes'), findsOneWidget);
+  });
+
+  testWidgets('Requests discovery supports the dark theme', (tester) async {
+    await _pumpRequestsPage(tester, darkTheme: true);
+    expect(find.text('People near you who need an item'), findsOneWidget);
+    expect(tester.takeException(), isNull);
   });
 
   for (final code in const ['en', 'si', 'ta']) {

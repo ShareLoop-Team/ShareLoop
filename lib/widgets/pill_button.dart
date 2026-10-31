@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Full-width deep-green pill button with a soft shadow, used for the main
 /// action pinned at the bottom of a screen. Shows a spinner while
@@ -25,21 +25,21 @@ class PillButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final sl = context.sl;
     final style = ElevatedButton.styleFrom(
-      backgroundColor: outlined ? AppColors.white : AppColors.deepGreen,
-      foregroundColor: outlined ? AppColors.deepGreen : AppColors.white,
-      disabledBackgroundColor: AppColors.deepGreen.withValues(alpha: 0.6),
-      disabledForegroundColor: AppColors.white,
+      backgroundColor: outlined ? sl.surface : sl.action,
+      foregroundColor: outlined ? sl.accentText : sl.onAction,
+      disabledBackgroundColor: sl.action.withValues(alpha: 0.6),
+      disabledForegroundColor: sl.onAction,
       elevation: 0,
       minimumSize: const Size.fromHeight(54),
       shape: StadiumBorder(
         side: outlined
-            ? const BorderSide(color: AppColors.deepGreen, width: 1.5)
+            ? BorderSide(color: sl.accentText, width: 1.5)
             : BorderSide.none,
       ),
-      textStyle: Theme.of(context).textTheme.titleMedium?.copyWith(
-        fontWeight: FontWeight.w700,
-      ),
+      textStyle: Theme.of(context).textTheme.titleMedium
+          ?.copyWith(fontWeight: FontWeight.w700),
     );
     final onTap = isLoading ? null : onPressed;
     final Widget button;
@@ -47,12 +47,9 @@ class PillButton extends StatelessWidget {
       button = ElevatedButton(
         onPressed: null,
         style: style,
-        child: const SizedBox.square(
+        child: SizedBox.square(
           dimension: 22,
-          child: CircularProgressIndicator(
-            strokeWidth: 2,
-            color: AppColors.white,
-          ),
+          child: CircularProgressIndicator(strokeWidth: 2, color: sl.onAction),
         ),
       );
     } else if (icon case final icon?) {
@@ -75,7 +72,7 @@ class PillButton extends StatelessWidget {
         borderRadius: BorderRadius.circular(28),
         boxShadow: [
           BoxShadow(
-            color: AppColors.deepGreen.withValues(alpha: 0.25),
+            color: sl.action.withValues(alpha: 0.25),
             blurRadius: 16,
             offset: const Offset(0, 6),
           ),
@@ -95,9 +92,9 @@ class BottomActionBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
-        color: AppColors.white,
-        border: Border(top: BorderSide(color: AppColors.border)),
+      decoration: BoxDecoration(
+        color: context.sl.surface,
+        border: Border(top: BorderSide(color: context.sl.divider)),
       ),
       child: SafeArea(
         top: false,

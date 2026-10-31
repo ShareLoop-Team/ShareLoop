@@ -6,6 +6,7 @@ import '../../controllers/request_controller.dart';
 import '../../core/constants/app_colors.dart';
 import '../../core/localization/generated/app_localizations.dart';
 import '../../core/routes/app_routes.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../core/utils/time_ago.dart';
 import '../../models/item_request_model.dart';
 import '../../widgets/confirm_dialog.dart';
@@ -51,17 +52,18 @@ class RequestsTab extends StatelessWidget {
         child: LoadingIndicator(),
       );
     }
-    final requests = (onlyMine
-        ? requestController
-            .requestsByUser(userId ?? '')
-            .where((r) => category == null || r.category == category)
-            .toList()
-        : requestController.communityRequests(
-            category: category,
-            district: district,
-            query: query,
-          ))
-      ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
+    final requests =
+        (onlyMine
+              ? requestController
+                    .requestsByUser(userId ?? '')
+                    .where((r) => category == null || r.category == category)
+                    .toList()
+              : requestController.communityRequests(
+                  category: category,
+                  district: district,
+                  query: query,
+                ))
+          ..sort((a, b) => b.createdAt.compareTo(a.createdAt));
     if (requests.isEmpty) {
       final EmptyState state;
       if (requestController.errorMessage case final error?) {
@@ -110,10 +112,10 @@ class _RequestCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
     final textTheme = Theme.of(context).textTheme;
+    final sl = context.sl;
     final isStandalone = request.itemPostId == null;
-    final canHelp = isStandalone &&
-        !isMine &&
-        request.status == ItemRequestStatus.pending;
+    final canHelp =
+        isStandalone && !isMine && request.status == ItemRequestStatus.pending;
     // Once a donor has chosen this request, the handover depends on it.
     final canDelete = isMine && request.status != ItemRequestStatus.approved;
     final canEdit =
@@ -126,15 +128,8 @@ class _RequestCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: sl.surface,
         borderRadius: BorderRadius.circular(18),
-        boxShadow: [
-          BoxShadow(
-            color: AppColors.ink.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 2),
-          ),
-        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -149,7 +144,7 @@ class _RequestCard extends StatelessWidget {
                       : request.itemName,
                   style: textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w700,
-                    color: AppColors.ink,
+                    color: sl.ink,
                   ),
                 ),
               ),
@@ -162,9 +157,7 @@ class _RequestCard extends StatelessWidget {
             request.reason,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
-            style: textTheme.bodyMedium?.copyWith(
-              color: AppColors.textSecondary,
-            ),
+            style: textTheme.bodyMedium?.copyWith(color: sl.inkMuted),
           ),
           const SizedBox(height: 12),
           Wrap(
@@ -173,20 +166,20 @@ class _RequestCard extends StatelessWidget {
             children: [
               _Tag(
                 label: request.category,
-                background: AppColors.paleMint,
-                foreground: AppColors.deepGreen,
+                background: sl.accentSoft,
+                foreground: sl.accentText,
               ),
               _Tag(
                 label: request.district,
                 icon: Icons.location_on_outlined,
-                background: AppColors.mutedSurface,
-                foreground: AppColors.textSecondary,
+                background: sl.surfaceMuted,
+                foreground: sl.inkMuted,
               ),
             ],
           ),
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(vertical: 12),
-            child: Divider(height: 1, color: AppColors.border),
+            child: Divider(height: 1, color: sl.divider),
           ),
           Row(
             children: [
@@ -195,12 +188,12 @@ class _RequestCard extends StatelessWidget {
               else
                 CircleAvatar(
                   radius: 18,
-                  backgroundColor: AppColors.softMint,
+                  backgroundColor: sl.accentSoft,
                   child: Text(
                     name.isEmpty ? '?' : name[0].toUpperCase(),
                     style: textTheme.titleSmall?.copyWith(
                       fontWeight: FontWeight.w700,
-                      color: AppColors.deepGreen,
+                      color: sl.accentText,
                     ),
                   ),
                 ),
@@ -215,16 +208,14 @@ class _RequestCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w700,
-                        color: AppColors.ink,
+                        color: sl.ink,
                       ),
                     ),
                     Text(
                       '${request.city} · ${timeAgo(l10n, request.createdAt)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: textTheme.bodySmall?.copyWith(
-                        color: AppColors.textSecondary,
-                      ),
+                      style: textTheme.bodySmall?.copyWith(color: sl.inkMuted),
                     ),
                   ],
                 ),
@@ -236,13 +227,12 @@ class _RequestCard extends StatelessWidget {
                   constraints: const BoxConstraints(maxWidth: 140),
                   child: OutlinedButton(
                     // Opens the Give form pre-filled with what they need.
-                    onPressed: () => Navigator.of(context).pushNamed(
-                      AppRoutes.createGiveAway,
-                      arguments: request,
-                    ),
+                    onPressed: () => Navigator.of(
+                      context,
+                    ).pushNamed(AppRoutes.createGiveAway, arguments: request),
                     style: OutlinedButton.styleFrom(
-                      foregroundColor: AppColors.deepGreen,
-                      side: const BorderSide(color: AppColors.deepGreen),
+                      foregroundColor: sl.accentText,
+                      side: BorderSide(color: sl.accentText),
                       shape: const StadiumBorder(),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 18,
@@ -270,14 +260,14 @@ class _RequestCard extends StatelessWidget {
                     ),
                     tooltip: l10n.requestsEdit,
                     icon: const Icon(Icons.edit_outlined),
-                    color: AppColors.deepGreen,
+                    color: sl.accentText,
                   ),
                 if (canDelete)
                   IconButton(
                     onPressed: () => _confirmDelete(context),
                     tooltip: l10n.requestsDelete,
                     icon: const Icon(Icons.delete_outline),
-                    color: AppColors.error,
+                    color: sl.danger,
                   ),
               ],
             ],
@@ -315,27 +305,28 @@ class _StatusPill extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context);
+    final sl = context.sl;
     final (label, icon, color) = switch (request.status) {
       ItemRequestStatus.pending when request.itemPostId == null => (
-          l10n.statusOpen,
-          Icons.radio_button_unchecked,
-          AppColors.deepGreen,
-        ),
+        l10n.statusOpen,
+        Icons.radio_button_unchecked,
+        sl.accentText,
+      ),
       ItemRequestStatus.pending => (
-          l10n.statusDonorReviewing,
-          Icons.schedule,
-          AppColors.amber,
-        ),
+        l10n.statusDonorReviewing,
+        Icons.schedule,
+        AppColors.amber,
+      ),
       ItemRequestStatus.approved => (
-          l10n.statusApproved,
-          Icons.check_circle_outline,
-          AppColors.deepGreen,
-        ),
+        l10n.statusApproved,
+        Icons.check_circle_outline,
+        sl.accentText,
+      ),
       ItemRequestStatus.rejected => (
-          l10n.statusNotSelected,
-          Icons.remove_circle_outline,
-          AppColors.textSecondary,
-        ),
+        l10n.statusNotSelected,
+        Icons.remove_circle_outline,
+        sl.inkMuted,
+      ),
     };
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
@@ -351,10 +342,10 @@ class _StatusPill extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  fontWeight: FontWeight.w700,
-                  // Amber text is too faint on its own tint.
-                  color: color == AppColors.amber ? AppColors.ink : color,
-                ),
+              fontWeight: FontWeight.w700,
+              // Amber text is too faint on its own tint.
+              color: color == AppColors.amber ? sl.ink : color,
+            ),
           ),
         ],
       ),
@@ -392,10 +383,8 @@ class _Tag extends StatelessWidget {
           ],
           Text(
             label,
-            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                  color: foreground,
-                  fontWeight: FontWeight.w600,
-                ),
+            style: Theme.of(context).textTheme.bodySmall
+                ?.copyWith(color: foreground, fontWeight: FontWeight.w600),
           ),
         ],
       ),

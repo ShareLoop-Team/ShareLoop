@@ -3,8 +3,7 @@ import 'package:provider/provider.dart';
 
 import '../../controllers/auth_controller.dart';
 import '../../controllers/profile_controller.dart';
-import '../../core/constants/app_colors.dart';
-import '../../core/theme/app_theme.dart';
+import '../../core/theme/sl_tokens.dart';
 import '../../widgets/pill_button.dart';
 import '../../widgets/subpage_header.dart';
 
@@ -29,7 +28,7 @@ class ActivityPage extends StatelessWidget {
 
   /// List content shown when not [isEmpty].
   final List<Widget> items;
-  final Widget action;
+  final Widget? action;
 
   /// Reloads the signed-in user's posts, requests and reviews.
   static Future<void> refresh(BuildContext context) async {
@@ -41,68 +40,66 @@ class ActivityPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Theme(
-      data: AppTheme.lightTheme,
-      child: Scaffold(
-        backgroundColor: AppColors.canvas,
-        body: SafeArea(
-          bottom: false,
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              Padding(
-                padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
-                child: SubpageHeader(title: title, subtitle: subtitle),
-              ),
-              Expanded(
-                child: RefreshIndicator(
-                  color: AppColors.deepGreen,
-                  onRefresh: () => refresh(context),
-                  child: LayoutBuilder(
-                    builder: (context, constraints) => isEmpty
-                        ? SingleChildScrollView(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 28,
-                              vertical: 24,
+    final sl = context.sl;
+    return Scaffold(
+      backgroundColor: sl.ground,
+      body: SafeArea(
+        bottom: false,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(20, 12, 20, 8),
+              child: SubpageHeader(title: title, subtitle: subtitle),
+            ),
+            Expanded(
+              child: RefreshIndicator(
+                color: sl.accentText,
+                onRefresh: () => refresh(context),
+                child: LayoutBuilder(
+                  builder: (context, constraints) => isEmpty
+                      ? SingleChildScrollView(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 28,
+                            vertical: 24,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight: constraints.maxHeight - 48,
                             ),
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                minHeight: constraints.maxHeight - 48,
-                              ),
-                              child: Center(
-                                child: ConstrainedBox(
-                                  constraints: const BoxConstraints(
-                                    maxWidth: 480,
-                                  ),
-                                  child: emptyState,
-                                ),
-                              ),
-                            ),
-                          )
-                        : ListView.separated(
-                            physics: const AlwaysScrollableScrollPhysics(),
-                            padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
-                            itemCount: items.length,
-                            itemBuilder: (_, index) => Center(
+                            child: Center(
                               child: ConstrainedBox(
                                 constraints: const BoxConstraints(
-                                  maxWidth: 600,
+                                  maxWidth: 480,
                                 ),
-                                child: items[index],
+                                child: emptyState,
                               ),
                             ),
-                            separatorBuilder: (_, _) =>
-                                const SizedBox(height: 12),
                           ),
-                  ),
+                        )
+                      : ListView.separated(
+                          physics: const AlwaysScrollableScrollPhysics(),
+                          padding: const EdgeInsets.fromLTRB(20, 8, 20, 24),
+                          itemCount: items.length,
+                          itemBuilder: (_, index) => Center(
+                            child: ConstrainedBox(
+                              constraints: const BoxConstraints(maxWidth: 600),
+                              child: items[index],
+                            ),
+                          ),
+                          separatorBuilder: (_, _) =>
+                              const SizedBox(height: 12),
+                        ),
                 ),
               ),
-            ],
-          ),
+            ),
+          ],
         ),
-        bottomNavigationBar: BottomActionBar(children: [action]),
       ),
+      bottomNavigationBar: action == null
+          ? null
+          : BottomActionBar(children: [action!]),
     );
   }
 }

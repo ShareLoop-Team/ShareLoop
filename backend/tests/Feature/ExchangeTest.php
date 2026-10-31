@@ -76,6 +76,28 @@ class ExchangeTest extends ShareLoopTestCase
             ->assertJsonPath('data.status', 'completed');
     }
 
+    public function test_signed_in_user_can_list_only_their_exchanges(): void
+    {
+        $this->select();
+
+        $this->actingAsUser($this->donor)
+            ->getJson('/api/me/exchanges')
+            ->assertOk()
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.item_id', $this->item->id)
+            ->assertJsonPath('data.0.donor_id', $this->donor->id);
+
+        $this->actingAsUser($this->requester)
+            ->getJson('/api/me/exchanges')
+            ->assertOk()
+            ->assertJsonCount(1, 'data');
+
+        $this->actingAsUser($this->otherRequester)
+            ->getJson('/api/me/exchanges')
+            ->assertOk()
+            ->assertJsonCount(0, 'data');
+    }
+
     public function test_only_the_donor_selects_and_only_once(): void
     {
         $this->actingAsUser($this->requester)

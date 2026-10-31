@@ -1,20 +1,28 @@
 # ShareLoop CI/CD.
-#   Every push and pull request: backend tests + Flutter analyze/tests.
-#   Push to main (after both pass): deploy the API and web app to Azure App
-#   Service, and build an Android APK pointed at it (download it from the run).
+#   Pushes and pull requests: backend tests + Flutter analyze/tests.
+#   Confirmed manual dispatch on main (after both pass): deploy to Azure.
+#   Push to main: build a downloadable Android APK artifact (no deployment).
 #
-# One-time setup (repo Settings > Secrets and variables > Actions):
-#   secret   AZURE_WEBAPP_PUBLISH_PROFILE  web app > Overview > Download publish profile
-#   variable AZURE_WEBAPP_NAME             e.g. shareloop-api-dilum
+# One-time setup:
+#   Actions repository variable AZURE_WEBAPP_NAME (exact Azure App Service name)
+#   production environment secret AZURE_WEBAPP_PUBLISH_PROFILE (publish profile XML)
 #   variable GOOGLE_CLIENT_ID              Google OAuth web client ID (optional)
 #   variable FACEBOOK_APP_ID               Meta App ID (optional)
-# Until AZURE_WEBAPP_NAME is set, the deploy and APK jobs are skipped.
+# Production deploys are manual-only and require workflow_dispatch confirmation.
+# The APK job remains limited to main pushes when AZURE_WEBAPP_NAME is set; it
+# only uploads an artifact and does not deploy it.
 name: CI/CD
 
 on:
   push:
   pull_request:
   workflow_dispatch:
+    inputs:
+      confirm_production_deploy:
+        description: Confirm deployment to the production Azure App Service
+        type: boolean
+        required: true
+        default: false
 
 permissions:
   contents: read
@@ -64,7 +72,12 @@ jobs:
   deploy:
     name: Deploy to Azure
     needs: [backend, app]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main' && vars.AZURE_WEBAPP_NAME != ''
+    if: >-
+      github.event_name == 'workflow_dispatch' &&
+      github.ref == 'refs/heads/main' &&
+      inputs.confirm_production_deploy == true &&
+      needs.backend.result == 'success' &&
+      needs.app.result == 'success'
     runs-on: ubuntu-latest
     concurrency:
       group: deploy-azure
@@ -74,6 +87,20 @@ jobs:
       url: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/app/
     steps:
       - uses: actions/checkout@v4
+      - name: Validate Azure deployment settings
+        shell: bash
+        env:
+          AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          if [[ -z "$AZURE_WEBAPP_NAME" ]]; then
+            echo "::error::Missing GitHub Actions variable AZURE_WEBAPP_NAME. Set it to the exact Azure App Service name."
+            exit 1
+          fi
+          if [[ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]]; then
+            echo "::error::Missing GitHub Actions secret AZURE_WEBAPP_PUBLISH_PROFILE. Add the publish profile XML for the production App Service."
+            exit 1
+          fi
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}

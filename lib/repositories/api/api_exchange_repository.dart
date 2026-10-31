@@ -32,8 +32,12 @@ class ApiExchangeRepository implements ExchangeRepository {
   @override
   Future<ExchangeModel?> getExchangeForPost(String postId) async {
     final data = ApiRows.data(await _api.get('/items/$postId/exchange'));
-    return data == null
-        ? null
-        : ApiRows.exchange(data as Map<String, dynamic>);
+    return data == null ? null : ApiRows.exchange(data as Map<String, dynamic>);
+  }
+
+  @override
+  Future<List<ExchangeModel>> getExchangesByUser(String userId) async {
+    final body = await _api.get('/me/exchanges');
+    return [for (final row in ApiRows.list(body)) ApiRows.exchange(row)];
   }
 }

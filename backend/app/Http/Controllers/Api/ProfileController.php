@@ -4,13 +4,32 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
+use App\Http\Resources\ExchangeResource;
+use App\Models\Exchange;
 use App\Services\PhotoStorage;
 use App\Support\Rules;
 use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
 
 /** The signed-in user's own editable details. */
 class ProfileController extends Controller
 {
+    /** Exchanges involving the signed-in user, newest first. */
+    public function exchanges(Request $request): AnonymousResourceCollection
+    {
+        $userId = $request->user()->id;
+        $exchanges = Exchange::query()
+            ->where(fn ($query) => $query
+                ->where('donor_id', $userId)
+                ->orWhere('requester_id', $userId))
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->limit(100)
+            ->get();
+
+        return ExchangeResource::collection($exchanges);
+    }
+
     public function update(Request $request): UserResource
     {
         $data = $request->validate([

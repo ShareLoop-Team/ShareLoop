@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
-import '../core/constants/app_colors.dart';
 import '../core/localization/generated/app_localizations.dart';
-import '../core/theme/app_theme.dart';
+import '../core/theme/sl_tokens.dart';
 
 /// Asks the user to confirm a destructive action (shown in red). Resolves
-/// true only when they press [actionLabel].
+/// true only when they press [actionLabel]. Takes the theme of the screen
+/// that opens it (light or dark).
 Future<bool> confirmDestructiveAction(
   BuildContext context, {
   required String title,
@@ -14,26 +14,25 @@ Future<bool> confirmDestructiveAction(
 }) async {
   final confirmed = await showDialog<bool>(
     context: context,
-    builder: (dialogContext) => Theme(
-      data: AppTheme.lightTheme,
-      child: AlertDialog(
-        backgroundColor: AppColors.white,
-        title: Text(title),
-        content: Text(message),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(false),
-            child: Text(
-              MaterialLocalizations.of(dialogContext).cancelButtonLabel,
-            ),
+    builder: (dialogContext) => AlertDialog(
+      title: Text(title),
+      content: Text(message),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(false),
+          style: TextButton.styleFrom(
+            foregroundColor: dialogContext.sl.accentText,
           ),
-          TextButton(
-            onPressed: () => Navigator.of(dialogContext).pop(true),
-            style: TextButton.styleFrom(foregroundColor: AppColors.error),
-            child: Text(actionLabel),
+          child: Text(
+            MaterialLocalizations.of(dialogContext).cancelButtonLabel,
           ),
-        ],
-      ),
+        ),
+        TextButton(
+          onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: TextButton.styleFrom(foregroundColor: dialogContext.sl.danger),
+          child: Text(actionLabel),
+        ),
+      ],
     ),
   );
   return confirmed ?? false;
