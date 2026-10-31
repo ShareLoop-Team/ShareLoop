@@ -1,16 +1,17 @@
 # ShareLoop CI/CD.
 #   Pushes and pull requests: backend tests + Flutter analyze/tests.
-#   Confirmed manual dispatch on main (after both pass): deploy to Azure.
-#   Push to main: build a downloadable Android APK artifact (no deployment).
+#   Push to main, or a confirmed manual run on main (after both pass): deploy
+#   the API and web app to Azure, so merged changes go live on their own.
+#   Push to main: also build a downloadable Android APK artifact.
 #
 # One-time setup:
 #   Actions repository variable AZURE_WEBAPP_NAME (exact Azure App Service name)
 #   production environment secret AZURE_WEBAPP_PUBLISH_PROFILE (publish profile XML)
 #   variable GOOGLE_CLIENT_ID              Google OAuth web client ID (optional)
 #   variable FACEBOOK_APP_ID               Meta App ID (optional)
-# Production deploys are manual-only and require workflow_dispatch confirmation.
-# The APK job remains limited to main pushes when AZURE_WEBAPP_NAME is set; it
-# only uploads an artifact and does not deploy it.
+# To hold deploys for sign-off, add required reviewers to the production
+# environment (Settings > Environments); each deploy then waits for approval.
+# The APK job only uploads an artifact and does not deploy it.
 name: CI/CD
 
 on:
@@ -73,9 +74,9 @@ jobs:
     name: Deploy to Azure
     needs: [backend, app]
     if: >-
-      github.event_name == 'workflow_dispatch' &&
       github.ref == 'refs/heads/main' &&
-      inputs.confirm_production_deploy == true &&
+      (github.event_name == 'push' ||
+       (github.event_name == 'workflow_dispatch' && inputs.confirm_production_deploy == true)) &&
       needs.backend.result == 'success' &&
       needs.app.result == 'success'
     runs-on: ubuntu-latest
