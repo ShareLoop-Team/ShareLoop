@@ -46,6 +46,7 @@ Route::middleware(['auth:sanctum', 'active'])->group(function () {
     Route::get('/users', [UserController::class, 'index']);
     Route::get('/users/{id}', [UserController::class, 'show']);
     Route::get('/users/{id}/ratings', [UserController::class, 'ratings']);
+    Route::get('/notifications', [UserController::class, 'notifications']);
 
     Route::get('/items', [ItemController::class, 'index']);
     Route::post('/items', [ItemController::class, 'store']);

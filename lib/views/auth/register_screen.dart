@@ -74,7 +74,7 @@ class _RegisterViewState extends State<_RegisterView> {
     );
   }
 
-  /// Google and Facebook aren't set up in Firebase yet: say so plainly
+  /// Google and Facebook aren't configured on the backend yet: say so plainly
   /// rather than starting a sign-up that can't finish.
   void _socialUnavailable(AppLocalizations l10n) => showAppSnackBar(
     ScaffoldMessenger.of(context),
