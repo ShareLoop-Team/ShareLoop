@@ -21,9 +21,12 @@ class User extends Authenticatable implements CanResetPassword
 
     public const STATUS_ACTIVE = 'active';
     public const STATUS_SUSPENDED = 'suspended';
+    public const STATUS_BANNED = 'banned';
 
     protected $fillable = [
         'display_name', 'email', 'password', 'phone', 'district', 'city',
+        'role_id', 'is_banned', 'banned_at', 'ban_reason', 'is_verified',
+        'points', 'badge', 'trust_score', 'last_login_at', 'last_login_ip',
     ];
 
     protected $hidden = ['password', 'remember_token', 'google_id', 'facebook_id'];
@@ -35,6 +38,11 @@ class User extends Authenticatable implements CanResetPassword
         'rating_count' => 0,
         'is_admin' => false,
         'status' => self::STATUS_ACTIVE,
+        'is_banned' => false,
+        'is_verified' => false,
+        'points' => 0,
+        'badge' => 'Bronze',
+        'trust_score' => 100,
     ];
 
     protected function casts(): array
@@ -46,17 +54,37 @@ class User extends Authenticatable implements CanResetPassword
             'rating_avg' => 'float',
             'rating_count' => 'integer',
             'is_admin' => 'boolean',
+            'is_banned' => 'boolean',
+            'is_verified' => 'boolean',
+            'points' => 'integer',
+            'trust_score' => 'integer',
+            'banned_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 
     public function isActive(): bool
     {
-        return $this->status === self::STATUS_ACTIVE;
+        return $this->status === self::STATUS_ACTIVE && ! $this->is_banned;
     }
 
     public function isAdmin(): bool
     {
-        return $this->is_admin && $this->isActive();
+        return ($this->is_admin || $this->role_id !== null) && $this->isActive();
+    }
+
+    public function role(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(AdminRole::class, 'role_id');
+    }
+
+    public function hasPermission(string $permissionSlug): bool
+    {
+        if ($this->is_admin && ! $this->role_id) {
+            return true; // Super admin
+        }
+
+        return $this->role?->hasPermission($permissionSlug) ?? false;
     }
 
     public function items(): HasMany

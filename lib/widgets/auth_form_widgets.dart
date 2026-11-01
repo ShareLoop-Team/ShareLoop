@@ -114,8 +114,8 @@ class AuthBackButton extends StatelessWidget {
 }
 
 /// "or continue with" divider above a row of Google and Facebook buttons.
-/// [onPressed] runs for either one; Firebase has no social provider set up
-/// yet, so the screens use it to say so.
+/// [onPressed] runs for either one; if no social provider is configured on
+/// the backend, the screens use it to say so.
 class AuthSocialButtons extends StatelessWidget {
   const AuthSocialButtons({
     super.key,

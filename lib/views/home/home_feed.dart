@@ -9,6 +9,7 @@ import '../../core/constants/app_constants.dart';
 import '../../core/constants/sri_lanka_locations.dart';
 import '../../core/localization/data_labels.dart';
 import '../../core/localization/generated/app_localizations.dart';
+import '../../core/routes/app_routes.dart';
 import '../../core/theme/sl_tokens.dart';
 import '../../models/user_model.dart';
 import '../../widgets/app_snack_bar.dart';
@@ -225,6 +226,10 @@ class _HomeFeedState extends State<HomeFeed> {
                     clearTooltip: l10n.searchClear,
                     onChanged: itemController.setSearchQuery,
                     onClear: _clearSearch,
+                    hasActiveFilters: itemController.hasActiveFilters,
+                    onFilterTap: () => Navigator.of(context).pushNamed(
+                      AppRoutes.searchFilter,
+                    ),
                   ),
                   const SizedBox(height: SLSpace.s),
                 ],
@@ -385,6 +390,8 @@ class _SearchField extends StatelessWidget {
     required this.clearTooltip,
     required this.onChanged,
     required this.onClear,
+    this.hasActiveFilters = false,
+    this.onFilterTap,
   });
 
   final TextEditingController controller;
@@ -392,6 +399,8 @@ class _SearchField extends StatelessWidget {
   final String clearTooltip;
   final ValueChanged<String> onChanged;
   final VoidCallback onClear;
+  final bool hasActiveFilters;
+  final VoidCallback? onFilterTap;
 
   @override
   Widget build(BuildContext context) {
@@ -411,15 +420,31 @@ class _SearchField extends StatelessWidget {
         hintText: hint,
         hintStyle: type.body.copyWith(color: sl.inkMuted),
         prefixIcon: Icon(Icons.search, color: sl.inkMuted),
-        // The parent rebuilds on every search change, so this tracks the
-        // text without its own listener.
-        suffixIcon: controller.text.isEmpty
-            ? null
-            : IconButton(
+        suffixIcon: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (controller.text.isNotEmpty)
+              IconButton(
                 onPressed: onClear,
                 tooltip: clearTooltip,
                 icon: Icon(Icons.close, color: sl.inkMuted),
               ),
+            if (onFilterTap != null)
+              IconButton(
+                onPressed: onFilterTap,
+                tooltip: 'Filter',
+                icon: Badge(
+                  isLabelVisible: hasActiveFilters,
+                  backgroundColor: sl.accent,
+                  smallSize: 8,
+                  child: Icon(
+                    Icons.tune_rounded,
+                    color: hasActiveFilters ? sl.accentText : sl.inkMuted,
+                  ),
+                ),
+              ),
+          ],
+        ),
         filled: true,
         fillColor: sl.surface,
         contentPadding: const EdgeInsets.symmetric(vertical: 14),

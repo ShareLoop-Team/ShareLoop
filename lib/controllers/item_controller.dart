@@ -2,8 +2,11 @@ import 'package:flutter/foundation.dart';
 
 import '../core/errors/app_exception.dart';
 import '../models/exchange_model.dart';
+import '../models/item_filter_criteria.dart';
 import '../models/item_post_model.dart';
 import '../models/photo_upload.dart';
+
+export '../models/item_filter_criteria.dart';
 import '../repositories/exchange_repository.dart';
 import '../repositories/item_post_repository.dart';
 
@@ -24,37 +27,46 @@ class ItemController extends ChangeNotifier {
   bool isLoading = false;
   String? errorMessage;
 
-  String? categoryFilter;
-  String? districtFilter;
+  ItemFilterCriteria _criteria = ItemFilterCriteria.empty;
+
+  /// The active catalog filter criteria.
+  ItemFilterCriteria get filterCriteria => _criteria;
+
+  String? get categoryFilter => _criteria.category;
+  set categoryFilter(String? value) => setCategoryFilter(value);
+
+  String? get conditionFilter => _criteria.condition;
+  set conditionFilter(String? value) => setConditionFilter(value);
+
+  String? get districtFilter => _criteria.district;
+  set districtFilter(String? value) => setDistrictFilter(value);
 
   /// Only posts in this city; Home sets it to the user's own city.
-  String? cityFilter;
-  String searchQuery = '';
+  String? get cityFilter => _criteria.city;
+  set cityFilter(String? value) => setCityFilter(value);
+
+  String get searchQuery => _criteria.searchQuery;
+  set searchQuery(String value) => setSearchQuery(value);
+
+  ItemSortOption get sortOption => _criteria.sortOption;
+  set sortOption(ItemSortOption value) => setSortOption(value);
+
+  double? get minRatingFilter => _criteria.minDonorRating;
+  set minRatingFilter(double? value) => setMinRatingFilter(value);
+
+  /// Unfiltered list of all posts loaded in memory.
+  List<ItemPostModel> get allPosts => List.unmodifiable(_allPosts);
 
   /// The profile city [applyProfileCity] last applied.
   String? _profileCity;
 
-  List<ItemPostModel> get posts {
-    return _allPosts.where((p) {
-      final matchesCategory =
-          categoryFilter == null || p.category == categoryFilter;
-      final matchesDistrict =
-          districtFilter == null || p.district == districtFilter;
-      final matchesCity = cityFilter == null || p.city == cityFilter;
-      final matchesSearch =
-          searchQuery.isEmpty ||
-          p.title.toLowerCase().contains(searchQuery.toLowerCase()) ||
-          p.description.toLowerCase().contains(searchQuery.toLowerCase());
-      return matchesCategory && matchesDistrict && matchesCity && matchesSearch;
-    }).toList();
-  }
+  /// Posts matching the current search, category, condition, location,
+  /// and sort criteria.
+  List<ItemPostModel> get posts => _criteria.filterAndSort(_allPosts);
 
-  /// Whether a search, category, district or city is narrowing [posts].
-  bool get hasActiveFilters =>
-      categoryFilter != null ||
-      districtFilter != null ||
-      cityFilter != null ||
-      searchQuery.trim().isNotEmpty;
+  /// Whether a search, category, condition, district, city, rating or sort
+  /// is currently active.
+  bool get hasActiveFilters => _criteria.hasActiveFilters;
 
   /// Whether [city] (the user's profile city) is already applied, so a
   /// null [cityFilter] means they chose to see all areas.
@@ -65,17 +77,27 @@ class ItemController extends ChangeNotifier {
   void applyProfileCity(String? city) {
     if (_profileCity == city) return;
     _profileCity = city;
-    cityFilter = city;
-    notifyListeners();
+    setCityFilter(city);
   }
 
   /// Any loaded post by id, regardless of the Home filters.
   ItemPostModel? postById(String id) =>
       _allPosts.where((p) => p.id == id).firstOrNull;
+
   /// [posts] that can still be requested, for the browse lists. Posts with a
   /// handover underway or done stay in [posts] so their screens can find them.
-  List<ItemPostModel> get availablePosts =>
-      posts.where((p) => p.status == ItemPostStatus.active).toList();
+  List<ItemPostModel> get availablePosts => _criteria
+      .copyWith(status: ItemPostStatus.active)
+      .filterAndSort(_allPosts);
+
+  /// Filters and sorts any custom list of [items] using the given or
+  /// current filter criteria.
+  List<ItemPostModel> filterItems(
+    List<ItemPostModel> items, {
+    ItemFilterCriteria? criteria,
+  }) {
+    return (criteria ?? _criteria).filterAndSort(items);
+  }
 
   Future<void> loadPosts() async {
     isLoading = true;
@@ -103,30 +125,69 @@ class ItemController extends ChangeNotifier {
       _allPosts.where((p) => p.donorId == donorId).toList();
 
   void setCategoryFilter(String? category) {
-    categoryFilter = category;
+    if (_criteria.category == category) return;
+    _criteria = _criteria.copyWith(
+      category: category,
+      clearCategory: category == null,
+    );
+    notifyListeners();
+  }
+
+  void setConditionFilter(String? condition) {
+    if (_criteria.condition == condition) return;
+    _criteria = _criteria.copyWith(
+      condition: condition,
+      clearCondition: condition == null,
+    );
     notifyListeners();
   }
 
   void setDistrictFilter(String? district) {
-    districtFilter = district;
+    if (_criteria.district == district) return;
+    _criteria = _criteria.copyWith(
+      district: district,
+      clearDistrict: district == null,
+    );
     notifyListeners();
   }
 
   void setCityFilter(String? city) {
-    cityFilter = city;
+    if (_criteria.city == city) return;
+    _criteria = _criteria.copyWith(
+      city: city,
+      clearCity: city == null,
+    );
     notifyListeners();
   }
 
   void setSearchQuery(String query) {
-    searchQuery = query;
+    if (_criteria.searchQuery == query) return;
+    _criteria = _criteria.copyWith(searchQuery: query);
+    notifyListeners();
+  }
+
+  void setSortOption(ItemSortOption option) {
+    if (_criteria.sortOption == option) return;
+    _criteria = _criteria.copyWith(sortOption: option);
+    notifyListeners();
+  }
+
+  void setMinRatingFilter(double? rating) {
+    if (_criteria.minDonorRating == rating) return;
+    _criteria = _criteria.copyWith(
+      minDonorRating: rating,
+      clearMinDonorRating: rating == null,
+    );
+    notifyListeners();
+  }
+
+  void setFilterCriteria(ItemFilterCriteria criteria) {
+    _criteria = criteria;
     notifyListeners();
   }
 
   void clearFilters() {
-    categoryFilter = null;
-    districtFilter = null;
-    cityFilter = null;
-    searchQuery = '';
+    _criteria = ItemFilterCriteria.empty;
     notifyListeners();
   }
 

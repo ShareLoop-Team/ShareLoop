@@ -18,9 +18,16 @@ class Item extends Model
     public const STATUS_PENDING_HANDOVER = 'pending_handover';
     public const STATUS_COMPLETED = 'completed';
 
+    public const MODERATION_APPROVED = 'approved';
+    public const MODERATION_PENDING = 'pending';
+    public const MODERATION_REJECTED = 'rejected';
+    public const MODERATION_ARCHIVED = 'archived';
+
     protected $fillable = [
         'donor_id', 'title', 'description', 'condition', 'category',
         'district', 'city', 'image_paths',
+        'moderation_status', 'moderation_notes', 'moderated_by',
+        'moderated_at', 'ai_toxicity_score', 'ai_scam_score', 'ai_flagged',
     ];
 
     protected $attributes = [
@@ -28,11 +35,27 @@ class Item extends Model
         'image_paths' => '[]',
         'status' => self::STATUS_ACTIVE,
         'is_hidden' => false,
+        'moderation_status' => self::MODERATION_APPROVED,
+        'ai_toxicity_score' => 0,
+        'ai_scam_score' => 0,
+        'ai_flagged' => false,
     ];
 
     protected function casts(): array
     {
-        return ['image_paths' => 'array', 'is_hidden' => 'boolean'];
+        return [
+            'image_paths' => 'array',
+            'is_hidden' => 'boolean',
+            'ai_flagged' => 'boolean',
+            'ai_toxicity_score' => 'integer',
+            'ai_scam_score' => 'integer',
+            'moderated_at' => 'datetime',
+        ];
+    }
+
+    public function moderator(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moderated_by');
     }
 
     public function donor(): BelongsTo
