@@ -10,6 +10,19 @@ APP=/home/site/wwwroot
 mkdir -p "$DATA/private"
 [ -f "$DATA/database.sqlite" ] || touch "$DATA/database.sqlite"
 
+# Without an APP_KEY app setting, make one once and keep it in /home/data,
+# so encrypted values and sign-in tokens survive restarts. config:cache below
+# bakes it into the cached config that PHP-FPM reads.
+if [ -z "$APP_KEY" ]; then
+    [ -f "$DATA/app_key" ] || echo "base64:$(head -c 32 /dev/urandom | base64)" > "$DATA/app_key"
+    export APP_KEY="$(cat "$DATA/app_key")"
+fi
+
+# Photo upload limits (5 MB each, 5 per item). PHP reads this file through
+# the PHP_INI_SCAN_DIR app setting (/usr/local/etc/php/conf.d:/home/site/ini).
+mkdir -p /home/site/ini
+printf 'upload_max_filesize=6M\npost_max_size=40M\nmax_file_uploads=10\n' > /home/site/ini/shareloop.ini
+
 cd "$APP"
 # Photos are on the "local" disk (storage/app/private).
 rm -rf storage/app/private

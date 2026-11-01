@@ -1073,6 +1073,11 @@ class AppLocalizationsSi extends AppLocalizations {
   }
 
   @override
+  String verifySentToIfAccount(String email) {
+    return '$email සඳහා ගිණුමක් ඇත්නම්, අපි එයට ඉලක්කම් 6ක කේතයක් ඊමේල් කළෙමු. එය මිනිත්තු 10කින් කල් ඉකුත් වේ.';
+  }
+
+  @override
   String get verifyCheckSpam =>
       'සොයාගත නොහැකිද? ඔබේ spam ෆෝල්ඩරය පරීක්ෂා කරන්න.';
 
