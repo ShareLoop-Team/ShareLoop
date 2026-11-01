@@ -88,20 +88,55 @@ jobs:
       url: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/app/
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Azure deployment settings
+      - name: Resolve Azure deployment settings
+        id: resolve_azure_settings
         shell: bash
         env:
           AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
           AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          AZURE_WEBAPP_PUBLISH_PROFILE_FALLBACK: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2FF84972DB0641D09B5099A79FF643A6 }}
         run: |
-          if [[ -z "$AZURE_WEBAPP_NAME" ]]; then
-            echo "::error::Missing GitHub Actions variable AZURE_WEBAPP_NAME. Set it to the exact Azure App Service name."
+          PUBLISH_PROFILE="${AZURE_WEBAPP_PUBLISH_PROFILE:-$AZURE_WEBAPP_PUBLISH_PROFILE_FALLBACK}"
+          if [[ -z "$PUBLISH_PROFILE" ]]; then
+            echo "::error::Missing publish profile secret. Set AZURE_WEBAPP_PUBLISH_PROFILE or AZUREAPPSERVICE_PUBLISHPROFILE_2FF84972DB0641D09B5099A79FF643A6."
             exit 1
           fi
-          if [[ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]]; then
-            echo "::error::Missing GitHub Actions secret AZURE_WEBAPP_PUBLISH_PROFILE. Add the publish profile XML for the production App Service."
+          RESOLVED_WEBAPP_NAME="$AZURE_WEBAPP_NAME"
+          if [[ -z "$RESOLVED_WEBAPP_NAME" ]]; then
+            RESOLVED_WEBAPP_NAME="$(
+              PUBLISH_PROFILE="$PUBLISH_PROFILE" python3 - <<'PY'
+              import os
+              import xml.etree.ElementTree as ET
+
+              publish_profile = os.environ.get("PUBLISH_PROFILE", "").strip()
+              if not publish_profile:
+                  raise SystemExit(0)
+
+              try:
+                  root = ET.fromstring(publish_profile)
+              except ET.ParseError:
+                  raise SystemExit(0)
+
+              for attr in ("siteName", "msdeploySite"):
+                  for node in root.iter():
+                      value = node.attrib.get(attr)
+                      if value:
+                          print(value.strip())
+                          raise SystemExit(0)
+              PY
+            )"
+          fi
+          if [[ -z "$RESOLVED_WEBAPP_NAME" ]]; then
+            echo "::error::Missing GitHub Actions variable AZURE_WEBAPP_NAME and failed to infer app name from publish profile."
             exit 1
           fi
+          echo "Resolved Azure Web App: $RESOLVED_WEBAPP_NAME"
+          {
+            echo "webapp_name=$RESOLVED_WEBAPP_NAME"
+            echo "publish_profile<<EOF"
+            echo "$PUBLISH_PROFILE"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -110,7 +145,7 @@ jobs:
       - name: Build the web app (served at /app/)
         run: >-
           flutter build web --release --base-href /app/
-          --dart-define=API_BASE_URL=https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/api
+          --dart-define=API_BASE_URL=https://${{ steps.resolve_azure_settings.outputs.webapp_name }}.azurewebsites.net/api
           --dart-define=GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
           --dart-define=FACEBOOK_APP_ID=${{ vars.FACEBOOK_APP_ID }}
       - name: Copy it into the backend
@@ -136,9 +171,9 @@ jobs:
           'storage/framework/views/*.php' 'bootstrap/cache/*.php'
       - uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          app-name: ${{ steps.resolve_azure_settings.outputs.webapp_name }}
           # Added by hand, or by Azure's Deployment Center (which names it itself).
-          publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE || secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2FF84972DB0641D09B5099A79FF643A6 }}
+          publish-profile: ${{ steps.resolve_azure_settings.outputs.publish_profile }}
           package: shareloop-api.zip
 
   apk:
