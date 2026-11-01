@@ -88,20 +88,34 @@ jobs:
       url: https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/app/
     steps:
       - uses: actions/checkout@v4
-      - name: Validate Azure deployment settings
+      - name: Resolve Azure deployment settings
+        id: azure_settings
         shell: bash
         env:
           AZURE_WEBAPP_NAME: ${{ vars.AZURE_WEBAPP_NAME }}
           AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+          AZURE_WEBAPP_PUBLISH_PROFILE_FALLBACK: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2FF84972DB0641D09B5099A79FF643A6 }}
         run: |
-          if [[ -z "$AZURE_WEBAPP_NAME" ]]; then
-            echo "::error::Missing GitHub Actions variable AZURE_WEBAPP_NAME. Set it to the exact Azure App Service name."
+          PUBLISH_PROFILE="$AZURE_WEBAPP_PUBLISH_PROFILE"
+          if [[ -z "$PUBLISH_PROFILE" ]]; then
+            PUBLISH_PROFILE="$AZURE_WEBAPP_PUBLISH_PROFILE_FALLBACK"
+          fi
+
+          if [[ -z "$PUBLISH_PROFILE" ]]; then
+            echo "::error::Missing Azure publish profile secret. Set AZURE_WEBAPP_PUBLISH_PROFILE or keep the Azure-generated AZUREAPPSERVICE_PUBLISHPROFILE_* secret."
             exit 1
           fi
-          if [[ -z "$AZURE_WEBAPP_PUBLISH_PROFILE" ]]; then
-            echo "::error::Missing GitHub Actions secret AZURE_WEBAPP_PUBLISH_PROFILE. Add the publish profile XML for the production App Service."
+
+          WEBAPP_NAME="$AZURE_WEBAPP_NAME"
+          if [[ -z "$WEBAPP_NAME" ]]; then
+            WEBAPP_NAME="$(printf '%s' "$PUBLISH_PROFILE" | tr -d '\r' | sed -n 's/.*siteName="\([^"]*\)".*/\1/p' | head -n1)"
+          fi
+          if [[ -z "$WEBAPP_NAME" ]]; then
+            echo "::error::Missing Azure app name. Set AZURE_WEBAPP_NAME variable or use a publish profile containing siteName=\"...\"."
             exit 1
           fi
+
+          echo "webapp_name=$WEBAPP_NAME" >> "$GITHUB_OUTPUT"
       - uses: subosito/flutter-action@v2
         with:
           flutter-version: ${{ env.FLUTTER_VERSION }}
@@ -110,7 +124,7 @@ jobs:
       - name: Build the web app (served at /app/)
         run: >-
           flutter build web --release --base-href /app/
-          --dart-define=API_BASE_URL=https://${{ vars.AZURE_WEBAPP_NAME }}.azurewebsites.net/api
+          --dart-define=API_BASE_URL=https://${{ steps.azure_settings.outputs.webapp_name }}.azurewebsites.net/api
           --dart-define=GOOGLE_CLIENT_ID=${{ vars.GOOGLE_CLIENT_ID }}
           --dart-define=FACEBOOK_APP_ID=${{ vars.FACEBOOK_APP_ID }}
       - name: Copy it into the backend
@@ -136,7 +150,7 @@ jobs:
           'storage/framework/views/*.php' 'bootstrap/cache/*.php'
       - uses: azure/webapps-deploy@v3
         with:
-          app-name: ${{ vars.AZURE_WEBAPP_NAME }}
+          app-name: ${{ steps.azure_settings.outputs.webapp_name }}
           # Added by hand, or by Azure's Deployment Center (which names it itself).
           publish-profile: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE || secrets.AZUREAPPSERVICE_PUBLISHPROFILE_2FF84972DB0641D09B5099A79FF643A6 }}
           package: shareloop-api.zip
