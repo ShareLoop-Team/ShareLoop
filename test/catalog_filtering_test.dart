@@ -4,10 +4,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:provider/provider.dart';
 
 import 'package:shareloop/controllers/item_controller.dart';
-import 'package:shareloop/core/constants/app_constants.dart';
 import 'package:shareloop/core/localization/generated/app_localizations.dart';
 import 'package:shareloop/core/theme/app_theme.dart';
-import 'package:shareloop/models/item_filter_criteria.dart';
 import 'package:shareloop/models/item_post_model.dart';
 import 'package:shareloop/repositories/item_post_repository.dart';
 import 'package:shareloop/views/browse/search_filter_screen.dart';

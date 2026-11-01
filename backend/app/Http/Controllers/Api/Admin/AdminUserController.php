@@ -42,6 +42,8 @@ class AdminUserController extends Controller
             } elseif ($status === 'active') {
                 $query->where('status', User::STATUS_ACTIVE)->where('is_banned', false);
             }
+        } else {
+            $query->where('status', User::STATUS_ACTIVE)->where('is_banned', false);
         }
 
         if ($request->filled('district')) {
@@ -92,15 +94,28 @@ class AdminUserController extends Controller
 
     public function updateStatus(Request $request, string $id): JsonResponse
     {
-        $data = $request->validate([
-            'action' => ['required', Rule::in(['activate', 'suspend', 'ban', 'verify'])],
-            'reason' => ['nullable', 'string', 'max:500'],
-        ]);
+        if ($id === $request->user()->id) {
+            abort(422, 'You cannot change your own account status.');
+        }
 
         $user = User::findOrFail($id);
         $oldState = ['status' => $user->status, 'is_banned' => $user->is_banned, 'is_verified' => $user->is_verified];
 
-        switch ($data['action']) {
+        if ($request->has('status') && ! $request->has('action')) {
+            $data = $request->validate([
+                'status' => ['required', Rule::in([User::STATUS_ACTIVE, User::STATUS_SUSPENDED])],
+                'reason' => ['nullable', 'string', 'max:500'],
+            ]);
+            $action = $data['status'] === User::STATUS_SUSPENDED ? 'suspend' : 'activate';
+        } else {
+            $data = $request->validate([
+                'action' => ['required', Rule::in(['activate', 'suspend', 'ban', 'verify'])],
+                'reason' => ['nullable', 'string', 'max:500'],
+            ]);
+            $action = $data['action'];
+        }
+
+        switch ($action) {
             case 'activate':
                 $user->status = User::STATUS_ACTIVE;
                 $user->is_banned = false;
@@ -125,14 +140,20 @@ class AdminUserController extends Controller
         $user->save();
 
         AuditLogger::log(
-            action: 'user.' . $data['action'],
+            action: 'user.' . $action,
             entity: $user,
             oldValues: $oldState,
             newValues: ['status' => $user->status, 'is_banned' => $user->is_banned, 'is_verified' => $user->is_verified],
-            description: $data['reason'] ?? ('User account ' . $data['action'])
+            description: $data['reason'] ?? ('User account ' . $action)
         );
 
-        return response()->json(['message' => 'User updated successfully.', 'user' => $user]);
+        $resource = (new \App\Http\Resources\UserResource($user))->resolve($request);
+
+        return response()->json([
+            'message' => 'User updated successfully.',
+            'user' => $user,
+            'data' => $resource,
+        ]);
     }
 
     public function resetPassword(Request $request, string $id): JsonResponse

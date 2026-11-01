@@ -48,7 +48,12 @@ class AdminItemController extends Controller
         }
 
         if ($request->has('hidden')) {
-            $query->where('is_hidden', $request->boolean('hidden'));
+            $hidden = $request->input('hidden');
+            if ($hidden !== 'all') {
+                $query->where('is_hidden', $request->boolean('hidden'));
+            }
+        } else {
+            $query->where('is_hidden', false);
         }
 
         $query->orderBy('created_at', 'desc');

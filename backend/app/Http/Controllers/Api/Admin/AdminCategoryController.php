@@ -34,18 +34,44 @@ class AdminCategoryController extends Controller
     public function store(Request $request): JsonResponse
     {
         $data = $request->validate([
-            'name' => ['required', 'string', 'max:60', 'unique:categories,name'],
+            'id' => ['nullable', 'string', 'regex:/^[a-z0-9_-]{1,40}$/', 'unique:categories,id'],
+            'name' => ['required', 'string', 'max:60', 'not_regex:/^\s*$/'],
             'icon_name' => ['nullable', 'string', 'max:40'],
             'sort_order' => ['nullable', 'integer'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
-        $id = Str::slug($data['name']);
+        $name = trim($data['name']);
+
+        $existing = Category::query()->where('name', $name)->first();
+        if ($existing !== null) {
+            if ($existing->is_active) {
+                abort(409, 'That category already exists.');
+            }
+            $existing->forceFill([
+                'is_active' => true,
+                'icon_name' => $data['icon_name'] ?? $existing->icon_name,
+            ])->save();
+
+            AuditLogger::log(
+                action: 'category.reactivate',
+                entity: $existing,
+                newValues: $existing->toArray(),
+                description: "Reactivated category {$existing->name}"
+            );
+
+            return (new \App\Http\Resources\CategoryResource($existing))->additional([
+                'message' => 'Category reactivated successfully.',
+                'category' => $existing,
+            ])->response()->setStatusCode(200);
+        }
+
+        $id = $data['id'] ?? (Str::slug($name, '_') ?: 'cat').'_'.Str::lower(Str::random(4));
         $category = Category::create([
-            'id' => $id,
-            'name' => $data['name'],
+            'id' => substr($id, 0, 40),
+            'name' => $name,
             'icon_name' => $data['icon_name'] ?? 'category',
-            'sort_order' => $data['sort_order'] ?? 0,
+            'sort_order' => $data['sort_order'] ?? 1000,
             'is_active' => $data['is_active'] ?? true,
         ]);
 
@@ -56,7 +82,10 @@ class AdminCategoryController extends Controller
             description: "Created category {$category->name}"
         );
 
-        return response()->json(['message' => 'Category created successfully.', 'category' => $category], 201);
+        return (new \App\Http\Resources\CategoryResource($category))->additional([
+            'message' => 'Category created successfully.',
+            'category' => $category,
+        ])->response()->setStatusCode(201);
     }
 
     public function update(Request $request, string $id): JsonResponse
@@ -88,21 +117,17 @@ class AdminCategoryController extends Controller
     {
         $category = Category::findOrFail($id);
 
-        if (Item::where('category', $category->name)->exists()) {
-            return response()->json([
-                'message' => 'Cannot delete category that still has items associated with it. Disable it instead.',
-            ], 422);
-        }
+        $old = $category->toArray();
+        $category->forceFill(['is_active' => false])->save();
 
         AuditLogger::log(
-            action: 'category.delete',
+            action: 'category.retire',
             entity: $category,
-            oldValues: $category->toArray(),
-            description: "Deleted category {$category->name}"
+            oldValues: $old,
+            newValues: $category->toArray(),
+            description: "Retired category {$category->name}"
         );
 
-        $category->delete();
-
-        return response()->json(['message' => 'Category deleted successfully.']);
+        return response()->json(['message' => 'Category removed.']);
     }
 }
