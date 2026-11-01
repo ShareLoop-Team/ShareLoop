@@ -16,7 +16,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'active' => \App\Http\Middleware\EnsureUserIsActive::class,
             'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+            'check.ip' => \App\Http\Middleware\CheckIpBlacklist::class,
         ]);
+        $middleware->append(\App\Http\Middleware\CheckIpBlacklist::class);
+        $middleware->append(\App\Http\Middleware\RecordApiMetrics::class);
         // Hosts like Azure App Service end HTTPS at their front end, so trust
         // its X-Forwarded-* headers; otherwise signed photo URLs are http://.
         $middleware->trustProxies(at: '*');
